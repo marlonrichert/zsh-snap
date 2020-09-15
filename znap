@@ -1,0 +1,126 @@
+#!/bin/zsh
+emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+zmodload zsh/parameter
+
+typeset -gHA _ZNAP_ARGS=(
+  cd      'cd to your plugins dir or into a repo'
+  clone   'git clone a repo into your plugins dir'
+  eval    'eval a command with caching'
+  ls      'list your plugins & cache-files, or the contents of a repo'
+  path    'print the path to a repo'
+  pull    'update all plugins, or a specific one'
+  rm      'remove a repo or cache-file'
+  source  'source a plugin or theme'
+)
+
+local action=$1 plugin=$2 cmd=$3
+local -i ret=1
+
+local basedir=${${(%):-%x}:A:h:h}
+local repo=$basedir/$plugin
+local cache=$repo.zsh
+
+case $action in
+  cd)
+    cd $repo
+    ;;
+  clone)
+    shift 1
+    git -C $basedir clone --depth=1 "$@"
+    ;;
+  eval)
+    setopt interactivecomments NO_warncreateglobal
+    {
+      local pwd=$PWD
+      local dir=$repo; [[ -d $repo ]] || dir=$basedir
+
+      _znap_cache() {
+        print -r "#${(q)cmd}" >! $cache
+        eval "cd $dir; $cmd" >>! $cache
+      }
+
+      if [[ ! -f $cache ]] || () {
+        local -a newer=( $repo/***/*(Ne:'[[ $REPLY -nt $cache ]]:':Y1) )
+        [[ -f $newer ]]
+      }; then
+        _znap_cache
+      fi
+
+      local -a lines=( ${(f)"$(<$cache)"} )
+
+      [[ $lines[1] == \#${(q)cmd} ]] || _znap_cache
+
+      eval "cd $dir; ${(F)lines}"
+      ret=$?
+    } always {
+      cd ${pwd:--}
+      [[ -v functions[_znap_cache] ]] && unfunction _znap_cache
+    }
+    return ret
+    ;;
+  ls)
+    if [[ -f $cache ]]; then
+      print -n 'ls '
+      eval "ls $cache; ls -l $cache"
+      ret=$?
+    fi
+    if [[ -d $repo ]]; then
+      print -n 'ls '
+      eval "ls -d $repo; ls -l $repo"
+      ret=$?
+    fi
+    return ret
+    ;;
+  path)
+    print $repo
+    ;;
+  pull)
+    shift 1
+    local -a repos=( $basedir/$^@ ); (( $#@ > 0 )) ||
+      repos=( $basedir/*(/) )
+    ret=0
+    {
+      cd $basedir
+      local r; for r in $repos; do
+        eval "ls -d $r:t"
+        git -C $r pull
+        ret+=$?
+      done
+    } always {
+      cd ${pwd:--}
+      [[ -v functions[_znap_cache] ]] && unfunction _znap_cache
+    }
+    return ret
+    ;;
+  rm)
+    shift 1
+    (( $#@ > 0 )) || return 1
+    local rm=${${commands[trash]:+trash -F}:-rm -r}
+    {
+      _znap_rm() {
+        print -n "$rm "
+        eval "ls -d $1; $rm $1"
+      }
+      for plugin in $@; do
+        repo=$basedir/$plugin
+        cache=$repo.zsh
+        [[ -d $repo ]] && _znap_rm $repo && ret=0
+        [[ -f $cache ]] && _znap_rm $cache && ret=0
+      done
+    } always {
+      [[ -v functions[_znap_rm] ]] && unfunction _znap_rm
+    }
+    return ret
+    ;;
+  source)
+    setopt NO_warncreateglobal
+    shift 2
+    local -a files=( "$repo/$^@" ); (( $#@ > 0 )) ||
+      files=( $repo/*.(plugin.zsh|zsh-theme)(#qN) )
+    eval "source "$^files";"
+    ;;
+  *)
+    print "${(@koF)_ZNAP_ARGS/(#m)*/${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"
+    return 1
+    ;;
+esac

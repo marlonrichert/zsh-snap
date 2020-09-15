@@ -1,0 +1,58 @@
+#compdef znap
+
+[[ -v _ZNAP_ARGS ]] || znap &> /dev/null
+
+local -a actions=()
+local k v; for k v in ${(@kv)_ZNAP_ARGS}; do
+  actions+=( "$k\:'$v'" )
+done
+
+local ret=1
+local -a context line state state_descr
+local -A opt_args
+_arguments -A '' ":action:(( $actions ))" '*:: :->next'
+ret=$?
+
+if [[ $state == next ]]; then
+  local basedir=${${(%):-%x}:A:h:h}
+  local -aU plugins=( $basedir/*(/) ); plugins=( ${plugins[@]:t} )
+  case $words[1] in
+    cd)
+      _arguments -s -S : "::plugin:( $plugins )"
+      ;;
+    clone)
+      _arguments -s -S : ':remote repository:_urls'
+      ;;
+    eval)
+      _arguments -s -S : ': :->repos-caches' ':command:_default'
+      ;;
+    ls)
+      _arguments -s -S : ': :->repos-caches'
+      ;;
+    path)
+      _arguments -s -S : ":plugin:( $plugins )"
+      ;;
+    pull)
+      _arguments -s -S : "*::plugin:( $plugins )"
+      ;;
+    rm)
+      _arguments -s -S : '*:: :->repos-caches'
+      ;;
+    source)
+      _arguments -s -S : ":plugin:( $plugins )" '*:: :->files'
+      ;;
+  esac
+  ret=$(( ret && ? ))
+  case $state in
+    files)
+      _arguments -s -S : "*::file:_files -W $basedir/$words[1]"
+      ;;
+    repos-caches)
+      local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
+      _alternative "repositories:plugin:( $plugins )" "cache-files:cache:( $caches )"
+      ;;
+  esac
+  ret=$(( ret && ? ))
+fi
+
+return ret
