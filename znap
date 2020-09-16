@@ -26,7 +26,7 @@ case $action in
     ;;
   clone)
     shift 1
-    git -C $basedir clone --depth=1 "$@"
+    git -C $basedir clone --depth=1 --recurse-submodules "$@"
     ;;
   eval)
     setopt interactivecomments NO_warncreateglobal
@@ -83,7 +83,7 @@ case $action in
       cd $basedir
       local r; for r in $repos; do
         eval "ls -d $r:t"
-        git -C $r pull
+        git -C $r pull --rebase --recurse-submodules
         ret+=$?
       done
     } always {
