@@ -29,8 +29,8 @@ case $action in
     git -C $basedir clone --depth=1 --recurse-submodules "$@"
     ;;
   eval)
-    setopt interactivecomments NO_warncreateglobal
     {
+      setopt interactivecomments shortloops NO_warncreateglobal
       local pwd=$PWD
       local dir=$repo; [[ -d $repo ]] || dir=$basedir
 
@@ -59,16 +59,19 @@ case $action in
     return ret
     ;;
   ls)
-    if [[ -f $cache ]]; then
-      print -n 'ls '
-      eval "ls $cache; ls -l $cache"
-      ret=$?
-    fi
-    if [[ -d $repo ]]; then
-      print -n 'ls '
-      eval "ls -d $repo; ls -l $repo"
-      ret=$?
-    fi
+    {
+      _znap_ls() {
+        print -n 'ls '
+        eval "ls $2 $1; ls -l $1"
+      }
+      [[ -f $cache ]] &&
+        _znap_ls $cache && ret=0
+      [[ -z $repo ]] && repo=$basedir
+      [[ -d $repo ]] &&
+        _znap_ls $repo -d && ret=0
+    } always {
+      [[ -v functions[_znap_ls] ]] && unfunction _znap_ls
+    }
     return ret
     ;;
   path)
@@ -113,11 +116,19 @@ case $action in
     return ret
     ;;
   source)
-    setopt NO_warncreateglobal
+    setopt shortloops NO_warncreateglobal
     shift 2
-    local -a files=( "$repo/$^@" ); (( $#@ > 0 )) ||
-      files=( $repo/*.(plugin.zsh|zsh-theme)(#qN) )
-    eval "source "$^files";"
+    local -aU args=( $repo/$^@ ); (( $#args > 0 )) ||
+      args=( $repo )
+    local -aU files
+    local a; for a in $args; do
+      [[ -r $a ]] || continue
+      files=( $a ); [[ -d $a ]] &&
+        files=(
+          $a/(#i){${a:t},${~${${a:t}/(zsh-|-zsh)/}//(-|_)/(-|_)},init,*}.{(|*.)zsh^*.zwc,sh}(#qN.Y1)
+        )
+      source $files[1]
+    done
     ;;
   *)
     print "${(@koF)_ZNAP_ARGS/(#m)*/${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"

@@ -32,22 +32,23 @@ right place, `source` the plugin file, and you're good to go.
 1. Add this line _near the top_ of your `~/.zshrc` file —or at least early enough that Znap is
    fully initialized before any plugins you want to manage:
    ```sh
-   source ~/.zsh-plugins/zsh-snap/znap.plugin.zsh
+   source ~/.zsh-plugins/zsh-snap/znap.zsh
    ```
 1. **Restart your shell.**
 
 ## Getting Started
 
-`git clone` a repo straight into your plugins dir:
+`git clone` a repo, including submodules, straight into your plugins dir:
 ```sh
-znap clone https://github.com/marlonrichert/zsh-hist.git
-znap clone git@github.com:marlonrichert/zsh-autocomplete.git
+znap clone git@github.com:marlonrichert/zsh-hist.git
+znap clone https://github.com/sorin-ionescu/prezto.git
 ```
 
-`source` a plugin, or specific files inside a repo:
+`source` a plugin, or a combination of submodules and/or specific files:
 ```sh
 znap source zsh-hist
-znap source prezto environment/init.zsh history/init.zsh directory/init.zsh
+znap source ohmyzsh lib/key-bindings.zsh plugins/history-substring-search
+znap source prezto modules/environment modules/history modules/directory
 ```
 
 Add a repo to your `$path` or `$fpath`:
@@ -56,10 +57,7 @@ typeset -gU PATH path=(
   $(znap path github-markdown-toc)
   $path
 )
-typeset -gU FPATH fpath=(
-  $(znap path pure)
-  $fpath
-)
+fpath+=( $(znap path pure) )
 ```
 
 Run a command inside a repo, then **cache its output** and `eval` it with **automatic cache
@@ -73,16 +71,17 @@ zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"
 cache file when necessary):
 ```sh
 znap eval brew-shellenv 'brew shellenv'
+znap eval pyenv-init 'pyenv init -'
 znap eval pipenv-completion 'pipenv --completion'
 ```
 
 `rm` one or more repos and/or cache files:
 ```sh
-znap rm LS_COLORS
-znap rm brew-shellenv pipenv-completion
+znap rm ohmyzsh LS_COLORS
+znap rm brew-shellenv pyenv-init pipenv-completion
 ```
 
-Update your plugins by running `git pull` in all your repos, or in just specific ones:
+Update all your repos, including submodules, with `git pull`, or just specific ones:
 ```sh
 znap pull
 znap pull zsh-autocomplete zsh-hist
