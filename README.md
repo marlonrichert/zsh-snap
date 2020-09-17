@@ -43,17 +43,28 @@ right place, `source` the plugin file, and you're good to go.
 
 ## Getting Started
 
-`git clone` a repo, including submodules, straight into your plugins dir:
+`git clone` multiple repos _simultaneously,_ including submodules, straight into your plugins dir:
 ```sh
-znap clone git@github.com:marlonrichert/zsh-hist.git
-znap clone https://github.com/sorin-ionescu/prezto.git
+znap clone git@github.com:marlonrichert/zsh-hist.git https://github.com/sorin-ionescu/prezto.git
 ```
 
-`source` a plugin, or a combination of submodules and/or specific files:
+Instantly re-`clone` all repos you've `znap clone`d before, again _in parallel:_
+```sh
+znap clone
+```
+
+Run `git pull` _simultaneously_ in all your repos, including submodules, or just in specific
+ones:
+```sh
+znap pull
+znap pull zsh-autocomplete zsh-hist
+```
+
+`source` a plugin, or a combination of submodules and/or specific files inside a repo:
 ```sh
 znap source zsh-hist
 znap source ohmyzsh lib/key-bindings.zsh plugins/history-substring-search
-znap source prezto modules/environment modules/history modules/directory
+znap source prezto modules/history modules/directory
 ```
 
 Add a repo to your `$path` or `$fpath`:
@@ -80,28 +91,21 @@ znap eval pyenv-init 'pyenv init -'
 znap eval pipenv-completion 'pipenv --completion'
 ```
 
-`rm` one or more repos and/or cache files:
+`rm` repos and cache files:
 ```sh
-znap rm ohmyzsh LS_COLORS
-znap rm brew-shellenv pyenv-init pipenv-completion
-```
-
-Update all your repos, including submodules, with `git pull`, or just specific ones:
-```sh
-znap pull
-znap pull zsh-autocomplete zsh-hist
-```
-
-`ls` your plugins dir, or a repo:
-```sh
-znap ls
-znap ls zsh-hist
+znap rm LS_COLORS prezto brew-shellenv
 ```
 
 `cd` to your plugins dir, or straight into a repo:
 ```sh
 znap cd
 znap cd zsh-hist
+```
+
+`ls` your plugins dir, or a repo:
+```sh
+znap ls
+znap ls zsh-hist
 ```
 
 ## Author

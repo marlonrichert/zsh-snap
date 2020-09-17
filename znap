@@ -27,7 +27,32 @@ case $action in
     ;;
   clone)
     shift 1
-    git -C $basedir clone --depth=1 --recurse-submodules "$@"
+    local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/; [[ -d $dir ]] ||
+      mkdir -p $dir
+    local file=$dir/znap-repos
+    local -aU lines=(); [[ -f $file ]] &&
+      lines=( ${(f)"$(<$file)"} )
+    local -aU repos=( $@ ); (( $#@ > 0 )) ||
+      repos=( $lines[@] )
+    local -i fd; local -a fds=()
+    ret=0
+    {
+      local r; for r in $repos; do
+        exec {fd}< <(
+          git -C $basedir clone --recurse-submodules -j$(ulimit -n) \
+            --depth=1 --shallow-submodules "$r"
+        ); (( ret += ? ))
+        fds+=( $fd )
+      done
+      lines+=( $repos[@] )
+      print -l ${(i)lines} >! $file
+    } always {
+      for fd in $fds; do
+        <&$fd; (( ret += ? ))
+        exec {fd}<&-; (( ret += ? ))
+      done
+    }
+    return ret
     ;;
   eval)
     {
@@ -82,15 +107,26 @@ case $action in
     shift 1
     local -a repos=( $basedir/$^@ ); (( $#@ > 0 )) ||
       repos=( $basedir/*(/) )
+    local -i fd; local -a fds=()
     ret=0
     {
+      local pwd=$PWD
       cd $basedir
-      local r; for r in $repos; do
-        eval "ls -d $r:t"
-        git -C $r pull --rebase --recurse-submodules
-        ret+=$?
+      local r; for r in ${(i)repos}; do
+        exec {fd}< <(
+          print $(
+            eval 'ls -d '$r:t
+            git -C $r pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1
+            (( ret += ? ))
+          )
+        )
+        fds+=( $fd )
       done
     } always {
+      for fd in $fds; do
+        <&$fd; (( ret += ? ))
+        exec {fd}<&-; (( ret += ? ))
+      done
       cd ${pwd:--}
       [[ -v functions[_znap_cache] ]] && unfunction _znap_cache
     }
@@ -99,22 +135,22 @@ case $action in
   rm)
     shift 1
     (( $#@ > 0 )) || return 1
-    local rm=${${commands[trash]:+trash -F}:-rm -r}
+    local -aU files=()
+    for plugin in $@; do
+      repo=$basedir/$plugin
+      cache=$repo.zsh
+      [[ -d $repo ]] && files+="$repo/"
+      [[ -f $cache ]] && files+="$cache"
+    done
+    (( $#files > 0 )) || return 1
     {
-      _znap_rm() {
-        print -n "$rm "
-        eval "ls -d $1; $rm $1"
-      }
-      for plugin in $@; do
-        repo=$basedir/$plugin
-        cache=$repo.zsh
-        [[ -d $repo ]] && _znap_rm $repo && ret=0
-        [[ -f $cache ]] && _znap_rm $cache && ret=0
-      done
+      cd $basedir
+      local rm=${${commands[trash]:+trash -F}:-rm -r}
+      print $rm' '$(eval "ls -d $files[@]:t")
+      eval "$rm $files"
     } always {
-      [[ -v functions[_znap_rm] ]] && unfunction _znap_rm
+      cd ${pwd:--}
     }
-    return ret
     ;;
   source)
     setopt shortloops NO_warncreateglobal
