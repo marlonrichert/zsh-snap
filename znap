@@ -16,7 +16,8 @@ typeset -gHA _ZNAP_ARGS=(
 local action=$1 plugin=$2 cmd=$3
 local -i ret=1
 
-local basedir=${${(%):-%x}:A:h:h}
+local basedir; zstyle -s ':znap:' plugins-dir basedir ||
+  basedir=${${(%):-%x}:A:h:h}
 local repo=$basedir/$plugin
 local cache=$repo.zsh
 

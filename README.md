@@ -29,8 +29,13 @@ right place, `source` the plugin file, and you're good to go.
    ```sh
    git clone https://github.com/marlonrichert/zsh-snap.git
    ```
+   * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
+     plugins dir (which you can also change on the fly):
+     ```sh
+     zstyle ':znap:*' plugins-dir ~/.zsh-plugins
+     ```
 1. Add this line _near the top_ of your `~/.zshrc` file —or at least early enough that Znap is
-   fully initialized before any plugins you want to manage:
+   `source`d before any plugins that you want to manage:
    ```sh
    source ~/.zsh-plugins/zsh-snap/znap.zsh
    ```
