@@ -1,0 +1,30 @@
+#!/bin/zsh
+# compile asynchronously
+typeset -gHaU _znap_compile_queue=()
+
+.znap.compile() {
+  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+  zmodload zsh/parameter
+  _znap_compile_queue+=( "$@" ); (( $#@ > 0 )) ||
+    _znap_compile_queue+=( "${functions_source[@]:#*.zwc}" )
+  .znap.iter .znap.compile.next
+}
+
+.znap.compile.next() {
+  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+  local src=$_znap_compile_queue[1]
+  shift _znap_compile_queue
+
+  local -i fd
+  exec {fd}< <(
+    local bin=$src.zwc
+    [[ -r $src && -w $src:h ]] && [[ ! -e $bin || $bin -ot $src ]] &&
+      zcompile -Uz $src 2>&1
+  )
+  zle -F $fd .znap.close-fd
+  return $#_znap_compile_queue
+}
+
+.znap.compile "$@"

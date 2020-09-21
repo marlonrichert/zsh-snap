@@ -1,0 +1,44 @@
+#!/bin/zsh
+# repeat task asynchronously until it returns 0
+
+typeset -gHaU _znap_iter_queue=()
+typeset -gH _znap_iter_timeout=0
+
+.znap.iter() {
+  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+  _znap_iter_queue+=( "$@" )
+  .znap.iter.sleep 0
+}
+
+.znap.iter.sleep() {
+  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+  _znap_iter_timeout=$1
+  zmodload zsh/zselect
+  local -i fd
+  exec {fd}< <(zselect -t $_znap_iter_timeout)
+  zle -F $fd .znap.iter.next
+}
+
+.znap.iter.next() {
+  .znap.close-fd $1
+
+  local -i backlog=$(( KEYS_QUEUED_COUNT + PENDING ))
+  if (( backlog > 0 )); then
+    .znap.iter.sleep $(( _znap_iter_timeout + backlog ))
+    return 0
+  fi
+
+  local cmd="$_znap_iter_queue[1]"
+  shift _znap_iter_queue
+  eval "$cmd" ||
+    _znap_iter_queue+="$cmd"
+
+  (( $#_znap_iter_queue > 0 )) &&
+    .znap.iter.sleep 0
+
+  return 0
+}
+
+.znap.iter "$@"

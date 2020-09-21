@@ -23,11 +23,23 @@ if [[ $state == next ]]; then
     clone)
       _arguments -s -S : ':remote repository:_urls'
       ;;
+    close-fd)
+      _arguments -s -S : ':file descriptor:_file_descriptors'
+      ;;
+    compile)
+      _arguments -s -S : '*:: :->files-functions'
+      ;;
     eval)
       _arguments -s -S : ': :->repos-caches' ':command:_default'
       ;;
+    iter)
+      _arguments -s -S : ':command:_default'
+      ;;
     ls)
       _arguments -s -S : ': :->repos-caches'
+      ;;
+    multi)
+      _arguments -s -S : ':command:_default'
       ;;
     path)
       _arguments -s -S : ":plugin:( $plugins )"
@@ -50,6 +62,10 @@ if [[ $state == next ]]; then
     repos-caches)
       local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
       _alternative "repositories:plugin:( $plugins )" "cache-files:cache:( $caches )"
+      ;;
+    repos-functions)
+      local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
+      _alternative "files:file:_files" "functions:function:_functions"
       ;;
   esac
   ret=$(( ret && ? ))
