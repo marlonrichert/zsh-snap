@@ -1,0 +1,5 @@
+#!/bin/zsh
+# print plugins dir or repo path
+emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+print -r ${${(%):-%x}:A:h:h:h}${1:+/$1}

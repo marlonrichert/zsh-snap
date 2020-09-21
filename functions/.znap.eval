@@ -1,0 +1,35 @@
+#!/bin/zsh
+# run command, then cache & eval output
+
+.znap.eval() {
+
+  local repo=$(.znap.path $1)
+  shift
+  local cmd="$@"
+  local cache=$repo.zsh header="#${(q)cmd}"
+  local -i ret=1
+  {
+    local pwd=$PWD
+    [[ -d $repo ]] &&
+      cd $repo
+
+      local line
+      [[ -r $cache ]] &&
+        IFS='' read -r line < $cache
+      if [[ $line != $header ]] || [[ -f $repo/.git/index && $repo/.git/index -nt $cache ]]; then
+        print -r "$header" >! $cache
+        print -r "$(eval $cmd)" >>! $cache
+      fi
+      . $cache; ret=$?
+  } always {
+    [[ -x $pwd ]] &&
+      cd $pwd
+  }
+  return ret
+}
+
+.znap.eval.source() {
+
+}
+
+.znap.eval "$@"

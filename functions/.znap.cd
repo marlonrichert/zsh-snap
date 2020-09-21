@@ -1,0 +1,5 @@
+#!/bin/zsh
+# cd to plugins dir or repo
+emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+cd $(.znap.path $1)

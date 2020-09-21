@@ -1,0 +1,27 @@
+#!/bin/zsh
+# rm repos and/or cache files
+emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+(( $#@ > 0 )) ||
+  return 1
+
+local basedir=$(.znap.path)
+local -aU files=(
+  $basedir/$^@(#qNw/)
+  $basedir/$^@.zsh(#qNw^/)
+)
+
+(( $#files > 0 )) ||
+  return 1
+{
+  local pwd=$PWD
+  cd $basedir
+
+  local rm=${${commands[trash]:+trash -F}:-rm -r}
+  print $rm' '$(eval "ls -d $files[@]:t")
+  eval "$rm $files"
+
+} always {
+  [[ -x $pwd ]] &&
+    cd $pwd
+}

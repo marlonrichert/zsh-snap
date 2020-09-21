@@ -1,0 +1,23 @@
+#!/bin/zsh
+# git clone remotes in parallel to plugins dir
+emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+local basedir=$(.znap.path)
+local -a fds=()
+local -i fd
+local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/; [[ -d $dir ]] ||
+  mkdir -p $dir
+local file=$dir/znap-repos
+local -aU lines=(); [[ -f $file ]] &&
+  lines=( "${(f)"$(<$file)"}" )
+local -aU repos=( $@ ); (( $#repos > 0 )) ||
+  repos=( $lines[@] )
+
+.znap.multi 'git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 \
+              --shallow-submodules '$^repos
+local -i ret=$?
+
+lines+=( $repos[@] )
+print -l ${(i)lines} >! $file
+
+return ret

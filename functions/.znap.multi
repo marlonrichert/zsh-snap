@@ -1,0 +1,20 @@
+#!/bin/zsh
+# run tasks in parallel
+
+local -a fds=()
+local fd
+local -i ret=0
+{
+  local cmd; for cmd in $@; do
+    exec {fd}< <(
+      eval "$cmd"; (( ret += ? ))
+    )
+    fds+=( $fd )
+  done
+} always {
+  for fd in $fds; do
+    <&$fd
+    exec {fd}<&-
+  done
+}
+return ret

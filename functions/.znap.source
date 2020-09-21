@@ -1,0 +1,17 @@
+#!/bin/zsh
+# source plugin or repo submodules & scripts
+
+local repo=$(znap path $1); shift
+local -aU files=( $repo/$^@ ); (( $#files > 0 )) ||
+  files=( $repo )
+local -aU src
+
+local -a words
+local f; for f in $files; do
+  () {
+    emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+    src=( $f ); [[ -d $f ]] &&
+      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}.{(|*.)zsh^*.zwc,sh}(#qN.rY1) )
+   }
+  . $src[1]
+done

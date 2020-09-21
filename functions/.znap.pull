@@ -1,0 +1,34 @@
+#!/bin/zsh
+# git pull repos in parallel
+
+.znap.pull() {
+  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+  local basedir=$(.znap.path)
+  local -a repos=( $basedir/$^@(#q/) ); (( $#repos > 0 )) ||
+    repos=( $basedir/*(/) )
+  {
+    local pwd=$PWD
+    cd $basedir
+
+    .znap.multi '.znap.pull.task '${(i)^repos}
+    local -i ret=$?
+  } always {
+    [[ -x $pwd ]] &&
+      cd $pwd
+  }
+  return ret
+}
+
+.znap.pull.task() {
+  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+
+  print $(
+    eval 'ls -d '$1:t
+    git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1
+    local -i ret=$?
+  )
+  return ret
+}
+
+.znap.pull "$@"
