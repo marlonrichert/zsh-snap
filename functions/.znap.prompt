@@ -1,0 +1,54 @@
+#!/bin/zsh
+# init prompt from repo
+typeset -gHi _znap_prompt_adjust=2
+
+.znap.prompt() {
+  local -a matches=( $(znap path)/{$1,*$1*}(N/) )
+  local repo=$matches[1]
+  typeset -gU FPATH fpath=( $repo $fpath )
+  autoload -Uz promptinit
+  promptinit
+  setopt prompt{bang,cr,percent,sp,subst}
+  if [[ -v functions[prompt_${1}_setup] ]]; then
+    prompt $1
+  else
+    .znap.source $repo:t $2
+  fi
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd .znap.prompt.precmd
+
+  autoload -Uz add-zle-hook-widget
+  add-zle-hook-widget line-init .znap.prompt.line-init
+
+  [[ -n $precmd_functions[(r)prompt_${1}_precmd] ]] &&
+    prompt_${1}_precmd
+  echoti sc  # save cursor position
+  [[ -o promptcr ]] &&
+    print -n $'\r'
+  :
+  local out=$(print -nP "$PS1" >&1 >&2) 2>&1
+  local -a lines=( "${(f)out}" )
+  _znap_prompt_adjust=$#lines
+  [[ -n $preexec_functions[(r)prompt_${1}_preexec] ]] &&
+    prompt_${1}_preexec
+}
+
+.znap.prompt.precmd() {
+  add-zsh-hook -d precmd $funcstack[1]
+
+  echoti invis  # invisible text
+  echoti civis  # invisible cursor
+}
+
+.znap.prompt.line-init() {
+  add-zle-hook-widget -d line-init $funcstack[1]
+
+  echoti rc  # restore cursor position
+  [[ -o promptcr ]] ||
+    echoti cud1  # cursor down 1
+  echoti cnorm  # normal cursor
+  zle .redisplay
+}
+
+.znap.prompt "$@"
