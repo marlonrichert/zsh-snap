@@ -69,6 +69,7 @@ if [[ $state == next ]]; then
     repos-functions)
       local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
       _alternative "files:file:_files" "functions:function:_functions"
+      ;;
     repos-themes)
       local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
       _alternative "repositories:plugin:( $plugins )" ":prompt theme:($prompt_themes)"
