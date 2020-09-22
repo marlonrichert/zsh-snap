@@ -1,37 +1,48 @@
 #!/bin/zsh
 # init prompt from repo
-typeset -gHi _znap_prompt_adjust=2
+zmodload zsh/parameter
+autoload -Uz add-zsh-hook
+autoload -Uz add-zle-hook-widget
 
 .znap.prompt() {
-  local -a matches=( $(znap path)/{$1,*$1*}(N/) )
+  local basedir=$(znap path)
+  local -a matches=( $basedir/{$1,*$1*}(N/) )
   local repo=$matches[1]
   typeset -gU FPATH fpath=( $repo $fpath )
-  autoload -Uz promptinit
-  promptinit
-  setopt prompt{bang,cr,percent,sp,subst}
-  if [[ -v functions[prompt_${1}_setup] ]]; then
-    prompt $1
-  else
-    .znap.source $repo:t $2
+
+  local theme=${2:-$1}
+  local setup=prompt_${theme}_setup
+  if ! autoload +X -Uz $setup 2>/dev/null; then
+    unfunction $setup
+
+    local file=$basedir/$setup
+    [[ -r $file ]] ||
+      print -r "znap source $repo:t ${2:+themes/$2.zsh-theme}" >! $file
+
+    fpath=( $basedir $fpath )
+    autoload -Uz $setup
   fi
 
-  autoload -Uz add-zsh-hook
-  add-zsh-hook precmd .znap.prompt.precmd
+  setopt prompt{bang,cr,percent,sp,subst}
+  autoload -Uz promptinit
+  promptinit
+  prompt $theme
 
-  autoload -Uz add-zle-hook-widget
+  add-zsh-hook precmd .znap.prompt.precmd
   add-zle-hook-widget line-init .znap.prompt.line-init
 
-  [[ -n $precmd_functions[(r)prompt_${1}_precmd] ]] &&
-    prompt_${1}_precmd
+  local precmd=prompt_${theme}_precmd
+  [[ -n $precmd_functions[(r)$precmd] ]] && $precmd
+
   echoti sc  # save cursor position
-  [[ -o promptcr ]] &&
-    print -n $'\r'
+
+  [[ -o promptcr ]] && print -n $'\r'
+
   :
-  local out=$(print -nP "$PS1" >&1 >&2) 2>&1
-  local -a lines=( "${(f)out}" )
-  _znap_prompt_adjust=$#lines
-  [[ -n $preexec_functions[(r)prompt_${1}_preexec] ]] &&
-    prompt_${1}_preexec
+  print -nP "$PS1"
+
+  local preexec=prompt_${theme}_preexec
+  [[ -n $preexec_functions[(r)$preexec] ]] && $preexec
 }
 
 .znap.prompt.precmd() {

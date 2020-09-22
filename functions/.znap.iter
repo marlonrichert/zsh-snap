@@ -1,6 +1,6 @@
 #!/bin/zsh
 # repeat task asynchronously until it returns 0
-
+zmodload zsh/zselect
 typeset -gHaU _znap_iter_queue=()
 typeset -gH _znap_iter_timeout=0
 
@@ -15,7 +15,6 @@ typeset -gH _znap_iter_timeout=0
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
   _znap_iter_timeout=$1
-  zmodload zsh/zselect
   local -i fd
   exec {fd}< <(zselect -t $_znap_iter_timeout)
   zle -F $fd .znap.iter.next

@@ -77,7 +77,10 @@ source ~/.zsh/zsh-snap/znap.zsh
 
 # Use Znap to make your prompt appear *instantly.*
 # You can start typing right away!
-znap prompt agnoster
+znap prompt agnoster  # Just an example. Works with any (normal) theme.
+
+# For OhMyZsh themes, use this syntax:
+# znap prompt ohmyzsh robbyrussell
 
 # Then, while you are typing...
 

@@ -6,11 +6,10 @@ if (( $#@ > 0 )); then
   .znap.$action $@
 else
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+  zmodload zsh/mapfile
 
   typeset -gHA _ZNAP_ARGS=()
-  local -a files=( ${${(%):-%x}:A:h}/.znap.[^.]## )
-  zmodload zsh/mapfile
-  local f; for f in $files[@]; do
+  local f; for f in ${${(%):-%x}:A:h}/.znap.[^.]##; do
     _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
   done
   local MATCH MBEGIN MEND

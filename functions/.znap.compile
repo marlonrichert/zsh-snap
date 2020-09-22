@@ -1,11 +1,11 @@
 #!/bin/zsh
 # compile asynchronously
+zmodload zsh/parameter
 typeset -gHaU _znap_compile_queue=()
 
 .znap.compile() {
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
-  zmodload zsh/parameter
   _znap_compile_queue+=( "$@" ); (( $#@ > 0 )) ||
     _znap_compile_queue+=( "${functions_source[@]:#*.zwc}" )
   .znap.iter .znap.compile.next
