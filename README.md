@@ -1,11 +1,11 @@
-# Znap!
-Zsh-Snap –or **Znap** for short– is the light-weight plugin manager for Zsh that's easy to grok.
+# :zap:Znap!
+**Znap** is the light-weight plugin manager for Zsh that's easy to grok.
 
 Consisting of just ~16 kilobytes of source code (9 KB when zipped), Znap does everything you need
 from a plugin manager, but without any bloat.
 
 Znap is in fact so simple, that if you ever have a question about it, the fastest way to get an
-answer is probably to [read the code](znap). Because good software shouldn't be hard to
+answer is probably to [read the code](functions). Because good software shouldn't be hard to
 understand.
 
 Oh, and of course, Znap needs exactly zero configuration. Just `git clone` the repo into the
@@ -119,7 +119,6 @@ While you are using your shell, Znap will compile your scripts and functions in 
 
 Should you not want this feature, you can _disable_ it with `zstyle ':znap:*' auto-compile no`.
 You can then run it manually at any time with `znap compile`.
-
 
 ## Author
 © 2020 [Marlon Richert](https://github.com/marlonrichert)
