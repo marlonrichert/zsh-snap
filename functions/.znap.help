@@ -1,0 +1,18 @@
+#!/bin/zsh
+# print help text
+emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+zmodload zsh/mapfile
+
+typeset -gHA _ZNAP_ARGS=()
+local f; for f in ${${(%):-%x}:A:h}/.znap.[^.]##; do
+  _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
+done
+local MATCH MBEGIN MEND
+
+local -i fd=1
+if (( $# > 0 )); then
+  fd=2
+  print -u$fd $@
+fi
+print -u$fd 'usage: znap <command> [<args>]'
+print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"

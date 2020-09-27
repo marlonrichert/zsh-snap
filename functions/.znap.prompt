@@ -1,13 +1,25 @@
 #!/bin/zsh
 # init prompt from repo
-zmodload zsh/parameter
+zmodload zsh/{parameter,system}
 autoload -Uz add-zsh-hook
 autoload -Uz add-zle-hook-widget
 
 .znap.prompt() {
-  local basedir=$(znap path)
+  if (( $# < 1 )); then
+    print -u2 'znap prompt: not enough arguments'
+    print -u2 'usage: znap prompt [<repo>] <theme>'
+    return 1
+  fi
+
+  local basedir=$(.znap.path) || return
   local -a matches=( $basedir/{$1,*$1*}(N/) )
   local repo=$matches[1]
+
+  if [[ -z $repo ]]; then
+    print -u2 "znap prompt: no such theme '$*' in $basedir"
+    return 1
+  fi
+
   typeset -gU FPATH fpath=( $repo $fpath )
 
   local theme=${2:-$1}
@@ -26,7 +38,7 @@ autoload -Uz add-zle-hook-widget
   setopt prompt{bang,cr,percent,sp,subst}
   autoload -Uz promptinit
   promptinit
-  prompt $theme
+  prompt $theme || return
 
   add-zsh-hook precmd .znap.prompt.precmd
   add-zle-hook-widget line-init .znap.prompt.line-init
@@ -36,13 +48,18 @@ autoload -Uz add-zle-hook-widget
 
   echoti sc  # save cursor position
 
-  [[ -o promptcr ]] && print -n $'\r'
+  [[ -o promptcr ]] &&
+    print -n $'\r'
 
   :
   print -nP "$PS1"
 
   local preexec=prompt_${theme}_preexec
   [[ -n $preexec_functions[(r)$preexec] ]] && $preexec
+
+  typeset -gHi _znap__stderr_copy
+  typeset -gH _znap__stderr=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
+  exec {_znap__stderr_copy}>&2 2>$_znap__stderr
 }
 
 .znap.prompt.precmd() {
@@ -50,16 +67,34 @@ autoload -Uz add-zle-hook-widget
 
   echoti invis  # invisible text
   echoti civis  # invisible cursor
+
+  return 0
 }
 
 .znap.prompt.line-init() {
   add-zle-hook-widget -d line-init $=funcstack[1]
 
+  exec 2>&$_znap__stderr_copy {_znap__stderr_copy}>&-
+  unset _znap__stderr_copy
+
   echoti rc  # restore cursor position
-  [[ -o promptcr ]] ||
-    echoti cud1  # cursor down 1
-  echoti cnorm  # normal cursor
-  zle .redisplay
+
+  local err="$(<$_znap__stderr)"
+  zmodload -F zsh/files b:zf_rm &&
+    zf_rm -f -- $_znap__stderr
+  if [[ $err == [[:IFS:]]# ]]; then
+    [[ -o promptcr ]] ||
+      echoti cud1  # cursor down 1
+    :
+    zle .redisplay
+  else
+    zle -I
+    print -u2 -r "$err"
+  fi
+
+  echoti cnorm  # normal, visible cursor
+
+  return 0
 }
 
 .znap.prompt "$@"

@@ -2,6 +2,13 @@
 # close file descriptor & remove handler
 emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
+[[ $1 == [[:digit:]]## ]] ||
+  return 1
+
 local -i fd=$1
+
+(( fd < 10 )) &&
+  return 1
+
 zle -F $fd
 exec {fd}<&-

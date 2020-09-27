@@ -1,11 +1,18 @@
 #!/bin/zsh
 # source plugin or repo submodules & scripts
 
-local repo=$(znap path $1); shift
+if (( $# < 1 )); then
+  print -u2 'znap source: not enough arguments'
+  return 1
+fi
+
+local repo=$(.znap.path $1) || return
+shift
 local -aU files=( $repo/$^@ ); (( $#files > 0 )) ||
   files=( $repo )
-local -aU src
 
+local -aU src
+local -i ret
 local -a words
 local f; for f in $files; do
   () {
@@ -13,5 +20,6 @@ local f; for f in $files; do
     src=( $f ); [[ -d $f ]] &&
       src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}.{(|*.)zsh^*.zwc,sh}(#qN.rY1) )
    }
-  . $src[1]
+  . $src[1]; (( ret += ? ))
 done
+return ret

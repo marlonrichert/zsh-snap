@@ -4,4 +4,11 @@ emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
 local basedir; zstyle -s ':znap:' plugins-dir basedir ||
   basedir=${${(%):-%x}:A:h:h:h}
-print -r $basedir${1:+/$1}
+local REPLY=$basedir${1:+/$1}
+if [[ -e $REPLY ]]; then
+  print -r $REPLY
+  return 0
+else
+  print -u2 "znap path: no such file or directory '$basedir/$1'"
+  return 1
+fi

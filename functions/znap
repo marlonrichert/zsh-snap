@@ -1,18 +1,15 @@
 #!/bin/zsh
 
 if (( $#@ > 0 )); then
-  local action=$1;
-  shift
-  .znap.$action $@
+  local cmd=$1; shift
+  local REPLY
+  local func=.znap.$cmd
+  if [[ -v functions[$func] ]]; then
+    $func $@
+  else
+    .znap.help "znap: '$cmd' is not a znap command"
+    return 1
+  fi
 else
-  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
-  zmodload zsh/mapfile
-
-  typeset -gHA _ZNAP_ARGS=()
-  local f; for f in ${${(%):-%x}:A:h}/.znap.[^.]##; do
-    _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
-  done
-  local MATCH MBEGIN MEND
-  print "${(@koF)_ZNAP_ARGS/(#m)*/${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"
-  return 1
+  .znap.help
 fi

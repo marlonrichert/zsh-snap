@@ -2,8 +2,13 @@
 # run command, then cache & eval output
 
 .znap.eval() {
+  if (( $# < 2 )); then
+    print -u2 'znap eval: not enough arguments'
+    print -u2 'usage: znap eval <plugin> <command>'
+    return 1
+  fi
 
-  local repo=$(.znap.path $1)
+  local repo=$(.znap.path)/$1 || return
   shift
   local cmd="$@"
   local cache=$repo.zsh header="#${(q)cmd}"

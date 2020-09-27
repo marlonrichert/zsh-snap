@@ -4,9 +4,10 @@
 .znap.pull() {
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
-  local basedir=$(.znap.path)
+  local basedir=$(.znap.path) || return
   local -a repos=( $basedir/$^@(#q/) ); (( $#repos > 0 )) ||
     repos=( $basedir/*(/) )
+
   {
     local pwd=$PWD
     cd $basedir
