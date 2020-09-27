@@ -46,14 +46,14 @@ autoload -Uz add-zle-hook-widget
 }
 
 .znap.prompt.precmd() {
-  add-zsh-hook -d precmd $funcstack[1]
+  add-zsh-hook -d precmd $=funcstack[1]
 
   echoti invis  # invisible text
   echoti civis  # invisible cursor
 }
 
 .znap.prompt.line-init() {
-  add-zle-hook-widget -d line-init $funcstack[1]
+  add-zle-hook-widget -d line-init $=funcstack[1]
 
   echoti rc  # restore cursor position
   [[ -o promptcr ]] ||

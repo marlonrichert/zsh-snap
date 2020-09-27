@@ -1,30 +1,67 @@
 #!/bin/zsh
 # compile asynchronously
-zmodload zsh/parameter
+zmodload zsh/{parameter,zselect}
+autoload -Uz add-zle-hook-widget
 typeset -gHaU _znap_compile_queue=()
 
 .znap.compile() {
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
-  _znap_compile_queue+=( "$@" ); (( $#@ > 0 )) ||
-    _znap_compile_queue+=( "${functions_source[@]:#*.zwc}" )
-  .znap.iter .znap.compile.next
+  _znap_compile_queue+=( $@ ${functions_source[@]:#*.zwc} )
+  add-zsh-hook preexec .znap.compile.play
+}
+
+.znap.compile.play() {
+  .znap.compile.hasnext ||
+    return 0
+
+  [[ -v _znap_compile_pause ]] &&
+    unset _znap_compile_pause
+  .znap.compile.next
+  add-zle-hook-widget line-pre-redraw .znap.compile.pause
+  add-zsh-hook -d preexec $=funcstack[1]
+}
+
+.znap.compile.pause() {
+  .znap.compile.hasnext ||
+    return 0
+
+  typeset -gH _znap_compile_pause=1
+  add-zsh-hook preexec .znap.compile.play
+  add-zle-hook-widget -d line-pre-redraw $=funcstack[1]
+}
+
+.znap.compile.hasnext() {
+  if (( $#_znap_compile_queue == 0 )); then
+    add-zsh-hook -d preexec .znap.compile.next
+    add-zle-hook-widget -d line-pre-redraw .znap.compile.pause
+    return 1
+  else
+    return 0
+  fi
 }
 
 .znap.compile.next() {
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
-  local src=$_znap_compile_queue[1]
-  shift _znap_compile_queue
+  .znap.close-fd $1
+
+  .znap.compile.hasnext ||
+    return 0
+
+  [[ -v _znap_compile_pause ]] &&
+    return 0
 
   local -i fd
   exec {fd}< <(
+    local src=$_znap_compile_queue[1]
     local bin=$src.zwc
     [[ -r $src && -w $src:h ]] && [[ ! -e $bin || $bin -ot $src ]] &&
-      zcompile -Uz $src 2>&1
+      zcompile -Uz $src
   )
-  zle -F $fd .znap.close-fd
-  return $#_znap_compile_queue
+  shift _znap_compile_queue
+  zle -F $fd .znap.compile.next
+  return 0
 }
 
 .znap.compile "$@"

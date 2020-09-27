@@ -4,5 +4,4 @@ emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
 local -i fd=$1
 zle -F $fd
-<&$fd
 exec {fd}<&-
