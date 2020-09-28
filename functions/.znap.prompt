@@ -26,13 +26,9 @@ autoload -Uz add-zle-hook-widget
   local setup=prompt_${theme}_setup
   if ! autoload +X -Uz $setup 2>/dev/null; then
     unfunction $setup
-
     local file=$basedir/$setup
-    [[ -r $file ]] ||
-      print -r "znap source $repo:t ${2:+themes/$2.zsh-theme}" >! $file
-
+    print -r "znap source $repo:t ${2:+themes/$2.zsh-theme}" >! $file
     fpath=( $basedir $fpath )
-    autoload -Uz $setup
   fi
 
   setopt prompt{bang,cr,percent,sp,subst}

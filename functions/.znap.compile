@@ -1,7 +1,7 @@
 #!/bin/zsh
 # compile asynchronously
 zmodload zsh/{parameter,zselect}
-autoload -Uz add-zle-hook-widget
+autoload -Uz add-zle-hook-widget add-zsh-hook
 typeset -gHaU _znap_compile_queue=()
 
 .znap.compile() {

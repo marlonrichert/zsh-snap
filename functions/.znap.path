@@ -4,7 +4,7 @@ emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
 local basedir; zstyle -s ':znap:' plugins-dir basedir ||
   basedir=${${(%):-%x}:A:h:h:h}
-local REPLY=$basedir${1:+/$1}
+REPLY=$basedir${1:+/$1}
 if [[ -e $REPLY ]]; then
   print -r $REPLY
   return 0

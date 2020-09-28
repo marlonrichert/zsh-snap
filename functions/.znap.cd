@@ -1,5 +1,5 @@
 #!/bin/zsh
 # cd to plugins dir or repo
 
-.znap.path $1 2>/dev/null &&
+.znap.path $1 >/dev/null &&
   cd $REPLY
