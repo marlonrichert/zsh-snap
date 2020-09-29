@@ -7,7 +7,7 @@ typeset -gHaU _znap_compile_queue=()
 .znap.compile() {
   emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
 
-  _znap_compile_queue+=( $@ ${functions_source[@]:#*.zwc} )
+  _znap_compile_queue+=( $@ ${functions_source[@]} )
   add-zsh-hook preexec .znap.compile.play
 }
 
@@ -54,9 +54,9 @@ typeset -gHaU _znap_compile_queue=()
 
   local -i fd
   exec {fd}< <(
-    local src=$_znap_compile_queue[1]
+    local src=${_znap_compile_queue[1]%.zwc}
     local bin=$src.zwc
-    [[ -r $src && -w $src:h ]] && [[ ! -e $bin || $bin -ot $src ]] &&
+    [[ ! -e $bin || $bin -ot $src ]] && [[ -r $src && -w $src:h ]] &&
       zcompile -Uz $src
   )
   shift _znap_compile_queue
