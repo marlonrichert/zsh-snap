@@ -82,7 +82,7 @@ autoload -Uz add-zle-hook-widget
     [[ -o promptcr ]] ||
       echoti cud1  # cursor down 1
     :
-    zle .redisplay
+    zle .reset-prompt
   else
     zle -I
     print -u2 -r "$err"
