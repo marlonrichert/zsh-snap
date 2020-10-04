@@ -29,6 +29,8 @@
     git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1
     local -i ret=$?
   )
+  .znap.clean $1/***(N/)
+  .znap.compile $1/***(N.)
   return ret
 }
 
