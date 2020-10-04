@@ -1,8 +1,5 @@
 #!/bin/zsh
 # init prompt from repo
-zmodload zsh/{parameter,system}
-autoload -Uz add-zsh-hook
-autoload -Uz add-zle-hook-widget
 
 .znap.prompt() {
   if (( $# < 1 )); then
@@ -92,5 +89,8 @@ autoload -Uz add-zle-hook-widget
 
   return 0
 }
+
+zmodload zsh/{parameter,system}
+autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt "$@"

@@ -1,6 +1,6 @@
 #!/bin/zsh
 # print help text
-emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+emulate -L zsh; setopt $_znap_opts
 zmodload zsh/mapfile
 
 typeset -gHA _ZNAP_ARGS=()

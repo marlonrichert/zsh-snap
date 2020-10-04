@@ -1,6 +1,6 @@
 #!/bin/zsh
 # close file descriptor & remove handler
-emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+emulate -L zsh; setopt $_znap_opts
 
 [[ $1 == [[:digit:]]## ]] ||
   return 1

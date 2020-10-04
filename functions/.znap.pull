@@ -2,7 +2,7 @@
 # git pull repos in parallel
 
 .znap.pull() {
-  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+  emulate -L zsh; setopt $_znap_opts
 
   local basedir=$(.znap.path) || return
   local -a repos=( $basedir/$^@(#q/) ); (( $#repos > 0 )) ||
@@ -22,7 +22,7 @@
 }
 
 .znap.pull.task() {
-  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+  emulate -L zsh; setopt $_znap_opts
 
   print $(
     eval 'ls -d '$1:t

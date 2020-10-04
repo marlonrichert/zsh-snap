@@ -5,7 +5,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
 typeset -gHaU _znap_compile_queue=()
 
 .znap.compile() {
-  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+  emulate -L zsh; setopt $_znap_opts
 
   _znap_compile_queue+=( $@ ${functions_source[@]} )
   add-zsh-hook preexec .znap.compile.play
@@ -42,7 +42,7 @@ typeset -gHaU _znap_compile_queue=()
 }
 
 .znap.compile.next() {
-  emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+  emulate -L zsh; setopt $_znap_opts
 
   .znap.close-fd $1
 

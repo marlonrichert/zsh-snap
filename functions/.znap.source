@@ -16,7 +16,7 @@ local -i ret
 local -a words
 local f; for f in $files; do
   () {
-    emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+    emulate -L zsh; setopt $_znap_opts
     src=( $f ); [[ -d $f ]] &&
       src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}.{(|*.)zsh^*.zwc,sh}(#qN.rY1) )
    }

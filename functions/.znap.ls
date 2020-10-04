@@ -1,6 +1,6 @@
 #!/bin/zsh
 # ls plugins dir or repo
-emulate -L zsh -o extendedglob -o NO_shortloops -o warncreateglobal
+emulate -L zsh; setopt $_znap_opts
 
 local -a files=()
 local repo=$(.znap.path $1) || return
