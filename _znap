@@ -15,10 +15,14 @@ ret=$?
 
 if [[ $state == next ]]; then
   local basedir=${${(%):-%x}:A:h:h}
-  local -aU plugins=( $basedir/*(/) ); plugins=( ${plugins[@]:t} )
+  local -aU plugins=( $basedir/*(/) )
+  plugins=( ${plugins[@]:t} )
   case $words[1] in
     cd)
       _arguments -s -S : "::plugin:( $plugins )"
+      ;;
+    clean)
+      _arguments -s -S : '*::directory:_files -/'
       ;;
     clone)
       _arguments -s -S : ':remote repository:_urls'

@@ -13,6 +13,7 @@
   if zstyle -T :znap: auto-compile; then
     zmodload zsh/parameter
     source .() {
+      .znap.clean "$1:A"
       builtin $=funcstack[1] "$@"
       local -i ret=$?
       znap compile "$1:A" ${(M@)=funcstack:#*/*}
