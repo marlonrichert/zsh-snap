@@ -2,8 +2,6 @@
 # git clone remotes in parallel to plugins dir
 emulate -L zsh; setopt $_znap_opts
 
-local -a fds=()
-local -i fd
 local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/; [[ -d $dir ]] ||
   mkdir -p $dir
 local file=$dir/znap-repos
@@ -26,5 +24,7 @@ ret=$?
 
 lines+=( $repos[@] )
 print -l ${(i)lines} >! $file
+
+.znap.compile $basedir/***(N.)
 
 return ret
