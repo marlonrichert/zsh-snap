@@ -1,13 +1,16 @@
 #!/bin/zsh
 # compile asynchronously
 zmodload zsh/{parameter,zselect}
+zmodload -F zsh/files b:zf_rm
 autoload -Uz add-zle-hook-widget add-zsh-hook
 typeset -gHaU _znap_compile_queue=()
+typeset -gHi _znap_compile_fd
 
 .znap.compile() {
   emulate -L zsh; setopt $_znap_opts
 
-  _znap_compile_queue+=( $@ ${functions_source[@]} )
+  _znap_compile_queue+=( $@ ); (( $# > 0 )) ||
+    _znap_compile_queue+=( $^fpath/*(N.) )
   add-zsh-hook preexec .znap.compile.play
 }
 
@@ -33,7 +36,8 @@ typeset -gHaU _znap_compile_queue=()
 
 .znap.compile.hasnext() {
   if (( $#_znap_compile_queue == 0 )); then
-    add-zsh-hook -d preexec .znap.compile.next
+    .znap.close-fd $_znap_compile_fd
+    add-zsh-hook -d preexec .znap.compile.play
     add-zle-hook-widget -d line-pre-redraw .znap.compile.pause
     return 1
   else
@@ -44,7 +48,7 @@ typeset -gHaU _znap_compile_queue=()
 .znap.compile.next() {
   emulate -L zsh; setopt $_znap_opts
 
-  .znap.close-fd $1
+  .znap.close-fd $_znap_compile_fd
 
   .znap.compile.hasnext ||
     return 0
@@ -52,15 +56,27 @@ typeset -gHaU _znap_compile_queue=()
   [[ -v _znap_compile_pause ]] &&
     return 0
 
-  local -i fd
-  exec {fd}< <(
-    local src=${_znap_compile_queue[1]%.zwc}
-    local bin=$src.zwc
-    [[ ! -e $bin || $bin -ot $src ]] && [[ -r $src && -w $src:h ]] &&
-      zcompile -Uz $src
-  )
+  local src=${_znap_compile_queue[1]%.zwc}
   shift _znap_compile_queue
-  zle -F $fd .znap.compile.next
+  exec {_znap_compile_fd}< <(
+    local bin=$src.zwc
+
+    [[ -w $src:h ]] || return
+
+    [[ "$bin" -ot $src ]] || zf_rm -f $bin
+
+    [[ -r $src ]] || return
+
+    local line
+    IFS='' read -r line < $src
+    if [[ $line != \#* ]]; then
+      zf_rm -f $bin
+      return
+    fi
+
+    [[ -e $bin ]] || zcompile -Uz $src 2>/dev/null
+  )
+  zle -F $_znap_compile_fd .znap.compile.next
   return 0
 }
 

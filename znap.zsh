@@ -16,17 +16,18 @@
       .znap.clean "$1:A"
       builtin $=funcstack[1] "$@"
       local -i ret=$?
-      znap compile "$1:A" ${(M@)=funcstack:#*/*}
+      .znap.compile "$1:A" ${(M@)=funcstack:#*/*}
       return ret
     }
     .znap.compile.hook() {
-      znap compile
-      add-zle-hook-widget -d line-finish $=funcstack[1]
-      zle -D $=funcstack[1]
+      .znap.compile
+      local this=$=funcstack[1]
+      add-zle-hook-widget -d line-finish $this
+      zle -D $this
     }
     zle -N .znap.compile.hook
     autoload -Uz add-zle-hook-widget
     add-zle-hook-widget line-finish .znap.compile.hook
-    znap compile $funcstack[@]
+    .znap.compile ${(M@)=funcstack:#*/*}
   fi
 }
