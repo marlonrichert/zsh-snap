@@ -10,5 +10,8 @@ local -i fd=$1
 (( fd < 10 )) &&
   return 1
 
+{ : <&$fd } 2> /dev/null ||
+  return 1
+
 zle -F $fd
 exec {fd}<&-
