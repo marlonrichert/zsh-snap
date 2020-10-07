@@ -35,7 +35,7 @@ right place, `source` the plugin file, and you're good to go.
      zstyle ':znap:*' plugins-dir ~/.zsh
      ```
 1. Add this line _near the top_ of your `~/.zshrc` file —or at least early enough that Znap is
-   `source`d before any plugins that you want to manage:
+   `source`d before any plugins that you want it to manage:
    ```zsh
    source ~/.zsh/zsh-snap/znap.zsh
    ```
@@ -50,14 +50,12 @@ remote URLs, it will clone them all _in parallel,_ which can be much faster than
 by one:
 ```zsh
 znap clone \
+   git@github.com:agnoster/agnoster-zsh-theme.git
    git@github.com:ekalinin/github-markdown-toc.git \
-   git@github.com:marlonrichert/zsh-autocomplete.git \
-   git@github.com:marlonrichert/zsh-hist.git \
-   git@github.com:marlonrichert/zsh-snap.git \
-   git@github.com:MichaelAquilina/zsh-autoswitch-virtualenv.git \
+   git@github.com:marlonrichert/{zsh-autocomplete,zsh-edit,zsh-hist,zsh-snap}.git \
    git@github.com:sindresorhus/pure.git \
    git@github.com:trapd00r/LS_COLORS.git \
-   git@github.com:zsh-users/zsh-syntax-highlighting.git
+   git@github.com:zsh-users/{zsh-autosuggestions,zsh-syntax-highlighting}.git
 ```
 
 ### Quickly Re-install Your Plugins
@@ -68,33 +66,34 @@ Znap saves the URL of each remote you clone. You can quickly re-clone all remote
 To update all of your repos _in parallel,_ just run `znap pull`.
 
 ### Instant Prompt, Simple Config
-Here's how you can use Znap to optimize your `~/.zshrc` file:
-```zsh
-#!/bin/zsh
+Use Znap to easily optimize your `~/.zshrc` file:
 
+```zsh
 # Source Znap at the start of your .zshrc file.
 source ~/.zsh/zsh-snap/znap.zsh
 
 # Use Znap to make your prompt appear *instantly.*
 # You can start typing right away!
-znap prompt agnoster  # Just an example. Works with any (normal) theme.
+znap prompt pure  # Just an example. Works with any (normal) theme.
 
 # For OhMyZsh themes, use this syntax:
 # znap prompt ohmyzsh robbyrussell
 
-# Then, while you are typing...
+# Then, while your prompt is visible and you are already typing commands...
 
-# Use Znap to source your plugins:
+# Use Znap to load only those parts of OhMyZsh or Prezto that you really need:
+znap source ohmyzsh lib/{git,theme-and-appearance}
+znap source prezto modules/{environment,history}
 
+# Use Znap to load your plugins:
 znap source zsh-autocomplete
+znap source zsh-edit
 
-bindkey '^[Q' push-line-or-edit
 znap source zsh-hist
+bindkey '^[Q' push-line-or-edit
 
 export ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-syntax-highlighting
-
-znap source zsh-autoswitch-virtualenv
 
 # Use Znap to add plugins to your $path:
 typeset -gU PATH path=(
@@ -103,7 +102,7 @@ typeset -gU PATH path=(
   .
 )
 
-# Use Znap to cache and compile the output of slow `eval` commands:
+# Use Znap to cache the output of slow `eval` commands:
 
 # This runs inside the LS_COLORS repo.
 znap eval LS_COLORS 'gdircolors -b LS_COLORS'
@@ -118,10 +117,11 @@ znap eval pipenv-completion 'pipenv --completion'
 Again, always **restart your terminal** for changes to take effect.
 
 ### Asynchronous Compilation
-While you are using your shell, Znap will compile your scripts and functions in the background,whenever the Zsh Line Editor is idle. This way, you Zsh will start up even faster next time!
+While you are using your shell, Znap will compile your scripts and functions in the background,
+whenever the Zsh Line Editor is idle. This way, you Zsh will start up even faster next time!
 
-Should you not want this feature, you can _disable_ it with `zstyle ':znap:*' auto-compile no`.
-You can then run it manually at any time with `znap compile`.
+Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. You
+can compile sources manually at any time with `znap compile`.
 
 ## Author
 © 2020 [Marlon Richert](https://github.com/marlonrichert)
