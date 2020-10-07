@@ -13,73 +13,81 @@ local -A opt_args
 _arguments -A '' ":action:(( $actions ))" '*:: :->next'
 ret=$?
 
-if [[ $state == next ]]; then
-  local basedir=${${(%):-%x}:A:h:h}
-  local -aU plugins=( $basedir/*(/) )
-  plugins=( ${plugins[@]:t} )
-  case $words[1] in
-    cd)
-      _arguments -s -S : "::plugin:( $plugins )"
-      ;;
-    clean)
-      _arguments -s -S : '*::directory:_files -/'
-      ;;
-    clone)
-      _arguments -s -S : ':remote repository:_urls'
-      ;;
-    close-fd)
-      _arguments -s -S : ':file descriptor:_file_descriptors'
-      ;;
-    compile)
-      _arguments -s -S : '*:: :->files-functions'
-      ;;
-    eval)
-      _arguments -s -S : ': :->repos-caches' ':command:_default'
-      ;;
-    iter)
-      _arguments -s -S : ':command:_default'
-      ;;
-    ls)
-      _arguments -s -S : ': :->repos-caches'
-      ;;
-    multi)
-      _arguments -s -S : ':command:_default'
-      ;;
-    path)
-      _arguments -s -S : ":plugin:( $plugins )"
-      ;;
-    prompt)
-      _arguments -s -S : ': :->repos-themes'
-      ;;
-    pull)
-      _arguments -s -S : "*::plugin:( $plugins )"
-      ;;
-    rm)
-      _arguments -s -S : '*:: :->repos-caches'
-      ;;
-    source)
-      _arguments -s -S : ":plugin:( $plugins )" '*:: :->files'
-      ;;
-  esac
-  ret=$(( ret && ? ))
-  case $state in
-    files)
-      _arguments -s -S : "*::file:_files -W $basedir/$words[1]"
-      ;;
-    repos-caches)
-      local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
-      _alternative "repositories:plugin:( $plugins )" "cache-files:cache:( $caches )"
-      ;;
-    repos-functions)
-      local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
-      _alternative "files:file:_files" "functions:function:_functions"
-      ;;
-    repos-themes)
-      local -aU caches=( $basedir/*.zsh(.) ); caches=( ${caches[@]:t:r} )
-      _alternative "repositories:plugin:( $plugins )" ":prompt theme:($prompt_themes)"
-      ;;
-  esac
-  ret=$(( ret && ? ))
-fi
+[[ $state == next ]] ||
+return ret
+
+case $words[1] in
+  cd)
+    _arguments -s -S : ":: :->plugins"
+    ;;
+  clean)
+    _arguments -s -S : '*:: :->dirs'
+    ;;
+  clone)
+    _arguments -s -S : ':remote repository:_urls'
+    ;;
+  close-fd)
+    _arguments -s -S : ':file descriptor:_file_descriptors'
+    ;;
+  compile)
+    _arguments -s -S : '*:: :->files-functions'
+    ;;
+  eval)
+    _arguments -s -S : ': :->repos-caches' ':command:_default'
+    ;;
+  ls)
+    _arguments -s -S : ': :->repos-caches'
+    ;;
+  multi)
+    _arguments -s -S : ':command:_default'
+    ;;
+  path)
+    _arguments -s -S : ': :->plugins'
+    ;;
+  prompt)
+    _arguments : ': :->repos-themes' '*:: :->subthemes'
+    ;;
+  pull)
+    _arguments -s -S : "*:: :->plugins"
+    ;;
+  rm)
+    _arguments -s -S : '*:: :->repos-caches'
+    ;;
+  source)
+    _arguments -s -S : ": :->plugins" '*:: :->files'
+    ;;
+esac
+ret=$(( ret && ? ))
+
+local basedir=$(znap path)
+local -aU plugins=( $basedir/*(/) ); plugins=( ${plugins[@]:t} )
+case $state in
+  dirs)
+    _alternative 'directories:directory:_files -/'
+    ;;
+  files)
+    _arguments -s -S : "*::file:_files -W $basedir/$words[1]"
+    ;;
+  repos-caches)
+    local -aU caches=( $basedir/*.zsh(#q.) )
+    _alternative "repositories:plugin:($plugins)" "cache-files:cache:(${caches[@]:t:r})"
+    ;;
+  files-functions)
+    _alternative "files:file:_files" "functions:function:_functions"
+    ;;
+  plugins)
+    _alternative "repositories:plugin:($plugins)"
+    ;;
+  repos-themes)
+    _alternative "repositories:plugin:($plugins)" "themes:prompt theme:($prompt_themes)"
+    ;;
+  subthemes)
+    local repo=$(znap path $words[1])
+    local -aU themes=( $repo/***.zsh-theme(#q.) )
+    themes=( ${themes[@]:t:r} )
+    _arguments : "::prompt theme:($themes)"
+    ;;
+esac
+ret=$(( ret && ? ))
 
 return ret
