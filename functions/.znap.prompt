@@ -8,25 +8,31 @@
     return 1
   fi
 
-  local basedir=$(.znap.path) || return
-  local -a matches=( $basedir/{$1,*$1*}(N/) )
-  local repo=$matches[1]
-
-  if [[ -z $repo ]]; then
-    print -u2 "znap prompt: no such theme '$*' in $basedir"
-    return 1
-  fi
-
-  typeset -gU FPATH fpath=( $repo $fpath )
-
   local theme=${2:-$1}
   local setup=prompt_${theme}_setup
+
   if ! autoload +X -Uz $setup 2>/dev/null; then
     unfunction $setup
-    local setup_file=$basedir/$setup
-    local -a theme_file=( ${~2:+$repo/***/$2.zsh-theme}(N.) )
-    print -r "znap source $repo:t $theme_file:h:t/$theme_file:t" >! $setup_file
-    fpath=( $basedir $fpath )
+
+    local basedir=$(.znap.path) || return
+    local -a matches=( $basedir/{$1,*$1*}(N/) )
+    local repo=$matches[1]
+
+    if [[ -z $repo ]]; then
+      print -u2 "znap prompt: no such theme '$*' in $basedir"
+      return 1
+    fi
+
+    typeset -gU FPATH fpath=( $repo $fpath )
+
+    if ! autoload +X -Uz $setup 2>/dev/null; then
+      unfunction $setup
+
+      local setup_file=$basedir/$setup
+      local -a theme_file=( ${~2:+$repo/***/$2.zsh-theme}(N.) )
+      print -r "znap source $repo:t $theme_file:h:t/$theme_file:t" >! $setup_file
+      fpath=( $basedir $fpath )
+    fi
   fi
 
   setopt prompt{bang,cr,percent,sp,subst}
