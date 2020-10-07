@@ -23,8 +23,9 @@
   local setup=prompt_${theme}_setup
   if ! autoload +X -Uz $setup 2>/dev/null; then
     unfunction $setup
-    local file=$basedir/$setup
-    print -r "znap source $repo:t ${2:+themes/$2.zsh-theme}" >! $file
+    local setup_file=$basedir/$setup
+    local -a theme_file=( ${~2:+$repo/***/$2.zsh-theme}(N.) )
+    print -r "znap source $repo:t $theme_file:h:t/$theme_file:t" >! $setup_file
     fpath=( $basedir $fpath )
   fi
 
