@@ -13,12 +13,15 @@ local -aU files=( $repo/$^@ ); (( $#files > 0 )) ||
 
 local -aU src
 local -i ret
-local -a words
+local -a words ext=( '.(|*.)zsh^*.zwc' '.sh' '' )
 local f; for f in $files; do
   () {
     emulate -L zsh; setopt $_znap_opts
-    src=( $f ); [[ -d $f ]] &&
-      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}.{(|*.)zsh^*.zwc,sh}(#qN.rY1) )
+    if [[ -d $f ]]; then
+      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}(#qN.rY1) )
+    else
+      src=( $f${^~ext}(#qN.rY1) )
+    fi
    }
   . $src[1]; (( ret += ? ))
 done
