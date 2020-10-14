@@ -29,7 +29,11 @@
       unfunction $setup
 
       local setup_file=$basedir/$setup
-      local -a theme_file=( ${~2:+$repo/***/$2.zsh-theme}(N.) )
+      local -a theme_file=( ${~2:+$repo/***/$2.zsh-theme}(N.Y1) )
+      if [[ ! -r $theme_file ]]; then
+        print -u2 "znap prompt: no such theme '$*' in $repo"
+        return 1
+      fi
       print -r "znap source $repo:t $theme_file:h:t/$theme_file:t" >! $setup_file
       fpath=( $basedir $fpath )
     fi
