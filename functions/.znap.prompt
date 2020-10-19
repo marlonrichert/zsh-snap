@@ -1,14 +1,9 @@
 #!/bin/zsh
 # init prompt from repo
 
-.znap.prompt() {
-  if (( $# < 1 )); then
-    print -u2 'znap prompt: not enough arguments'
-    print -u2 'usage: znap prompt [<repo>] <theme>'
-    return 1
-  fi
+.znap.prompt.setup() {
+  emulate -L zsh; setopt extendedglob globstarshort rcquotes
 
-  local theme=${2:-$1}
   local setup=prompt_${theme}_setup
 
   if ! autoload +X -Uz $setup 2>/dev/null; then
@@ -23,23 +18,32 @@
       return 1
     fi
 
-    typeset -gU FPATH fpath=( $repo $fpath )
+    typeset -gU FPATH fpath=( $repo $fpath[@] )
 
     if ! autoload +X -Uz $setup 2>/dev/null; then
       unfunction $setup
-
-      local setup_file=$basedir/$setup
-      local -a theme_file=( ${~2:+$repo/***/$2.zsh-theme}(N.Y1) )
+      local -a theme_file=( $repo/***/${~2:-*}.zsh-theme(N.Y1) )
       if [[ ! -r $theme_file ]]; then
         print -u2 "znap prompt: no such theme '$*' in $repo"
         return 1
       fi
-      print -r "znap source $repo:t $theme_file:h:t/$theme_file:t" >! $setup_file
+      print -r "znap source $repo:t ${theme_file[1]#$repo/}" >! $basedir/$setup
       fpath=( $basedir $fpath )
     fi
   fi
+}
 
-  setopt prompt{bang,cr,percent,sp,subst}
+.znap.prompt() {
+  if (( $# < 1 )); then
+    print -u2 'znap prompt: not enough arguments'
+    print -u2 'usage: znap prompt [<repo>] <theme>'
+    return 1
+  fi
+
+  local theme=${2:-$1}
+  .znap.prompt.setup "$@" || return
+
+  setopt prompt{bang,cr,percent,subst}
   autoload -Uz promptinit
   promptinit
   prompt $theme || return
@@ -82,15 +86,13 @@
   unset _znap__stderr_copy
 
   echoti rc  # restore cursor position
+  echoti cuu1  # cursor up 1
 
   local err="$(<$_znap__stderr)"
   zmodload -F zsh/files b:zf_rm &&
     zf_rm -f -- $_znap__stderr
   if [[ $err == [[:IFS:]]# ]]; then
-    [[ -o promptcr ]] ||
-      echoti cud1  # cursor down 1
-    :
-    zle .reset-prompt
+    zle -I
   else
     zle -I
     print -u2 -r "$err"
