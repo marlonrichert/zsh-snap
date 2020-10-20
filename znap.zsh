@@ -19,15 +19,6 @@
       .znap.compile "$1:A" ${(M@)=funcstack:#*/*}
       return ret
     }
-    .znap.compile.hook() {
-      .znap.compile
-      local this=$=funcstack[1]
-      add-zle-hook-widget -d line-finish $this
-      zle -D $this
-    }
-    zle -N .znap.compile.hook
-    autoload -Uz add-zle-hook-widget
-    add-zle-hook-widget line-finish .znap.compile.hook
     .znap.compile ${(M@)=funcstack:#*/*}
   fi
 }

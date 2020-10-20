@@ -25,6 +25,9 @@ ret=$?
 lines+=( $repos[@] )
 print -l ${(i)lines} >! $file
 
+.znap.clean $basedir/***(N/)
 .znap.compile $basedir/***(N.)
+.znap.clean
+.znap.compile
 
 return ret
