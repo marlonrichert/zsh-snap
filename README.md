@@ -66,13 +66,13 @@ Znap saves the URL of each remote you clone. You can quickly re-clone all remote
 To update all of your repos _in parallel,_ just run `znap pull`.
 
 ### Instant Prompt, Simple Config
-Use Znap to easily optimize your `~/.zshrc` file:
+Use Znap to reduce your startup time and simplify your `~/.zshrc` file:
 
 ```zsh
 # Source Znap at the start of your .zshrc file.
 source ~/.zsh/zsh-snap/znap.zsh
 
-# Use Znap to make your prompt appear *instantly.*
+# Use Znap to make your prompt appear **instantly.**
 # You can start typing right away!
 znap prompt pure  # Just an example. Works with any (normal) theme.
 
@@ -90,7 +90,7 @@ znap source zsh-autocomplete
 znap source zsh-edit
 
 znap source zsh-hist
-bindkey '^[Q' push-line-or-edit
+bindkey '^[q' push-line-or-edit
 
 export ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-syntax-highlighting
@@ -106,7 +106,7 @@ typeset -gU PATH path=(
 
 # This runs inside the LS_COLORS repo.
 znap eval LS_COLORS 'gdircolors -b LS_COLORS'
-zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # These don't have a repo, but the first arg will be used to name the cache file.
 znap eval brew-shellenv 'brew shellenv'
@@ -114,11 +114,11 @@ znap eval pyenv-init 'pyenv init -'
 znap eval pipenv-completion 'pipenv --completion'
 ```
 
-Again, always **restart your terminal** for changes to take effect.
+Again, always **restart your shell** for changes to take effect.
 
 ### Asynchronous Compilation
-While you are using your shell, Znap will compile your scripts and functions in the background,
-whenever the Zsh Line Editor is idle. This way, you Zsh will start up even faster next time!
+While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+Line Editor is idle. This way, your shell will start up even faster next time!
 
 Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. You
 can compile sources manually at any time with `znap compile`.
