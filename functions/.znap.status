@@ -1,0 +1,49 @@
+#!/bin/zsh
+# show git status of each repo
+zmodload -F zsh/files b:zf_mkdir
+
+.znap.status() {
+  emulate -L zsh; setopt $_znap_opts
+
+  local basedir=$(.znap.path) || return
+  local -a repos=( $basedir/$^@(#q/) ); (( $#repos > 0 )) ||
+    repos=( $basedir/*(/) )
+
+  {
+    local pwd=$PWD
+    cd $basedir
+
+    .znap.multi '.znap.status.task '${(i)^repos}
+  } always {
+    [[ -x $pwd ]] &&
+      cd $pwd
+  }
+  return 1
+}
+
+.znap.status.task() {
+  emulate -L zsh; setopt $_znap_opts
+
+  local file; for file in $1/${GIT_DIR:-.git}/***/info/exclude(.); do
+    local -aU lines
+    [[ -r $file ]] &&
+      lines=( ${(f)"$(<$file)"} )
+    lines+=( '*.zwc' )
+    print -r "${(F)lines}" >! $file 2>/dev/null
+  done
+
+  local repo=$(eval "ls -d $1:t")
+
+  lines=( "${(f)$(git -C $1 -P show -q --abbrev-commit)}" )
+  local commit=${lines[1]/commit /}
+
+  lines=( "${(f)$(git -C $1 status -sb)}" )
+  local branch=${${lines[1]#'## '}%...*}
+  local remote=${${(M)lines[1]% \[*\]}# }
+  shift lines
+  typeset -aU changes=( ${${lines[@]##[[:space:]]##}[@]%% *} )
+
+  print -r $repo $branch $commit $remote $changes
+}
+
+.znap.status "$@"

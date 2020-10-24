@@ -56,6 +56,9 @@ case $words[1] in
   source)
     _arguments -s -S : ": :->plugins" '*:: :->files'
     ;;
+  status)
+    _arguments -s -S : "*:: :->plugins"
+    ;;
 esac
 ret=$(( ret && ? ))
 
