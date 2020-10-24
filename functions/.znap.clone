@@ -1,9 +1,10 @@
 #!/bin/zsh
 # git clone remotes in parallel to plugins dir
 emulate -L zsh; setopt $_znap_opts
+zmodload -F zsh/files b:zf_mkdir
 
 local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/; [[ -d $dir ]] ||
-  mkdir -p $dir
+  zf_mkdir -p $dir
 local file=$dir/znap-repos
 local -aU lines=(); [[ -f $file ]] &&
   lines=( "${(f)"$(<$file)"}" )
