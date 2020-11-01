@@ -48,11 +48,9 @@
   promptinit
   prompt $theme || return
 
-  add-zsh-hook precmd .znap.prompt.precmd
-  add-zle-hook-widget line-init .znap.prompt.line-init
-
   local precmd=prompt_${theme}_precmd
-  [[ -n $precmd_functions[(r)$precmd] ]] && $precmd
+  [[ -n $precmd_functions[(r)$precmd] ]] &&
+    $precmd
 
   echoti sc  # save cursor position
 
@@ -63,11 +61,15 @@
   print -nP "$PS1"
 
   local preexec=prompt_${theme}_preexec
-  [[ -n $preexec_functions[(r)$preexec] ]] && $preexec
+  [[ -n $preexec_functions[(r)$preexec] ]] &&
+    $preexec
 
   typeset -gHi _znap__stderr_copy
   typeset -gH _znap__stderr=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
   exec {_znap__stderr_copy}>&2 2>$_znap__stderr
+
+  add-zsh-hook precmd .znap.prompt.precmd
+  add-zle-hook-widget line-init .znap.prompt.line-init
 }
 
 .znap.prompt.precmd() {

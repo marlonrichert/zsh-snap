@@ -39,11 +39,11 @@ zmodload -F zsh/files b:zf_mkdir
 
   lines=( "${(f)$(git -C $1 status -sb)}" )
   local branch=${${lines[1]#'## '}%...*}
-  local remote=${${(M)lines[1]% \[*\]}# }
+  local ahead_behind=${${(M)lines[1]% \[*\]}# }
   shift lines
   typeset -aU changes=( ${${lines[@]##[[:space:]]##}[@]%% *} )
 
-  print -r $repo $branch $commit $remote $changes
+  print -r $repo $branch $commit $ahead_behind $changes
 }
 
 .znap.status "$@"
