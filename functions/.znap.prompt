@@ -43,26 +43,32 @@
   local theme=${2:-$1}
   .znap.prompt.setup "$@" || return
 
-  setopt prompt{bang,cr,percent,subst}
+  echoti sc  # save cursor position
+
+  setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
   prompt $theme || return
 
-  local precmd=prompt_${theme}_precmd
-  [[ -n $precmd_functions[(r)$precmd] ]] &&
-    $precmd
+  local preview=prompt_${theme}_preview
+  if [[ -v functions[$preview] ]]; then
+    $preview
 
-  echoti sc  # save cursor position
+  else
+    local precmd=prompt_${theme}_precmd
+    [[ -n $precmd_functions[(r)$precmd] ]] &&
+      $precmd
 
-  [[ -o promptcr ]] &&
-    print -n $'\r'
+    [[ -o promptcr ]] &&
+      print -n $'\r'
 
-  :
-  print -nP "$PS1"
+    :
+    print -nP "$PS1"
 
-  local preexec=prompt_${theme}_preexec
-  [[ -n $preexec_functions[(r)$preexec] ]] &&
-    $preexec
+    local preexec=prompt_${theme}_preexec
+    [[ -n $preexec_functions[(r)$preexec] ]] &&
+      $preexec
+  fi
 
   typeset -gHi _znap__stderr_copy
   typeset -gH _znap__stderr=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
@@ -75,8 +81,9 @@
 .znap.prompt.precmd() {
   add-zsh-hook -d precmd $=funcstack[1]
 
-  echoti invis  # invisible text
   echoti civis  # invisible cursor
+  echoti rc  # restore cursor position
+  echoti invis  # invisible text
 
   return 0
 }
@@ -84,21 +91,17 @@
 .znap.prompt.line-init() {
   add-zle-hook-widget -d line-init $=funcstack[1]
 
+  zle .reset-prompt
+
   exec 2>&$_znap__stderr_copy {_znap__stderr_copy}>&-
   unset _znap__stderr_copy
-
-  echoti rc  # restore cursor position
-  echoti cuu1  # cursor up 1
 
   local err="$(<$_znap__stderr)"
   zmodload -F zsh/files b:zf_rm &&
     zf_rm -f -- $_znap__stderr
-  if [[ $err == [[:IFS:]]# ]]; then
-    zle -I
-  else
-    zle -I
+
+  [[ $err == [[:IFS:]]# ]] ||
     print -u2 -r "$err"
-  fi
 
   echoti cnorm  # normal, visible cursor
 
