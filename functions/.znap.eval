@@ -33,8 +33,4 @@
   return ret
 }
 
-.znap.eval.source() {
-
-}
-
 .znap.eval "$@"
