@@ -18,7 +18,7 @@ zmodload -F zsh/files b:zf_mkdir
     [[ -x $pwd ]] &&
       cd $pwd
   }
-  return 1
+  return 0
 }
 
 .znap.status.task() {
@@ -34,16 +34,24 @@ zmodload -F zsh/files b:zf_mkdir
 
   local repo=$(eval "ls -d $1:t")
 
-  lines=( "${(f)$(git -C $1 -P show -q --abbrev-commit)}" )
-  local commit=${lines[1]/commit /}
+  local log="$(git -C $1 log -n1 --decorate --oneline)"
+  local rev
+  if [[ $log ==  *'tag: '* ]]; then
+    local -a chunks=( ${(s.tag: .)log} )
+    rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
+  fi
 
   lines=( "${(f)$(git -C $1 status -sb)}" )
   local branch=${${lines[1]#'## '}%...*}
   local ahead_behind=${${(M)lines[1]% \[*\]}# }
-  shift lines
-  typeset -aU changes=( ${${lines[@]##[[:space:]]##}[@]%% *} )
+  local -aU changes=( ${(M@)${(@)lines:#\#\# *}##( |)[^ ]##} )
+  changes=( ${(@)${(i@)changes}# } )
 
-  print -r $repo $branch $commit $ahead_behind $changes
+  local e=$'\e'
+  [[ -z $ahead_behind && -z $changes ]] &&
+      ahead_behind="${e}[32m✔${e}[39m"
+
+  print -r ${repo%/} $rev ${branch:#*(main|master)*} $ahead_behind $changes
 }
 
 .znap.status "$@"
