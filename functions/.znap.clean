@@ -1,13 +1,14 @@
 #!/bin/zsh
 # remove outdated binaries from directories
 emulate -L zsh; setopt $_znap_opts
+zmodload -F zsh/files b:zf_rm
 
 local -a files=( $^@/*.zwc(#qN.) ); (( $# > 0 )) ||
   files=( $^fpath/*.zwc(#qN.) )
 local -i ret=0
 local bin; for bin in $files; do
-  if [[ $bin -ot ${bin%.zwc} ]]; then
-    rm -f $bin
+  if [[ -w $bin:h && -w $bin && $bin -ot ${bin%.zwc} ]]; then
+    zf_rm -f $bin 2>/dev/null
     ret+=$?
   fi
 done

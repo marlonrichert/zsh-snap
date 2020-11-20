@@ -27,13 +27,13 @@ typeset -gHi _znap_compile_fd
   local src=${_znap_compile_queue[1]%.zwc}
   shift _znap_compile_queue
   exec {_znap_compile_fd}< <(
-    local bin=$src.zwc
-
     [[ -w $src:h ]] ||
       return
 
-    [[ "$bin" -ot $src ]] ||
-      zf_rm -f $bin
+    local bin=$src.zwc
+
+    [[ -w $bin && $bin -ot $src ]] ||
+      zf_rm -f $bin 2>/dev/null || return
 
     [[ -r $src ]] ||
       return
@@ -41,7 +41,7 @@ typeset -gHi _znap_compile_fd
     local line
     IFS='' read -r line < $src
     if [[ $line != \#* ]]; then
-      zf_rm -f $bin
+      zf_rm -f $bin 2>/dev/null
       return
     fi
 
