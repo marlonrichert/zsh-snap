@@ -32,7 +32,9 @@ zmodload -F zsh/files b:zf_mkdir
     print -r "${(F)lines}" >! $file 2>/dev/null
   done
 
-  local repo=$(eval "ls -d $1:t")
+  git -C $1 fetch --recurse-submodules -j$(ulimit -n) &>/dev/null
+
+  local repo=${$(eval "ls -d $1:t")%/}
 
   local log="$(git -C $1 log -n1 --decorate --oneline)"
   local rev
@@ -51,7 +53,7 @@ zmodload -F zsh/files b:zf_mkdir
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind="${e}[32m✔${e}[39m"
 
-  print -r ${repo%/} $rev ${branch:#*(main|master)*} $ahead_behind $changes
+  print -r $repo $rev ${branch:#*(main|master)*} $ahead_behind $changes
 }
 
 .znap.status "$@"

@@ -70,9 +70,9 @@
       $preexec
   fi
 
-  typeset -gHi _znap__stderr_copy
-  typeset -gH _znap__stderr=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
-  exec {_znap__stderr_copy}>&2 2>$_znap__stderr
+  typeset -gHi _znap__stderr_orig
+  typeset -gH _znap__stderr_temp=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
+  exec {_znap__stderr_orig}>&2 2>$_znap__stderr_temp
 
   add-zsh-hook precmd .znap.prompt.precmd
   add-zle-hook-widget line-init .znap.prompt.line-init
@@ -93,15 +93,16 @@
 
   zle .reset-prompt
 
-  exec 2>&$_znap__stderr_copy {_znap__stderr_copy}>&-
-  unset _znap__stderr_copy
+  exec 2>&$_znap__stderr_orig {_znap__stderr_orig}>&-
 
-  local err="$(<$_znap__stderr)"
+  local err="$(<$_znap__stderr_temp)"
   zmodload -F zsh/files b:zf_rm &&
-    zf_rm -f -- $_znap__stderr
+    zf_rm -f -- $_znap__stderr_temp
 
   [[ $err == [[:IFS:]]# ]] ||
     print -u2 -r "$err"
+
+  unset _znap__stderr_orig _znap__stderr_temp
 
   echoti cnorm  # normal, visible cursor
 
