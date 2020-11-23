@@ -20,9 +20,16 @@ local -aU files=(
   local pwd=$PWD
   cd $basedir
 
-  local rm=${${commands[trash]:+trash -F}:-rm -r}
-  print $rm' '$(eval "ls -d $files[@]:t")
-  eval "$rm $files"
+  zmodload zsh/parameter
+  if [[ -v commands[osascript] ]]; then
+    print Moving $(eval "ls -d $files[@]:t") to Trash.
+    local items=( '(POSIX file "'${^files:a}'")' )
+    osascript -e 'tell application "Finder" to delete every item of {'${(j:, :)items}'}' >/dev/null
+  else
+    zmodload -F zsh/files b:zf_rm
+    print rm $(eval "ls -d $files[@]:t")
+    zf_rm -i $files[@]
+  fi
 
 } always {
   [[ -x $pwd ]] &&
