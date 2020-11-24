@@ -50,6 +50,10 @@
   promptinit
   prompt $theme || return
 
+  typeset -gHi _znap__stderr_orig
+  typeset -gH _znap__stderr_temp=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
+  exec {_znap__stderr_orig}>&2 2>$_znap__stderr_temp
+
   local preview=prompt_${theme}_preview
   if [[ -v functions[$preview] ]]; then
     $preview
@@ -70,10 +74,6 @@
       $preexec
   fi
 
-  typeset -gHi _znap__stderr_orig
-  typeset -gH _znap__stderr_temp=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
-  exec {_znap__stderr_orig}>&2 2>$_znap__stderr_temp
-
   add-zsh-hook precmd .znap.prompt.precmd
   add-zle-hook-widget line-init .znap.prompt.line-init
 }
@@ -92,6 +92,10 @@
   add-zle-hook-widget -d line-init $=funcstack[1]
 
   zle .reset-prompt
+  zle -R
+
+  echoti sc
+  echoti cud1
 
   exec 2>&$_znap__stderr_orig {_znap__stderr_orig}>&-
 
@@ -105,6 +109,7 @@
   unset _znap__stderr_orig _znap__stderr_temp
 
   echoti cnorm  # normal, visible cursor
+  echoti rc
 
   return 0
 }
