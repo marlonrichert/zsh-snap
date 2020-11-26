@@ -1,5 +1,7 @@
 #!/bin/zsh
 # init prompt from repo
+zmodload zsh/{parameter,system}
+autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt.setup() {
   emulate -L zsh; setopt extendedglob globstarshort rcquotes
@@ -44,35 +46,23 @@
   .znap.prompt.setup "$@" || return
 
   echoti sc  # save cursor position
+  echoti civis  # invisible cursor
 
   setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
   prompt $theme || return
 
-  typeset -gHi _znap__stderr_orig
-  typeset -gH _znap__stderr_temp=${TMPDIR:-/tmp}/znap-stderr-${(%):-%n}-$$
-  exec {_znap__stderr_orig}>&2 2>$_znap__stderr_temp
+  local precmd=prompt_${theme}_precmd
+  [[ -n $functions[$precmd] ]] &&
+    $precmd
 
-  local preview=prompt_${theme}_preview
-  if [[ -v functions[$preview] ]]; then
-    $preview
+  [[ -o promptcr ]] &&
+    print -n $'\r'
 
-  else
-    local precmd=prompt_${theme}_precmd
-    [[ -n $precmd_functions[(r)$precmd] ]] &&
-      $precmd
-
-    [[ -o promptcr ]] &&
-      print -n $'\r'
-
-    :
-    print -nP "$PS1"
-
-    local preexec=prompt_${theme}_preexec
-    [[ -n $preexec_functions[(r)$preexec] ]] &&
-      $preexec
-  fi
+  :
+  print -nP "$PS1"
+  echoti cnorm  # normal, visible cursor
 
   add-zsh-hook precmd .znap.prompt.precmd
   add-zle-hook-widget line-init .znap.prompt.line-init
@@ -92,29 +82,10 @@
   add-zle-hook-widget -d line-init $=funcstack[1]
 
   zle .reset-prompt
-  zle -R
-
-  echoti sc
-  echoti cud1
-
-  exec 2>&$_znap__stderr_orig {_znap__stderr_orig}>&-
-
-  local err="$(<$_znap__stderr_temp)"
-  zmodload -F zsh/files b:zf_rm &&
-    zf_rm -f -- $_znap__stderr_temp
-
-  [[ $err == [[:IFS:]]# ]] ||
-    print -u2 -r "$err"
-
-  unset _znap__stderr_orig _znap__stderr_temp
-
   echoti cnorm  # normal, visible cursor
-  echoti rc
+  zle -R
 
   return 0
 }
-
-zmodload zsh/{parameter,system}
-autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt "$@"
