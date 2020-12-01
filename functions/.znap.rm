@@ -9,9 +9,11 @@ fi
 
 local basedir=$(.znap.path) || return
 local -aU files=(
-  $basedir/$^@(#qNw/)
-  $basedir/$^@.zsh(#qNw^/)
-  $basedir/prompt_*$^@*_setup(#qNw^/)
+  $basedir/$^@(#qN/)
+  $basedir/$^@.zsh(#qN^/)
+  $basedir/$^@.zsh.zwc(#qN^/)
+  $basedir/prompt_*$^@*_setup(#qN^/)
+  $basedir/prompt_*$^@*_setup.zwc(#qN^/)
 )
 
 (( $#files > 0 )) ||
