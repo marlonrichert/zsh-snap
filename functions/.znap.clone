@@ -1,34 +1,48 @@
 #!/bin/zsh
 # git clone remotes in parallel to plugins dir
-emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_mkdir
 
-local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/; [[ -d $dir ]] ||
-  zf_mkdir -p $dir
-local file=$dir/znap-repos
-local -aU lines=(); [[ -f $file ]] &&
-  lines=( "${(f)"$(<$file)"}" )
-local -aU repos=( $@ ); (( $#repos > 0 )) ||
-  repos=( $lines[@] )
+.znap.clone() {
+  emulate -L zsh; setopt $_znap_opts
 
-local basedir=$(.znap.path) || return
+  local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/; [[ -d $dir ]] ||
+    zf_mkdir -p $dir
+  local file=$dir/znap-repos
+  local -aU lines=(); [[ -f $file ]] &&
+    lines=( "${(f)"$(<$file)"}" )
+  local -aU repos=( $@ ); (( $#repos > 0 )) ||
+    repos=( $lines[@] )
 
-if (( $#repos < 1 )); then
-  print -u2 "znap clone: no repositories in $basedir or $file"
-  return 1
-fi
+  local basedir=$(.znap.path) || return
 
-local -i ret=1
-.znap.multi 'git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 \
-              --shallow-submodules '$^repos
-ret=$?
+  if (( $#repos < 1 )); then
+    print -u2 "znap clone: no repositories in $basedir or $file"
+    return 1
+  fi
 
-lines+=( $repos[@] )
-print -l ${(i)lines} >! $file
+  local server; zstyle -s :znap:clone: default-server server ||
+    server='https://github.com/'
 
-.znap.clean $basedir/***(N/)
-.znap.compile $basedir/***(N.)
-.znap.clean
-.znap.compile
+  local -i ret=1
+  .znap.multi '.znap.clone.task '$^repos
+  ret=$?
 
-return ret
+  lines=( ${lines:#(${repos[@]})} )
+  lines+=( $repos[@] )
+  print -l ${(i)lines} >! $file
+
+  .znap.clean $basedir/***(N/)
+  .znap.compile $basedir/***(N.)
+  .znap.clean
+  .znap.compile
+
+  return ret
+}
+
+.znap.clone.task() {
+  local repo=$1; [[ $repo == (/*|*:*|*.git(|/)) ]] ||
+    repo=$server$repo.git
+  git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $repo
+}
+
+.znap.clone "$@"

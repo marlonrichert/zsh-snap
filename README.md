@@ -49,13 +49,15 @@ If you haven't done so yet, `znap clone` the plugins you want to use. If you pas
 remote URLs, it will clone them all _in parallel,_ which can be much faster than cloning them one
 by one:
 ```zsh
-znap clone \
-   git@github.com:agnoster/agnoster-zsh-theme.git
-   git@github.com:ekalinin/github-markdown-toc.git \
-   git@github.com:marlonrichert/{zsh-autocomplete,zsh-edit,zsh-hist,zsh-snap}.git \
-   git@github.com:sindresorhus/pure.git \
-   git@github.com:trapd00r/LS_COLORS.git \
-   git@github.com:zsh-users/{zsh-autosuggestions,zsh-syntax-highlighting}.git
+# If you pass `partial/URLs`, they will get auto-prefixed with `https://github.com/` and suffixed
+# with `.git`. You can change the prefix by adding this line to your `~/.zshrc` file:
+zstyle ':znap:*' default-server 'git@github.com:'
+
+# The following you need to do on the command line, but only once. This example uses
+# `partial/URLs`, but complete URLs are supported, too.
+% znap clone ekalinin/github-markdown-toc.git \
+   marlonrichert/{zsh-autocomplete,zsh-edit,zsh-hist,zsh-snap} \
+   zsh-users/{zsh-autosuggestions,zsh-syntax-highlighting}
 ```
 
 ### Quickly Re-install Your Plugins
@@ -86,6 +88,7 @@ znap source ohmyzsh lib/{git,theme-and-appearance}
 znap source prezto modules/{environment,history}
 
 # Use Znap to load your plugins:
+
 znap source zsh-autocomplete
 znap source zsh-edit
 
@@ -95,10 +98,10 @@ bindkey '^[q' push-line-or-edit
 export ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-syntax-highlighting
 
-# Use Znap to add plugins to your $path:
+# Use Znap to add plugins to your `$path`:
 typeset -gU PATH path=(
   $(znap path github-markdown-toc)
-  $path
+  $path[@]
   .
 )
 
