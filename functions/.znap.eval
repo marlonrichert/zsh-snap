@@ -16,7 +16,7 @@
   {
     local pwd=$PWD
     [[ -d $repo ]] &&
-      cd $repo
+      cd -q $repo
 
       local line
       [[ -r $cache ]] &&
@@ -28,7 +28,7 @@
       . $cache; ret=$?
   } always {
     [[ -x $pwd ]] &&
-      cd $pwd
+      cd -q $pwd
   }
   return ret
 }

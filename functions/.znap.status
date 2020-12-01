@@ -11,12 +11,12 @@ zmodload -F zsh/files b:zf_mkdir
 
   {
     local pwd=$PWD
-    cd $basedir
+    cd -q $basedir
 
     .znap.multi '.znap.status.task '${(i)^repos}
   } always {
     [[ -x $pwd ]] &&
-      cd $pwd
+      cd -q $pwd
   }
   return 0
 }

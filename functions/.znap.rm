@@ -18,7 +18,7 @@ local -aU files=(
   return 1
 {
   local pwd=$PWD
-  cd $basedir
+  cd -q $basedir
 
   zmodload zsh/parameter
   if [[ -v commands[osascript] ]]; then
@@ -33,5 +33,5 @@ local -aU files=(
 
 } always {
   [[ -x $pwd ]] &&
-    cd $pwd
+    cd -q $pwd
 }

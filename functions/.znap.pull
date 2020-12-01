@@ -10,14 +10,14 @@
 
   {
     local pwd=$PWD
-    cd $basedir
+    cd -q $basedir
 
     .znap.clean
     .znap.multi '.znap.pull.task '${(i)^repos}; local -i ret=$?
     .znap.compile
   } always {
     [[ -x $pwd ]] &&
-      cd $pwd
+      cd -q $pwd
   }
   return ret
 }
