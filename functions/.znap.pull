@@ -25,12 +25,12 @@
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  .znap.clean $1/***(N/)
+  .znap.clean $1/***(-/)
   local -i ret
   print ${$(eval 'ls -d '$1:t)%/}: $(
     git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1; ret=$?
   )
-  .znap.compile $1/***(N.)
+  .znap.compile $1/***(-.)
   return ret
 }
 

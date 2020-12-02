@@ -18,9 +18,11 @@ local f; for f in $files; do
   () {
     emulate -L zsh; setopt $_znap_opts
     if [[ -d $f ]]; then
-      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(#qN.rY1) )
+      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
+    elif [[ -r $f ]]; then
+      src=( $f )
     else
-      src=( $f${^~ext}~*.zwc(#qN.rY1) )
+      src=( $f${^~ext}~*.zwc(-.rY1) )
     fi
    }
   . $src[1]; (( ret += ? ))

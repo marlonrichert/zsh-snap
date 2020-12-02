@@ -31,8 +31,6 @@ zmodload -F zsh/files b:zf_mkdir
   lines+=( $repos[@] )
   print -l ${(i)lines} >! $file
 
-  .znap.clean $basedir/***(N/)
-  .znap.compile $basedir/***(N.)
   .znap.clean
   .znap.compile
 

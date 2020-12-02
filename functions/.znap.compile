@@ -10,8 +10,8 @@ typeset -gHi _znap_compile_fd
 
   _znap_compile_queue+=( ${(M@)funcstack[@]:#*/*} $@ ); (( $# > 0 )) ||
     _znap_compile_queue+=(
-      ${ZDOTDIR:-$HOME}/.z{log{in,out},profile,sh{env,rc}}~*.zwc(N-.)
-      $^fpath/*~*.zwc(N-.)
+      ${ZDOTDIR:-$HOME}/.z(log(in|out})|profile|sh(env|rc))(-.)
+      $^fpath/*~*.zwc(-.)
     )
   add-zle-hook-widget line-finish .znap.compile.next
 }

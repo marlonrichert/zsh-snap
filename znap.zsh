@@ -1,7 +1,7 @@
 #!/bin/zsh
 () {
   emulate -L zsh
-  typeset -gHa _znap_opts=( localoptions extendedglob globstarshort rcquotes )
+  typeset -gHa _znap_opts=( localoptions extendedglob globdots globstarshort nullglob rcquotes )
   setopt $_znap_opts
 
   local basedir=${${(%):-%x}:A:h}
