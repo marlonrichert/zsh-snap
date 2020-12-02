@@ -4,7 +4,7 @@ zmodload zsh/{parameter,system}
 autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt.setup() {
-  emulate -L zsh; setopt extendedglob globstarshort rcquotes
+  emulate -L zsh; setopt $_znap_opts
 
   local setup=prompt_${theme}_setup
 
@@ -25,11 +25,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
     if ! autoload +X -Uz $setup 2>/dev/null; then
       unfunction $setup
       local -a theme_file=( $repo/***/${~2:-*}.zsh-theme(N.Y1) )
-      if [[ ! -r $theme_file ]]; then
-        print -u2 "znap prompt: no such theme '$*' in $repo"
-        return 1
-      fi
-      print -r "znap source $repo:t ${theme_file[1]#$repo/}" >! $basedir/$setup
+      print -r - znap source $repo:t ${theme_file[1]#$repo/} >! $basedir/$setup
       fpath=( $basedir $fpath )
     fi
   fi
@@ -45,9 +41,6 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   local theme=${2:-$1}
   .znap.prompt.setup "$@" || return
 
-  echoti sc  # save cursor position
-  echoti civis  # invisible cursor
-
   setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
@@ -56,6 +49,9 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   local precmd=prompt_${theme}_precmd
   [[ -n $functions[$precmd] ]] &&
     $precmd
+
+  echoti sc     # save cursor position
+  echoti civis  # invisible cursor
 
   [[ -o promptcr ]] &&
     print -n $'\r'
@@ -72,7 +68,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   add-zsh-hook -d precmd $=funcstack[1]
 
   echoti civis  # invisible cursor
-  echoti rc  # restore cursor position
+  echoti rc     # restore cursor position
   echoti invis  # invisible text
 
   return 0
