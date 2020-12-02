@@ -8,19 +8,19 @@ fi
 
 local repo=$(.znap.path $1) || return
 shift
-local -aU files=( $repo/$^@ ); (( $#files > 0 )) ||
-  files=( $repo )
+local -aU files=( $repo ); (( $# > 0 )) &&
+  files=( $repo/$^@ )
 
 local -aU src
 local -i ret
-local -a words ext=( '.(|*.)zsh^*.zwc' '.sh' '' )
+local -a words ext=( '(|.*).zsh*' '.sh' '' )
 local f; for f in $files; do
   () {
     emulate -L zsh; setopt $_znap_opts
     if [[ -d $f ]]; then
-      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}(#qN.rY1) )
+      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(#qN.rY1) )
     else
-      src=( $f${^~ext}(#qN.rY1) )
+      src=( $f${^~ext}~*.zwc(#qN.rY1) )
     fi
    }
   . $src[1]; (( ret += ? ))
