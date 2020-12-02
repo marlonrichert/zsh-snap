@@ -10,7 +10,10 @@ typeset -gHi _znap_compile_fd
   emulate -L zsh; setopt $_znap_opts
 
   _znap_compile_queue+=( $@ ); (( $# > 0 )) ||
-    _znap_compile_queue+=( $^fpath/*(N.) )
+    _znap_compile_queue+=(
+      ${ZDOTDIR:-$HOME}/.z{log{in,out},profile,sh{env,rc}}~*.zwc(N-.)
+      $^fpath/*~*.zwc(N-.)
+    )
   add-zsh-hook preexec .znap.compile.next
 }
 
@@ -32,7 +35,7 @@ typeset -gHi _znap_compile_fd
 
     local bin=$src.zwc
 
-    [[ -w $bin && $bin -ot $src ]] ||
+    [[ $bin -ot $src ]] ||
       zf_rm -f $bin 2>/dev/null || return
 
     [[ -r $src ]] ||
