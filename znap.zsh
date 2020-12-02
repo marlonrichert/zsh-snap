@@ -10,14 +10,12 @@
   autoload -Uz znap $funcdir/.znap.*~*.zwc
 
   if zstyle -T :znap: auto-compile; then
-    zmodload zsh/parameter
-    source .() {
-      .znap.clean "$1:A"
-      builtin $=funcstack[1] "$@"
-      local -i ret=$?
-      .znap.compile "$1:A" ${(M@)=funcstack:#*/*}
+    zmodload -F zsh/parameter p:funcstack
+    source . () {
+      builtin $funcstack[1] "$@"; local -i ret=$?
+      .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
       return ret
     }
-    .znap.compile ${(M@)=funcstack:#*/*}
+    .znap.compile ${(M@)funcstack[@]:#*/*}
   fi
 }
