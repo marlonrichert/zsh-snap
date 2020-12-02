@@ -13,9 +13,9 @@
     zmodload -F zsh/parameter p:funcstack
     source . () {
       builtin $funcstack[1] "$@"; local -i ret=$?
-      .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
+      .znap.compile "$1:A"
       return ret
     }
-    .znap.compile ${(M@)funcstack[@]:#*/*}
+    .znap.compile
   fi
 }

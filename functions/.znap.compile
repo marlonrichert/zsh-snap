@@ -2,19 +2,18 @@
 # compile asynchronously
 zmodload zsh/{parameter,zselect}
 zmodload -F zsh/files b:zf_rm
-autoload -Uz add-zle-hook-widget add-zsh-hook
-typeset -gHaU _znap_compile_queue=()
+autoload -Uz add-zle-hook-widget
 typeset -gHi _znap_compile_fd
 
 .znap.compile() {
   emulate -L zsh; setopt $_znap_opts
 
-  _znap_compile_queue+=( $@ ); (( $# > 0 )) ||
+  _znap_compile_queue+=( ${(M@)funcstack[@]:#*/*} $@ ); (( $# > 0 )) ||
     _znap_compile_queue+=(
       ${ZDOTDIR:-$HOME}/.z{log{in,out},profile,sh{env,rc}}~*.zwc(N-.)
       $^fpath/*~*.zwc(N-.)
     )
-  add-zsh-hook preexec .znap.compile.next
+  add-zle-hook-widget line-finish .znap.compile.next
 }
 
 .znap.compile.next() {
@@ -23,13 +22,17 @@ typeset -gHi _znap_compile_fd
   .znap.close-fd $_znap_compile_fd
 
   if (( $#_znap_compile_queue == 0 )); then
-    add-zsh-hook -d preexec .znap.compile.next
+    add-zle-hook-widget -d line-finish .znap.compile.next
     return 0
   fi
 
-  local src=${_znap_compile_queue[1]%.zwc}
+  (( KEYS_QUEUED_COUNT + PENDING > 0 )) &&
+    return 0
+
+  local src=$_znap_compile_queue[1]
   shift _znap_compile_queue
   exec {_znap_compile_fd}< <(
+
     [[ -w $src:h ]] ||
       return
 
@@ -51,9 +54,7 @@ typeset -gHi _znap_compile_fd
     [[ -e $bin ]] ||
       zcompile -Uz $src 2>/dev/null
   )
-
-  zle ||
-    zle -F $_znap_compile_fd .znap.compile.next
+  zle -F $_znap_compile_fd .znap.compile.next
 
   return 0
 }
