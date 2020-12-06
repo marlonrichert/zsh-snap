@@ -1,87 +1,106 @@
-# :zap:Znap!
+# ⚡️Znap!
 **Znap** is the light-weight plugin manager for Zsh that's easy to grok.
 
-Consisting of just ~16 kilobytes of source code (9 KB when zipped), Znap does everything you need
-from a plugin manager, but without any bloat.
-
-Znap is in fact so simple, that if you ever have a question about it, the fastest way to get an
-answer is probably to [read the code](functions). Because good software shouldn't be hard to
-understand.
-
-Oh, and of course, Znap needs exactly zero configuration. Just `git clone` the repo into the
-right place, `source` the plugin file, and you're good to go.
-
+* [Features](#features)
 * [Installation](#installation)
 * [Getting Started](#getting-started)
 * [Author](#author)
 * [License](#license)
 
-# Installation
-1. `cd` into the dir where you already keep your plugins or where you want to keep your plugins. If
-   you don't have such a dir yet, you'll have to first make one. I personally use the following:
-   ```zsh
-   mkdir ~/.zsh
-   cd ~/.zsh
-   ```
-1. `git clone` this repo. You'll end up with dir called `zsh-snap` inside your plugins dir. This
-   example uses `https` because you don't need a GitHub account for it, but if you do have one,
-   you can use `ssh` instead:
-   ```zsh
-   git clone https://github.com/marlonrichert/zsh-snap.git
-   ```
-   * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
-     plugins dir (which you can also change on the fly):
-     ```zsh
-     zstyle ':znap:*' plugins-dir ~/.zsh
-     ```
-1. Add this line _near the top_ of your `~/.zshrc` file —or at least early enough that Znap is
-   `source`d before any plugins that you want it to manage:
-   ```zsh
-   source ~/.zsh/zsh-snap/znap.zsh
-   ```
-1. **Restart your shell.**
+## Features
+🐥 **Low resource usage:**
+Just ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
+
+🔌 **Zero configuration:**
+[`git clone` the repo](#installation), `source` the `.zsh` file, and you're good to go.
+
+🏃 **Instant prompt:**
+Reduce your startup time to only ~50ms [with just one command](#example-zshrc-file).
+
+🛣 **Parallel downloads:**
+Save time by downloading [multiple plugins at once](#clone-and-update-multiple-repos-in-parallel).
+
+🏭 **Easy environment replication:**
+Just copy [one file](#quickly-re-install-your-plugins) and run `znap clone` to instantly download
+your favorite plugins into any Zsh profile.
+
+⚙️ **Asynchronous compilation:**
+Compiles your dotfiles, plugins and functions [in the background](#asynchronous-compilation).
+
+## Installation
+ 1. `cd` to the dir where your (want to) keep your plugins. If you don't have one yet, you'll need
+    to make one. I use the following:
+    ```zsh
+    % mkdir ~/.zsh
+    % cd ~/.zsh
+    ```
+ 1. `git clone` this repo. It will create a dir `zsh-snap` inside your plugins dir. This
+    example uses `https` because you don't need a GitHub account for it, but if you do have one,
+    you can use `ssh` instead:
+    ```zsh
+    % git clone https://github.com/marlonrichert/zsh-snap.git
+    ```
+    * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
+      plugins dir, by adding this to your `.zshrc` file:
+      ```zsh
+      zstyle ':znap:*' plugins-dir ~/.zsh
+      ```
+ 1. Add this line _at the top_ of your `.zshrc` file (or at least before your use Znap to manage
+    any plugins):
+    ```zsh
+    source ~/.zsh/zsh-snap/znap.zsh
+    ```
+ 1. **Restart your shell.**
 
 ## Getting Started
 Here's a list of things that Znap can help you do more easily and more efficiently.
 
-### Clone Repos in Parallel
-If you haven't done so yet, `znap clone` the plugins you want to use. If you pass it multiple Git
-remote URLs, it will clone them all _in parallel,_ which can be much faster than cloning them one
-by one:
-```zsh
-# If you pass `partial/URLs`, they will get auto-prefixed with `https://github.com/` and suffixed
-# with `.git`. You can change the prefix by adding this line to your `~/.zshrc` file:
-zstyle ':znap:*' default-server 'git@github.com:'
+### Clone and Update Multiple Repos in Parallel
+Use `znap clone` to download the plugins you want to use. If you pass it multiple remotes, it will
+clone them all _in parallel,_ which can be much faster than cloning them one by one.
 
-# The following you need to do on the command line, but only once. This example uses
-# `partial/URLs`, but complete URLs are supported, too.
-% znap clone ekalinin/github-markdown-toc.git \
-   marlonrichert/{zsh-autocomplete,zsh-edit,zsh-hist,zsh-snap} \
-   zsh-users/{zsh-autosuggestions,zsh-syntax-highlighting}
+Here's an example of how to download multiple plugins in parallel, illustrating some of the
+different URL syntaxes you can use:
+```zsh
+% znap clone ekalinin/github-markdown-toc \
+    git@github.com:marlonrichert/zsh-{autocomplete,edit,hist}.git \
+    https://github.com/zsh-users/zsh-{autosuggestions,syntax-highlighting}.git
 ```
 
+If you pass `partial/URLs` to `znap clone`, they will get auto-prefixed with `https://github.com/`
+and suffixed with `.git`. To change the prefix, add this line to your `~/.zshrc` file:
+```zsh
+zstyle ':znap:*' default-server 'git@github.com:'
+```
+
+To update all of your repos in parallel, just run `znap pull`.
+
 ### Quickly Re-install Your Plugins
-Znap saves the URL of each remote you clone. You can quickly re-clone all remotes by running
-`znap clone`, without arguments.
+Znap saves the URL of each remote you clone into
+`${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Run `znap clone` without arguments to quickly
+re-download all plugins listed in this file.
 
-### Update Repos in Parallel
-To update all of your repos _in parallel,_ just run `znap pull`.
+### Asynchronous Compilation
+While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+Line Editor is idle. This way, your shell will start up even faster next time!
 
-### Instant Prompt, Simple Config
-Use Znap to reduce your startup time and simplify your `~/.zshrc` file:
+Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. You
+can compile sources manually at any time with `znap compile`.
 
+### Example `.zshrc` File
 ```zsh
 # Source Znap at the start of your .zshrc file.
 source ~/.zsh/zsh-snap/znap.zsh
 
 # Use Znap to make your prompt appear **instantly.**
 # You can start typing right away!
-znap prompt pure  # Just an example. Works with any (normal) theme.
+znap prompt agnoster
 
-# For OhMyZsh themes, use this syntax:
-# znap prompt ohmyzsh robbyrussell
+# For OhMyZsh or other repos containing multiple themes, use this syntax instead:
+znap prompt ohmyzsh robbyrussell
 
-# Then, while your prompt is visible and you are already typing commands...
+# Then, while your prompt is visible and you'retyping commands, the rest of your `.zshrc` file
+# continues...
 
 # Use Znap to load only those parts of OhMyZsh or Prezto that you really need:
 znap source ohmyzsh lib/{git,theme-and-appearance}
@@ -118,13 +137,6 @@ znap eval pipenv-completion 'pipenv --completion'
 ```
 
 Again, always **restart your shell** for changes to take effect.
-
-### Asynchronous Compilation
-While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
-Line Editor is idle. This way, your shell will start up even faster next time!
-
-Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. You
-can compile sources manually at any time with `znap compile`.
 
 ## Author
 © 2020 [Marlon Richert](https://github.com/marlonrichert)
