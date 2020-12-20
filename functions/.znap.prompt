@@ -1,5 +1,6 @@
 #!/bin/zsh
-# init prompt from repo
+# instantly init prompt theme from repo
+# args: [<repo>] <theme>
 zmodload zsh/{parameter,system}
 autoload -Uz add-zle-hook-widget add-zsh-hook
 
@@ -16,6 +17,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
 
     if [[ -z $repo ]]; then
       print -u2 "znap prompt: no such theme '$*' in $basedir"
+      .znap.help prompt
       return 1
     fi
 
@@ -34,7 +36,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
 .znap.prompt() {
   if (( $# < 1 )); then
     print -u2 'znap prompt: not enough arguments'
-    print -u2 'usage: znap prompt [<repo>] <theme>'
+    .znap.help prompt
     return 1
   fi
 

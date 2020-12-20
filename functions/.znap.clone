@@ -1,5 +1,6 @@
 #!/bin/zsh
 # git clone remotes in parallel to plugins dir
+# args: <user>/<repo>|<url>...
 zmodload -F zsh/files b:zf_mkdir
 
 .znap.clone() {
@@ -17,6 +18,7 @@ zmodload -F zsh/files b:zf_mkdir
 
   if (( $#repos < 1 )); then
     print -u2 "znap clone: no repositories in $basedir or $file"
+    .znap.help clone
     return 1
   fi
 

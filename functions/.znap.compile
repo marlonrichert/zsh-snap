@@ -1,5 +1,6 @@
 #!/bin/zsh
 # compile asynchronously
+# args: [<file>...]
 zmodload zsh/{parameter,zselect}
 zmodload -F zsh/files b:zf_rm
 autoload -Uz add-zle-hook-widget

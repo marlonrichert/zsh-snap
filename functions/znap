@@ -1,15 +1,32 @@
 #!/bin/zsh
+zmodload -F zsh/zutil b:zparseopts
 
-if (( $#@ > 0 )); then
-  local cmd=$1; shift
-  local REPLY
-  local func=.znap.$cmd
-  if [[ -v functions[$func] ]]; then
-    $func $@
+znap() {
+  if (( $#@ > 0 )); then
+    local -A opts1=()
+    zparseopts -D -A opts1 h -help
+    if (( $#@ == 0 )); then
+      .znap.help
+      return
+    fi
+    local cmd=$1; shift
+    local -A opts2=()
+    zparseopts -D -A opts2 h -help
+    local REPLY
+    local func=.znap.$cmd
+    if [[ -v functions[$func] ]]; then
+      if (( $#opts1 > 0 || $#opts2 > 0 )); then
+        .znap.help $cmd
+      else
+        $func $@
+      fi
+    else
+      .znap.help "znap: '$cmd' is not a znap command"
+      return 1
+    fi
   else
-    .znap.help "znap: '$cmd' is not a znap command"
-    return 1
+    .znap.help
   fi
-else
-  .znap.help
-fi
+}
+
+znap "$@"

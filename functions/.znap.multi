@@ -1,5 +1,6 @@
 #!/bin/zsh
 # run tasks in parallel
+# args: <command>
 
 local -a fds=()
 local fd

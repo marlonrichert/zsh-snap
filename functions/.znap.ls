@@ -1,5 +1,6 @@
 #!/bin/zsh
-# ls plugins dir or repo
+# list contents of plugins dir or repo
+# args: [<repo>]
 emulate -L zsh; setopt $_znap_opts
 
 local -a files=()

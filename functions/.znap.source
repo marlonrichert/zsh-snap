@@ -1,8 +1,10 @@
 #!/bin/zsh
 # source plugin or repo submodules & scripts
+# args: <repo> [<dir>|<file>...]
 
 if (( $# < 1 )); then
   print -u2 'znap source: not enough arguments'
+  .znap.help source
   return 1
 fi
 

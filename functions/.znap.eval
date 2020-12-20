@@ -1,10 +1,11 @@
 #!/bin/zsh
 # run command, then cache & eval output
+# args: <repo>|<name> <command>
 
 .znap.eval() {
   if (( $# < 2 )); then
     print -u2 'znap eval: not enough arguments'
-    print -u2 'usage: znap eval <plugin> <command>'
+    .znap.help eval
     return 1
   fi
 

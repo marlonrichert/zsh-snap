@@ -1,13 +1,16 @@
 #!/bin/zsh
-# rm repos and/or cache files
+# Delete repos and/or cache files
+# args: <repo>|<cache name>...
 emulate -L zsh; setopt $_znap_opts
 
 if (( $# < 1 )); then
   print -u2 'znap rm: not enough arguments'
+  .znap.help rm
   return 1
 fi
 if (( ${(M@)#@:#.##} > 0 )); then
   print -u2 znap rm: not a valid argument: ${(M@)@:#.##}
+  .znap.help rm
   return 1
 fi
 

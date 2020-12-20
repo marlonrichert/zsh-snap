@@ -1,5 +1,6 @@
 #!/bin/zsh
 # print help text
+# args: [<znap command>|<help text>]
 emulate -L zsh; setopt $_znap_opts
 zmodload zsh/mapfile
 
@@ -7,12 +8,20 @@ typeset -gHA _ZNAP_ARGS=()
 local f; for f in ${${(%):-%x}:A:h}/.znap.[^.]##; do
   _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
 done
-local MATCH MBEGIN MEND
 
 local -i fd=1
 if (( $# > 0 )); then
+  if [[ -v functions[.znap.$1] ]]; then
+    local -a funcfile=( ${(f)mapfile[${${(%):-%x}:A:h}/.znap.$1]} )
+    print -l "usage: znap $cmd ${funcfile[3]#'# args: '}"
+    local help="${funcfile[2]#'# '}"
+    local first=${${=help}[1]}
+    print -l "${(C)first} ${help#$first }."
+    return
+  fi
   fd=2
   print -u$fd $@
 fi
 print -u$fd 'usage: znap <command> [<args>]'
+local MATCH MBEGIN MEND
 print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"
