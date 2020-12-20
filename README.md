@@ -8,23 +8,23 @@
 * [License](#license)
 
 ## Features
-🐥 **Low resource usage:**
+🐥 *Low resource usage:*
 Just ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
 
-🔌 **Zero configuration:**
+🔌 *Zero configuration:*
 [`git clone` the repo](#installation), `source` the `.zsh` file, and you're good to go.
 
-🏃 **Instant prompt:**
-Reduce your startup time to only ~50ms [with just one command](#example-zshrc-file).
+🏃 *Instant prompt:*
+Reduce your startup time to only ~50ms [with just one command](#instant-prompt).
 
-🛣 **Parallel downloads:**
+🛣 *Parallel downloads:*
 Save time by downloading [multiple plugins at once](#clone-and-update-multiple-repos-in-parallel).
 
-🏭 **Easy environment replication:**
+🏭 *Easy environment replication:*
 Just copy [one file](#quickly-re-install-your-plugins) and run `znap clone` to instantly download
 your favorite plugins into any Zsh profile.
 
-⚙️ **Asynchronous compilation:**
+⚙️ *Asynchronous compilation:*
 Compiles your dotfiles, plugins and functions [in the background](#asynchronous-compilation).
 
 ## Installation
@@ -62,8 +62,8 @@ clone them all _in parallel,_ which can be much faster than cloning them one by 
 Here's an example of how to download multiple plugins in parallel, illustrating some of the
 different URL syntaxes you can use:
 ```zsh
-% znap clone ekalinin/github-markdown-toc \
-    git@github.com:marlonrichert/zsh-{autocomplete,edit,hist}.git \
+% znap clone marlonrichert/zsh-{autocomplete,edit,hist} \
+    git@github.com:{ohmyzsh/ohmyzsh,sorin-ionescu/prezto}.git \
     https://github.com/zsh-users/zsh-{autosuggestions,syntax-highlighting}.git
 ```
 
@@ -87,29 +87,38 @@ Line Editor is idle. This way, your shell will start up even faster next time!
 Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. You
 can compile sources manually at any time with `znap compile`.
 
+### Instant Prompt
+Reduce your startup time just ~50 ms. All you need to do is add `znap prompt <theme name>` near
+the top of your `.zshrc` file and you're good to go.
+
 ### Example `.zshrc` File
 ```zsh
 # Source Znap at the start of your .zshrc file.
 source ~/.zsh/zsh-snap/znap.zsh
 
-# Use Znap to make your prompt appear **instantly.**
+# `znap prompt` makes your prompt appear **instantly.**
 # You can start typing right away!
 znap prompt agnoster
 
 # For OhMyZsh or other repos containing multiple themes, use this syntax instead:
 znap prompt ohmyzsh robbyrussell
 
-# Then, while your prompt is visible and you'retyping commands, the rest of your `.zshrc` file
-# continues...
+# Now your prompt is visible and you can already start typing, even though your .zshrc file hasn't
+# even finished loading yet!
 
-# Use Znap to load only those parts of OhMyZsh or Prezto that you really need:
-znap source ohmyzsh lib/{git,theme-and-appearance}
+# Then, while your prompt is visible and you're typing commands, the rest of your `.zshrc` file
+# continues to be executed.
+
+# Use Znap to load only those parts of OhMyZsh or Prezto that you really need.
+znap source ohmyzsh lib/{git,theme-and-appearance} plugins/git
 znap source prezto modules/{environment,history}
 
-# Use Znap to load your plugins:
-
+# Use Znap to load your plugins, like this:
 znap source zsh-autocomplete
 znap source zsh-edit
+
+# Note that if a plugin requires additional config, there is nothing special you need to do. Just
+# use normal Zsh syntax:
 
 znap source zsh-hist
 bindkey '^[q' push-line-or-edit
@@ -117,7 +126,8 @@ bindkey '^[q' push-line-or-edit
 export ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-syntax-highlighting
 
-# Use Znap to add plugins to your `$path`:
+# Use Znap to add repos to your `$path`. This useful for when a repo doesn't contain a plugin, but
+# rather a standalone command.
 typeset -gU PATH path=(
   $(znap path github-markdown-toc)
   $path[@]
