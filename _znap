@@ -3,8 +3,8 @@
 [[ -v _ZNAP_ARGS ]] || znap &> /dev/null
 
 local -a actions=()
-local k v; for k v in ${(@kv)_ZNAP_ARGS}; do
-  actions+=( "$k\:'$v'" )
+local k; for k in ${(ko)_ZNAP_ARGS}; do
+  actions+=( "$k\:'$_ZNAP_ARGS[$k]'" )
 done
 
 local ret=1
