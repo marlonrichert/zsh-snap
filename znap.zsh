@@ -10,7 +10,7 @@
   autoload -Uz znap $funcdir/.znap.*~*.zwc
 
   if zstyle -T :znap: auto-compile; then
-    zmodload -F zsh/parameter p:funcstack
+    zmodload -Fa zsh/parameter p:funcstack
     source . () {
       builtin $funcstack[1] "$@"; local -i ret=$?
       .znap.compile "$1:A"
@@ -18,4 +18,22 @@
     }
     .znap.compile
   fi
+
+  compdef() {
+    unfunction compdef
+    autoload -Uz compinit
+    compinit
+    compdef "$@"
+  }
+
+  :znap:compinit() {
+    add-zsh-hook -d precmd :znap:compinit
+    unfunction :znap:compinit
+    [[ -v _comp_dumpfile ]] &&
+      return
+    autoload -Uz compinit
+    compinit
+  }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd :znap:compinit
 }
