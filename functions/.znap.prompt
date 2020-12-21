@@ -1,7 +1,7 @@
 #!/bin/zsh
 # instantly init prompt theme from repo
 # args: [<repo>] <theme>
-zmodload zsh/{parameter,system}
+zmodload zsh/{parameter,system,terminfo}
 autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt.setup() {
@@ -52,38 +52,43 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   [[ -n $functions[$precmd] ]] &&
     $precmd
 
-  echoti sc     # save cursor position
-  echoti civis  # invisible cursor
+  .znap.prompt.echoti sc     # save cursor position
+  .znap.prompt.echoti civis  # invisible cursor
 
   [[ -o promptcr ]] &&
     print -n $'\r'
 
   :
   print -nP "$PS1"
-  echoti cnorm  # normal, visible cursor
+  .znap.prompt.echoti cnorm  # normal, visible cursor
 
   add-zsh-hook precmd .znap.prompt.precmd
   add-zle-hook-widget line-init .znap.prompt.line-init
 }
 
 .znap.prompt.precmd() {
-  add-zsh-hook -d precmd $=funcstack[1]
+  add-zsh-hook -d precmd .znap.prompt.precmd
 
-  echoti civis  # invisible cursor
-  echoti rc     # restore cursor position
-  echoti invis  # invisible text
+  .znap.prompt.echoti civis  # invisible cursor
+  .znap.prompt.echoti rc     # restore cursor position
+  .znap.prompt.echoti invis  # invisible text
 
   return 0
 }
 
 .znap.prompt.line-init() {
-  add-zle-hook-widget -d line-init $=funcstack[1]
+  add-zle-hook-widget -d line-init .znap.prompt.line-init
 
   zle .reset-prompt
-  echoti cnorm  # normal, visible cursor
+  .znap.prompt.echoti cnorm  # normal, visible cursor
   zle -R
 
   return 0
+}
+
+.znap.prompt.echoti() {
+  [[ -v terminfo[$1] ]] &&
+    echoti $1
 }
 
 .znap.prompt "$@"
