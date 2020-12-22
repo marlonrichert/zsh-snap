@@ -17,6 +17,10 @@ Just ~18 kilobytes of [source code](#functions). Takes little disk space and lit
 🏃 *Instant prompt:*
 Reduce your startup time to only ~50ms [with just one command](#instant-prompt).
 
+📦 *Cached `eval`:*
+Speed up slow `eval "$( foo )"` commands [by caching the output of
+`foo`](#cache-slow-eval--command--statements).
+
 🛣 *Parallel downloads:*
 Save time by downloading [multiple plugins at once](#clone-and-update-multiple-repos-in-parallel).
 
@@ -91,6 +95,21 @@ can compile sources manually at any time with `znap compile`.
 Reduce your startup time just ~50 ms. All you need to do is add `znap prompt <theme name>` near
 the top of your `.zshrc` file and you're good to go.
 
+### Cache Slow `eval "$( <command> )"` Statements
+Statements like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
+`eval "$(pipenv --completion)"` can be very slow to evaluate. If instead of
+`eval "$( <command> )"`, you use `znap eval <name> <command>`, then the output of `<command>` will
+get cached, which can speed things up considerably. `<name>` can be anything you like, but if it's
+the name of a repo, then `foo` will conveniently be evaluated inside that repo.
+
+There are three cases that will cause `znap eval` to regenerate a cache:
+* If `<name>` is a repo and the repo's Git index is newer than the cache.
+* If the last argument to `znap eval` has changed. Thus, if `<command>` includes a variable, then
+  its cached output will be regenerated whenever the variable changes.
+* If the cache is missing. Thus, you can use `znap rm <name>.zsh` to force `znap eval` to
+  regenerate the `<name>` cache. See the end of the [example `.zshrc` file
+  below]((#example-zshrc-file)) for a practical use of this.
+
 ### Example `.zshrc` File
 ```zsh
 # Source Znap at the start of your .zshrc file.
@@ -144,6 +163,10 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 znap eval brew-shellenv 'brew shellenv'
 znap eval pyenv-init 'pyenv init -'
 znap eval pipenv-completion 'pipenv --completion'
+
+# This includes the full path to `direnv` in the command string, so that the cache will be
+# regenerated whenever the version of `direnv` changes.
+znap eval asdf-direnv "asdf exec $(asdf which direnv) hook zsh"
 ```
 
 Again, always **restart your shell** for changes to take effect.
