@@ -18,33 +18,37 @@ ret=$?
 
 case $words[1] in
   cd)
-    _arguments -s -S : ":: :->plugins" ;;
+    _arguments : ":: :->plugins" ;;
   clean)
-    _arguments -s -S : '*:: :->dirs' ;;
+    _arguments : '*:: :->dirs' ;;
   clone)
-    _arguments -s -S : ':remote repository:_urls' ;;
+    _arguments : ':remote repository:_urls' ;;
   close-fd)
-    _arguments -s -S : ':file descriptor:_file_descriptors' ;;
+    _arguments : ':file descriptor:_file_descriptors' ;;
   compile)
-    _arguments -s -S : '*:: :->files-functions' ;;
+    _arguments : '*:: :->files-functions' ;;
   eval)
-    _arguments -s -S : ': :->repos-caches' ':command:_default' ;;
+    _arguments : ': :->repos-caches' ':command:_default' ;;
+  function)
+    _arguments : ':command:_default' '*::function:_functions' ;;
+  help)
+    _arguments : ":action:(( $actions ))" ;;
   ls)
-    _arguments -s -S : ': :->repos-caches' ;;
+    _arguments : ': :->repos-caches' ;;
   multi)
-    _arguments -s -S : ':command:_default' ;;
+    _arguments : ':command:_default' ;;
   path)
-    _arguments -s -S : ': :->plugins' ;;
+    _arguments : ': :->plugins' ;;
   prompt)
     _arguments : ': :->repos-themes' '*:: :->subthemes' ;;
   pull)
-    _arguments -s -S : "*:: :->plugins" ;;
+    _arguments : "*:: :->plugins" ;;
   rm)
-    _arguments -s -S : '*:: :->repos-caches' ;;
+    _arguments : '*:: :->repos-caches' ;;
   source)
-    _arguments -s -S : ": :->plugins" '*:: :->files' ;;
+    _arguments : ": :->plugins" '*:: :->files' ;;
   status)
-    _arguments -s -S : "*:: :->plugins" ;;
+    _arguments : "*:: :->plugins" ;;
 esac
 ret=$(( ret && ? ))
 
@@ -55,7 +59,7 @@ case $state in
     _alternative 'directories:directory:_files -/'
     ;;
   files)
-    _arguments -s -S : "*::file:_files -W $basedir/$words[1]"
+    _arguments : "*::file:_files -W $basedir/$words[1]"
     ;;
   repos-caches)
     local -aU caches=( $basedir/*.zsh(#q.) )

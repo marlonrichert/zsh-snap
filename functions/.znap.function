@@ -1,0 +1,16 @@
+#!/bin/zsh
+# create one or more lazy-loading functions
+# args: <func name>... <init code>
+zmodload -Fa zsh/parameter p:funcstack
+
+.znap.function() {
+  local body=$@[-1]
+  shift -p 1
+  eval "$@ () {
+    unfunction $@
+    $body
+    \$funcstack[1] "\$@"
+  }"
+}
+
+.znap.function "$@"

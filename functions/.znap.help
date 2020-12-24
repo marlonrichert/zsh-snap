@@ -13,7 +13,7 @@ local -i fd=1
 if (( $# > 0 )); then
   if [[ -v functions[.znap.$1] ]]; then
     local -a funcfile=( ${(f)mapfile[${${(%):-%x}:A:h}/.znap.$1]} )
-    print -l "usage: znap $cmd ${funcfile[3]#'# args: '}"
+    print -l "usage: znap $1 ${funcfile[3]#'# args: '}"
     local help="${funcfile[2]#'# '}"
     local first=${${=help}[1]}
     print -l "${(C)first} ${help#$first }."

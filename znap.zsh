@@ -19,18 +19,14 @@
     .znap.compile
   fi
 
-  compdef() {
-    unfunction compdef
+  .znap.function compdef '
     autoload -Uz compinit
     compinit
-    compdef "$@"
-  }
-  _bash_complete compgen complete () {
-    unfunction _bash_complete compgen complete
+  '
+  .znap.function _bash_complete compgen complete '
     autoload -Uz bashcompinit
     bashcompinit
-    $funcstack[1] "$@"
-  }
+  '
 
   :znap:compinit() {
     add-zsh-hook -d precmd :znap:compinit
