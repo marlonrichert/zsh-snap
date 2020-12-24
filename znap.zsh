@@ -25,6 +25,12 @@
     compinit
     compdef "$@"
   }
+  _bash_complete compgen complete () {
+    unfunction _bash_complete compgen complete
+    autoload -Uz bashcompinit
+    bashcompinit
+    $funcstack[1] "$@"
+  }
 
   :znap:compinit() {
     add-zsh-hook -d precmd :znap:compinit
