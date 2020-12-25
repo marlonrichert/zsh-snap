@@ -42,6 +42,8 @@ zmodload -F zsh/files b:zf_mkdir
 .znap.clone.task() {
   local repo=$1; [[ $repo == (/*|*:*|*.git(|/)) ]] ||
     repo=$server$repo.git
+  [[ -d $basedir/${${repo##*/}%.git} ]] &&
+    return
   git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $repo
 }
 

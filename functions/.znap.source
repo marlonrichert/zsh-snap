@@ -8,8 +8,15 @@ if (( $# < 1 )); then
   return 1
 fi
 
-local repo=$(.znap.path $1) || return
+local plugin=$1
+if [[ $plugin == */* ]]; then
+  plugin=${${plugin##*/}%.git}
+  [[ -d $(.znap.path)/$plugin ]] ||
+    .znap.clone $1
+fi
+
 shift
+local repo=$(.znap.path $plugin) || return
 local -aU files=( $repo ); (( $# > 0 )) &&
   files=( $repo/$^@ )
 

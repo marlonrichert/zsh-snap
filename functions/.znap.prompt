@@ -27,7 +27,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
       unfunction $setup
 
       local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
-      print -r - znap source $repo:t ${theme_file[1]#$repo/} >! $basedir/$setup
+      print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! $basedir/$setup
       fpath=( $basedir $fpath[@] )
     fi
   fi
@@ -40,7 +40,14 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
     return 1
   fi
 
-  local plugin=$1 theme=${2:-$1}
+  local plugin=$1
+  if [[ $plugin == */* ]]; then
+    plugin=${${plugin##*/}%.git}
+    [[ -d $(.znap.path)/$plugin ]] ||
+      .znap.clone $1
+  fi
+
+  local theme=${2:-$plugin}
   .znap.prompt.setup "$@" || return
 
   setopt prompt{bang,cr,percent,subst} NO_promptsp
