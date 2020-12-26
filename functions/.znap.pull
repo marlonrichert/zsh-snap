@@ -10,11 +10,12 @@
     repos=( $basedir/*(/) )
 
   {
+    local -i ret=1
     local pwd=$PWD
     cd -q $basedir
 
     .znap.clean
-    .znap.multi '.znap.pull.task '${(i)^repos}; local -i ret=$?
+    .znap.multi '.znap.pull.task '${(i)^repos}; ret=$?
     .znap.compile
   } always {
     [[ -x $pwd ]] &&

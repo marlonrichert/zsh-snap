@@ -1,42 +1,48 @@
 #!/bin/zsh
 # Delete repos and/or cache files
 # args: <repo>|<cache name>...
-emulate -L zsh; setopt $_znap_opts
+zmodload -Fa zsh/files b:zf_rm
+zmodload -Fa zsh/parameter p:commands
 
-if (( $# < 1 )); then
-  print -u2 'znap rm: not enough arguments'
-  .znap.help rm
-  return 1
-fi
-if (( ${(M@)#@:#.##} > 0 )); then
-  print -u2 znap rm: not a valid argument: ${(M@)@:#.##}
-  .znap.help rm
-  return 1
-fi
+.znap.rm() {
+  emulate -L zsh; setopt $_znap_opts
 
-local basedir=$(.znap.path) || return
-local -aU files=(
-  $basedir/(prompt_*|)$^@(*_setup|.zsh|)(.zwc|)
-)
-
-(( $#files > 0 )) ||
-  return 1
-{
-  local pwd=$PWD
-  cd -q $basedir
-
-  zmodload zsh/parameter
-  if [[ -v commands[osascript] ]]; then
-    print Moving $(eval "ls -d $files[@]:t") to Trash.
-    local items=( '(POSIX file "'${^files:a}'")' )
-    osascript -e 'tell application "Finder" to delete every item of {'${(j:, :)items}'}' >/dev/null
-  else
-    zmodload -F zsh/files b:zf_rm
-    print rm $(eval "ls -d $files[@]:t")
-    zf_rm -i $files[@]
+  if (( $# < 1 )); then
+    print -u2 'znap rm: not enough arguments'
+    .znap.help rm
+    return 1
+  fi
+  if (( ${(M@)#@:#.##} > 0 )); then
+    print -u2 znap rm: not a valid argument: ${(M@)@:#.##}
+    .znap.help rm
+    return 1
   fi
 
-} always {
-  [[ -x $pwd ]] &&
-    cd -q $pwd
+  local basedir=$(.znap.path) || return
+  local -aU files=(
+    $basedir/(prompt_*|)$^@(*_setup|.zsh|)(.zwc|)
+  )
+
+  (( $#files > 0 )) ||
+    return 1
+  {
+    local pwd=$PWD
+    cd -q $basedir
+
+    if [[ -v commands[osascript] ]]; then
+      print Moving $(eval "ls -d $files[@]:t") to Trash.
+      local items=( '(POSIX file "'${^files:a}'")' )
+      osascript -e \
+        'tell application "Finder" to delete every item of {'${(j:, :)items}'}' >/dev/null
+    else
+      print rm $(eval "ls -d $files[@]:t")
+      zf_rm -i $files[@]
+    fi
+
+  } always {
+    [[ -x $pwd ]] &&
+      cd -q $pwd
+  }
 }
+
+.znap.rm "$@"

@@ -26,6 +26,7 @@ local -a words ext=( '(|.*).zsh*' '.sh' '' )
 local f; for f in $files; do
   () {
     emulate -L zsh; setopt $_znap_opts
+
     if [[ -d $f ]]; then
       src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
     elif [[ -r $f ]]; then
@@ -33,7 +34,7 @@ local f; for f in $files; do
     else
       src=( $f${^~ext}~*.zwc(-.rY1) )
     fi
-   }
+  }
   . $src[1]; (( ret += ? ))
 done
 return ret

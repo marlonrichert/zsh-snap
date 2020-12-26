@@ -1,8 +1,8 @@
 #!/bin/zsh
 # compile asynchronously
 # args: [<file>...]
-zmodload zsh/{parameter,zselect}
 zmodload -F zsh/files b:zf_rm
+zmodload -F zsh/parameter p:funcstack
 autoload -Uz add-zle-hook-widget
 typeset -gHi _znap_compile_fd
 

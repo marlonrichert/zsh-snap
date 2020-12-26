@@ -1,7 +1,6 @@
 #!/bin/zsh
 # show git status of each repo
 # args: [<repo>...]
-zmodload -F zsh/files b:zf_mkdir
 
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts
