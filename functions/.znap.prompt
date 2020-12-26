@@ -70,7 +70,6 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   .znap.prompt.echoti cnorm  # normal, visible cursor
 
   add-zsh-hook precmd .znap.prompt.precmd
-  add-zle-hook-widget line-init .znap.prompt.line-init
 }
 
 .znap.prompt.precmd() {
@@ -79,6 +78,8 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   .znap.prompt.echoti civis  # invisible cursor
   .znap.prompt.echoti rc     # restore cursor position
   .znap.prompt.echoti invis  # invisible text
+
+  add-zle-hook-widget line-init .znap.prompt.line-init
 
   return 0
 }
