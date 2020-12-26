@@ -14,9 +14,7 @@
     local pwd=$PWD
     cd -q $basedir
 
-    .znap.clean
     .znap.multi '.znap.pull.task '${(i)^repos}; ret=$?
-    .znap.compile
   } always {
     [[ -x $pwd ]] &&
       cd -q $pwd
@@ -32,7 +30,7 @@
   print ${$(eval 'ls -d '$1:t)%/}: $(
     git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1; ret=$?
   )
-  .znap.compile $1/***(-.)
+  .znap.compile $1/***(-^/)
   return ret
 }
 

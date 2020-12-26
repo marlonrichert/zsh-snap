@@ -13,10 +13,16 @@
     zmodload -Fa zsh/parameter p:funcstack
     source . () {
       builtin $funcstack[1] "$@"; local -i ret=$?
-      .znap.compile "$1:A"
+      .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
       return ret
     }
-    .znap.compile
+    local -a exclude=(); zstyle -a :znap: auto-compile-ignore exclude
+    local -a include=(
+      ${(M@)funcstack[@]:#*/*}
+      $^fpath/*~*.zwc(-^/)
+      ${ZDOTDIR:-$HOME}/.z(log(in|out)|profile|sh(env|rc))(-^/)
+    )
+    .znap.compile ${include:#(${(~j:|:)~exclude})}
   fi
 
   .znap.function compdef '

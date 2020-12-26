@@ -33,18 +33,17 @@ zmodload -Fa zsh/files b:zf_mkdir
   lines+=( $repos[@] )
   print -l ${(i)lines} >! $file
 
-  .znap.clean
-  .znap.compile
-
   return ret
 }
 
 .znap.clone.task() {
-  local repo=$1; [[ $repo == (/*|*:*|*.git(|/)) ]] ||
-    repo=$server$repo.git
-  [[ -d $basedir/${${repo##*/}%.git} ]] &&
+  local url=$1; [[ $repo == (/*|*:*|*.git(|/)) ]] ||
+    url=$server$url.git
+  local dir=$basedir/${${repo##*/}%.git}
+  [[ -d $dir ]] &&
     return
-  git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $repo
+  git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
+  .znap.compile $dir/***(-^/)
 }
 
 .znap.clone "$@"

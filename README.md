@@ -84,16 +84,9 @@ Znap saves the URL of each remote you clone into
 `${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Run `znap clone` without arguments to quickly
 re-download all plugins listed in this file.
 
-### Asynchronous Compilation
-While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
-Line Editor is idle. This way, your shell will start up even faster next time!
-
-Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. You
-can compile sources manually at any time with `znap compile`.
-
 ### Instant Prompt
-Reduce your startup time just ~50 ms. All you need to do is add `znap prompt <theme name>` near
-the top of your `.zshrc` file and you're good to go.
+Znap can reduce your startup time to just ~50 ms. All you need to do is add
+`znap prompt <theme name>` near the top of your `.zshrc` file and you're good to go.
 
 ### Cache Slow `eval "$( <command> )"` Statements
 Statements like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
@@ -109,6 +102,17 @@ There are three cases that will cause `znap eval` to regenerate a cache:
 * If the cache is missing. Thus, you can use `znap rm <name>.zsh` to force `znap eval` to
   regenerate the `<name>` cache. See the end of the [example `.zshrc` file
   below]((#example-zshrc-file)) for a practical use of this.
+
+### Asynchronous Compilation
+While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+Line Editor is idle. This way, your shell will start up even faster next time!
+
+Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
+you want to exclude specific files only, you can do so by passing them as absolute-path patterns to
+the `auto-compile-ignore` setting. For example:
+`zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'`.
+
+In any case, you can compile sources manually at any time with `znap compile`.
 
 ### Example `.zshrc` File
 ```zsh
