@@ -23,9 +23,7 @@ zmodload -Fa zsh/parameter p:commands
     $basedir/(prompt_*|)$^@(*_setup|.zsh|)(.zwc|)
   )
 
-  (( $#files > 0 )) ||
-    return 1
-  {
+  (( $#files > 0 )) && {
     local pwd=$PWD
     cd -q $basedir
 
@@ -38,11 +36,18 @@ zmodload -Fa zsh/parameter p:commands
       print rm $(eval "ls -d $files[@]:t")
       zf_rm -i $files[@]
     fi
-
   } always {
     [[ -x $pwd ]] &&
       cd -q $pwd
   }
+
+  local receipts=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos
+  local -aU repos=( "${(M@)${(f)"$(<$receipts)"}:#**/$1(|.git(|/))}" )
+  if (( $#repos > 0 )); then
+    print "Remove $1:t from $receipts${files:+, too}?"
+    read -q "?[yn] " &&
+      print -l "${(@)${(f)"$(<$receipts)"}:#**/$1(|.git(|/))}" >! $receipts
+  fi
 }
 
 .znap.rm "$@"
