@@ -37,11 +37,11 @@ zmodload -Fa zsh/files b:zf_mkdir
 }
 
 .znap.clone.task() {
-  local url=$1; [[ $repo == (/*|*:*|*.git(|/)) ]] ||
-    url=$server$url.git
-  local dir=$basedir/${${repo##*/}%.git}
+  local url=$1; [[ $1 == (*/*/*|*:*|*.git(|/)) ]] ||
+    url=$server$1.git
+  local dir=$basedir/$url:t:r
   [[ -d $dir ]] &&
-    return
+    return 1
   git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
   .znap.compile $dir/***(-^/)
 }
