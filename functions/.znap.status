@@ -10,15 +10,17 @@
     repos=( $basedir/*(/) )
 
   {
+    local -i ret=1
     local pwd=$PWD
     cd -q $basedir
 
     .znap.multi '.znap.status.task '${(i)^repos}
+    ret=$?
   } always {
     [[ -x $pwd ]] &&
       cd -q $pwd
   }
-  return 0
+  return ret
 }
 
 .znap.status.task() {

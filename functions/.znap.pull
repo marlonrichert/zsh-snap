@@ -14,7 +14,8 @@
     local pwd=$PWD
     cd -q $basedir
 
-    .znap.multi '.znap.pull.task '${(i)^repos}; ret=$?
+    .znap.multi '.znap.pull.task '${(i)^repos}
+    ret=$?
   } always {
     [[ -x $pwd ]] &&
       cd -q $pwd

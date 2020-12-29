@@ -4,11 +4,10 @@
 
 local -a fds=()
 local fd
-local -i ret=0
 {
   local cmd; for cmd in $@; do
     exec {fd}< <(
-      eval "$cmd"; (( ret += ? ))
+      eval "$cmd"
     )
     fds+=( $fd )
   done
@@ -18,4 +17,3 @@ local -i ret=0
     exec {fd}<&-
   done
 }
-return ret
