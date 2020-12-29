@@ -28,19 +28,26 @@
   .znap.function compdef '
     autoload -Uz compinit
     compinit
+    compinit() { : }
   '
   .znap.function _bash_complete compgen complete '
     autoload -Uz bashcompinit
     bashcompinit
+    bashcompinit() { : }
   '
 
   :znap:compinit() {
     add-zsh-hook -d precmd :znap:compinit
     unfunction :znap:compinit
-    [[ -v _comp_dumpfile ]] &&
+
+    if [[ -v _comp_dumpfile ]]; then
+      compinit() { : }
       return
+    fi
+
     autoload -Uz compinit
     compinit
+    compinit() { : }
   }
   autoload -Uz add-zsh-hook
   add-zsh-hook precmd :znap:compinit
