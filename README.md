@@ -9,7 +9,7 @@
 
 ## Features
 🐥 *Low resource usage:*
-Just ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
+Only ~20 kilobytes of [source code](#functions). Takes little disk space and little memory.
 
 🔌 *Zero configuration:*
 [`git clone` the repo](#installation), `source` the `.zsh` file, and you're good to go.
@@ -17,7 +17,7 @@ Just ~18 kilobytes of [source code](#functions). Takes little disk space and lit
 🏃 *Instant prompt:*
 Reduce your startup time to only ~50ms [with just one command](#instant-prompt).
 
-📦 *Cached `eval`:*
+🥫 *Cached `eval`:*
 Speed up slow `eval "$( foo )"` commands [by caching the output of
 `foo`](#cache-slow-eval--command--statements).
 
