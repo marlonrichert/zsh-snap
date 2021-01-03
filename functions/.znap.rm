@@ -41,14 +41,17 @@ zmodload -Fa zsh/parameter p:commands
       cd -q $pwd
   }
 
-  local receipts=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos
-  local -aU repos=( "${(M@)${(f)"$(<$receipts)"}:#**/$1(|.git(|/))}" )
-  if (( $#repos > 0 )); then
-    print -nPr - "%BRemove $1:t from $receipts${files:+, too}?%b"
-    read -q "? [yn] " &&
-      print -l "${(@)${(f)"$(<$receipts)"}:#**/$1(|.git(|/))}" >! $receipts
-    print -l
-  fi
+  local -aU repos=()
+  local f receipts=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos
+  for f in $@; do
+    repos=( "${(M@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" )
+    if (( $#repos > 0 )); then
+      print -nPr - "%BRemove $repos from $receipts?%b"
+      read -q "? [yn] " &&
+        print -l "${(@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" >! $receipts
+      print -l
+    fi
+  done
 }
 
 .znap.rm "$@"
