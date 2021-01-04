@@ -16,6 +16,10 @@
 
     .znap.multi '.znap.pull.task '${(i)^repos}
     ret=$?
+
+    [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
+      zf_rm -f $_comp_dumpfile
+
   } always {
     [[ -x $pwd ]] &&
       cd -q $pwd

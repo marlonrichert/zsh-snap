@@ -9,15 +9,15 @@
 
 ## Features
 🐥 *Low resource usage:*
-Only ~20 kilobytes of [source code](#functions). Takes little disk space and little memory.
+Only ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
 
 🔌 *Zero configuration:*
 [`git clone` the repo](#installation), `source` the `.zsh` file, and you're good to go.
 
 🏃 *Instant prompt:*
-Reduce your startup time to only ~50ms [with just one command](#instant-prompt).
+Reduce your startup time to under ~50ms [with just one command](#instant-prompt).
 
-🥫 *Cached `eval`:*
+🥫 *Command caching:*
 Speed up slow `eval "$( foo )"` commands [by caching the output of
 `foo`](#cache-slow-eval--command--statements).
 
@@ -30,6 +30,10 @@ your favorite plugins into any Zsh profile.
 
 ⚙️ *Asynchronous compilation:*
 Compiles your dotfiles, plugins and functions [in the background](#asynchronous-compilation).
+
+♻️ *Automatic completion cache invalidation:*
+Znap automatically deletes your comp dump file whenever you `znap clone`, `znap pull` or change
+your `.zshrc` file.
 
 ## Installation
  1. `cd` to the dir where your (want to) keep your plugins. If you don't have one yet, you'll need

@@ -9,6 +9,21 @@
   typeset -gU FPATH fpath=( $funcdir $basedir $fpath )
   autoload -Uz znap $funcdir/.znap.*~*.zwc
 
+  export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+  if [[ ! -d $XDG_CACHE_HOME ]]; then
+    zmodload -F zsh/files b:zf_mkdir
+    zf_mkdir -p $XDG_CACHE_HOME
+  fi
+
+  zstyle -s :completion: cache-path cache_path ||
+    zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zcompcache"
+
+  typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zcompdump}
+  if [[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:A} -nt $_comp_dumpfile ]]; then
+    zmodload -F zsh/files b:zf_rm
+    zf_rm -f $_comp_dumpfile
+  fi
+
   if zstyle -T :znap: auto-compile; then
     zmodload -Fa zsh/parameter p:funcstack
     source . () {
@@ -16,9 +31,12 @@
       .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
       return ret
     }
-    local -a exclude=(); zstyle -a :znap: auto-compile-ignore exclude
+
+    local -a exclude=()
+    zstyle -a :znap: auto-compile-ignore exclude
     local -a include=(
       ${(M@)funcstack[@]:#*/*}
+      $_comp_dumpfile
       $^fpath/*~*.zwc(-^/)
       ${ZDOTDIR:-$HOME}/.z(log(in|out)|profile|sh(env|rc))(-^/)
     )
@@ -27,7 +45,7 @@
 
   .znap.function compdef '
     autoload -Uz compinit
-    compinit
+    compinit -C -d $_comp_dumpfile
     compinit() { : }
   '
   .znap.function _bash_complete compgen complete '
@@ -40,13 +58,11 @@
     add-zsh-hook -d precmd :znap:compinit
     unfunction :znap:compinit
 
-    if [[ -v _comp_dumpfile ]]; then
-      compinit() { : }
-      return
+    if [[ ! -v _comp_dumpfile ]]; then
+      autoload -Uz compinit
+      compinit -C -d $_comp_dumpfile
     fi
 
-    autoload -Uz compinit
-    compinit
     compinit() { : }
   }
   autoload -Uz add-zsh-hook

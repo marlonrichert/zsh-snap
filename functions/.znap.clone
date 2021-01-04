@@ -33,6 +33,9 @@ zmodload -Fa zsh/files b:zf_mkdir
   lines+=( $repos[@] )
   print -l ${(i)lines} >! $file
 
+  [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
+    zf_rm -f $_comp_dumpfile
+
   return ret
 }
 
