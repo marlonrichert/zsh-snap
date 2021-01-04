@@ -34,7 +34,7 @@ typeset -gHi _znap_compile_fd
 
     local bin=$src.zwc
 
-    [[ $bin -ot $src ]] ||
+    [[ $bin -ot $src ]] &&
       zf_rm -f $bin 2>/dev/null || return
 
     [[ -r $src ]] ||
