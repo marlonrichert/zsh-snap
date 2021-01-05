@@ -58,7 +58,7 @@
     add-zsh-hook -d precmd :znap:compinit
     unfunction :znap:compinit
 
-    if [[ ! -v _comp_dumpfile ]]; then
+    if [[ ! -v _comp_setup || ! -f $_comp_dumpfile ]]; then
       autoload -Uz compinit
       compinit -C -d $_comp_dumpfile
     fi
