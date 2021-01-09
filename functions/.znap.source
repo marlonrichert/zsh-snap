@@ -11,12 +11,15 @@ fi
 local plugin=$1
 if [[ $plugin == */* ]]; then
   plugin=${${plugin##*/}%.git}
-  [[ -d $(.znap.path)/$plugin ]] ||
-    .znap.clone $1
+  () {
+    setopt localoptions NO_nomatch
+    [[ -d ~[$plugin] ]] ||
+      .znap.clone $1
+  }
 fi
 
 shift
-local repo=$(.znap.path $plugin) || return
+local repo=~[$plugin]
 local -aU files=( $repo ); (( $# > 0 )) &&
   files=( $repo/$^@ )
 

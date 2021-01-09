@@ -9,6 +9,45 @@
   typeset -gU FPATH fpath=( $funcdir $basedir $fpath )
   autoload -Uz znap $funcdir/.znap.*~*.zwc
 
+  local pluginsdir; zstyle -s :znap: plugins-dir pluginsdir ||
+    pluginsdir=$basedir:h
+  hash -d znap=$pluginsdir
+
+  :znap:dirname() {
+    local repo
+    case $1 in
+      n)
+        repo=~znap/$2
+        if [[ -d $repo ]]; then
+          reply=( $repo )
+          return 0
+        fi
+        ;;
+      d)
+        for repo in ~znap/*(-/); do
+          if [[ $2 == $repo(|/*) ]]; then
+            reply=( $repo:t $#repo )
+            return 0
+          fi
+        done
+        ;;
+      c)
+        local expl tag='named-directories' group='named directory'
+        _tags $tag
+        _tags &&
+          _requested $tag expl $group &&
+            compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
+        return
+        ;;
+    esac
+    return 72
+  }
+  export -U zsh_directory_name_functions=(
+    :znap:dirname
+    $zsh_directory_name_functions[@]
+  )
+
+
   export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
   if [[ ! -d $XDG_CACHE_HOME ]]; then
     zmodload -F zsh/files b:zf_mkdir

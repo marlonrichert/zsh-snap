@@ -1,6 +1,7 @@
 #compdef znap
 
-[[ -v _ZNAP_ARGS ]] || znap &> /dev/null
+[[ -v _ZNAP_ARGS ]] ||
+  znap &> /dev/null
 
 local -a actions=()
 local k; for k in ${(ko)_ZNAP_ARGS}; do
@@ -17,8 +18,6 @@ ret=$?
   return ret
 
 case $words[1] in
-  cd)
-    _arguments : ":: :->plugins" ;;
   clean)
     _arguments : '*:: :->dirs' ;;
   clone)
@@ -33,12 +32,8 @@ case $words[1] in
     _arguments : ':command:_default' '*::function:_functions' ;;
   help)
     _arguments : ":action:(( $actions ))" ;;
-  ls)
-    _arguments : ': :->repos-caches' ;;
   multi)
     _arguments : ':command:_default' ;;
-  path)
-    _arguments : ': :->plugins' ;;
   prompt)
     _arguments : ': :->repos-themes' '*:: :->subthemes' ;;
   pull)
@@ -52,17 +47,22 @@ case $words[1] in
 esac
 ret=$(( ret && ? ))
 
-local basedir=$(znap path)
-local -aU plugins=( $basedir/*(/) ); plugins=( ${plugins[@]:t} )
+local -aU plugins=( ~znap/*(/) ); plugins=( ${plugins[@]:t} )
+local repo
 case $state in
   dirs)
     _alternative 'directories:directory:_files -/'
     ;;
   files)
-    _arguments : "*::file:_files -W $basedir/$words[1]"
+    () {
+      setopt localoptions NO_nomatch
+      repo=~[$words[1]]
+    }
+    [[ -d $repo ]] &&
+      _arguments : "*::file:_files -W $repo"
     ;;
   repos-caches)
-    local -aU caches=( $basedir/*.zsh(#q.) )
+    local -aU caches=( ~znap/*.zsh(#q.) )
     _alternative "repositories:plugin:($plugins)" "cache-files:cache:(${caches[@]:t:r})"
     ;;
   files-functions)
@@ -75,10 +75,15 @@ case $state in
     _alternative "repositories:plugin:($plugins)" "themes:prompt theme:($prompt_themes)"
     ;;
   subthemes)
-    local repo=$(znap path $words[1])
-    local -aU themes=( $repo/***.zsh-theme(#q.) )
-    themes=( ${themes[@]:t:r} )
-    _arguments : "::prompt theme:($themes)"
+    () {
+      setopt localoptions NO_nomatch
+      repo=~[$words[1]]
+    }
+    if [[ -d $repo ]]; then
+      local -aU themes=( $repo/***.zsh-theme(#q.) )
+      themes=( ${themes[@]:t:r} )
+      _arguments : "::prompt theme:($themes)"
+    fi
     ;;
 esac
 

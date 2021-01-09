@@ -3,101 +3,36 @@
 
 * [Features](#features)
 * [Installation](#installation)
-* [Getting Started](#getting-started)
+* [Example `.zshrc` file](#example-zshrc-file)
 * [Author](#author)
 * [License](#license)
 
 ## Features
-🐥 *Low resource usage:*
-Only ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
+* [Low resource usage](#low-resource-usage)
+* [Zero configuration](#zero-configuration)
+* [Instant prompt](#instant-prompt)
+* [Command caching](#command-caching)
+* [Parallel downloads](#parallel-downloads)
+* [Automatic completion cache invalidation](#automatic-completion-cache-invalidation)
+* [Asynchronous compilation](#asynchronous-compilation)
+* [Easy re-install](#easy-re-install)
 
-🔌 *Zero configuration:*
-[`git clone` the repo](#installation), `source` the `.zsh` file, and you're good to go.
+### Low resource usage
+🐥 Only ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
 
-🏃 *Instant prompt:*
-Reduce your startup time to under ~50ms [with just one command](#instant-prompt).
+### Zero configuration
+🔌 [`git clone` the repo](#installation), `source` the `.zsh` file, and you're good to go.
 
-🥫 *Command caching:*
-Speed up slow `eval "$( foo )"` commands [by caching the output of
-`foo`](#cache-slow-eval--command--statements).
+### Instant prompt
+🏃 Add `znap prompt <theme name>` to your [`.zshrc` file](#example-zshrc) to reduce your startup time
+to ~40ms (depending on your prompt theme).
 
-🛣 *Parallel downloads:*
-Save time by downloading [multiple plugins at once](#clone-and-update-multiple-repos-in-parallel).
-
-🏭 *Easy environment replication:*
-Just copy [one file](#quickly-re-install-your-plugins) and run `znap clone` to instantly download
-your favorite plugins into any Zsh profile.
-
-⚙️ *Asynchronous compilation:*
-Compiles your dotfiles, plugins and functions [in the background](#asynchronous-compilation).
-
-♻️ *Automatic completion cache invalidation:*
-Znap automatically deletes your comp dump file whenever you `znap clone`, `znap pull` or change
-your `.zshrc` file.
-
-## Installation
- 1. `cd` to the dir where your (want to) keep your plugins. If you don't have one yet, you'll need
-    to make one. I use the following:
-    ```zsh
-    % mkdir ~/.zsh
-    % cd ~/.zsh
-    ```
- 1. `git clone` this repo. It will create a dir `zsh-snap` inside your plugins dir. This
-    example uses `https` because you don't need a GitHub account for it, but if you do have one,
-    you can use `ssh` instead:
-    ```zsh
-    % git clone https://github.com/marlonrichert/zsh-snap.git
-    ```
-    * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
-      plugins dir, by adding this to your `.zshrc` file:
-      ```zsh
-      zstyle ':znap:*' plugins-dir ~/.zsh
-      ```
- 1. Add this line _at the top_ of your `.zshrc` file (or at least before your use Znap to manage
-    any plugins):
-    ```zsh
-    source ~/.zsh/zsh-snap/znap.zsh
-    ```
- 1. **Restart your shell.**
-
-## Getting Started
-Here's a list of things that Znap can help you do more easily and more efficiently.
-
-### Clone and Update Multiple Repos in Parallel
-Use `znap clone` to download the plugins you want to use. If you pass it multiple remotes, it will
-clone them all _in parallel,_ which can be much faster than cloning them one by one.
-
-Here's an example of how to download multiple plugins in parallel, illustrating some of the
-different URL syntaxes you can use:
-```zsh
-% znap clone marlonrichert/zsh-{autocomplete,edit,hist} \
-    git@github.com:{ohmyzsh/ohmyzsh,sorin-ionescu/prezto}.git \
-    https://github.com/zsh-users/zsh-{autosuggestions,syntax-highlighting}.git
-```
-
-If you pass `partial/URLs` to `znap clone`, they will get auto-prefixed with `https://github.com/`
-and suffixed with `.git`. To change the prefix, add this line to your `~/.zshrc` file:
-```zsh
-zstyle ':znap:*' default-server 'git@github.com:'
-```
-
-To update all of your repos in parallel, just run `znap pull`.
-
-### Quickly Re-install Your Plugins
-Znap saves the URL of each remote you clone into
-`${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Run `znap clone` without arguments to quickly
-re-download all plugins listed in this file.
-
-### Instant Prompt
-Znap can reduce your startup time to just ~50 ms. All you need to do is add
-`znap prompt <theme name>` near the top of your `.zshrc` file and you're good to go.
-
-### Cache Slow `eval "$( <command> )"` Statements
-Statements like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
+### Command caching
+🥫 Commands like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
 `eval "$(pipenv --completion)"` can be very slow to evaluate. If instead of
 `eval "$( <command> )"`, you use `znap eval <name> <command>`, then the output of `<command>` will
-get cached, which can speed things up considerably. `<name>` can be anything you like, but if it's
-the name of a repo, then `foo` will conveniently be evaluated inside that repo.
+get cached, which can speed things up considerably. Plus, if `<name>` is the name of a repo, then
+ `foo` will conveniently be evaluated inside it.
 
 There are three cases that will cause `znap eval` to regenerate a cache:
 * If `<name>` is a repo and the repo's Git index is newer than the cache.
@@ -107,8 +42,15 @@ There are three cases that will cause `znap eval` to regenerate a cache:
   regenerate the `<name>` cache. See the end of the [example `.zshrc` file
   below]((#example-zshrc-file)) for a practical use of this.
 
-### Asynchronous Compilation
-While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+### Parallel downloads
+🛣 When you do `znap pull`, updates for all of your repos are downloaded in parallel.
+
+### Automatic completion cache invalidation
+♻️ Znap automatically deletes and regenerates your comp dump file whenever you install or update a
+plugin or change your `.zshrc` file.
+
+### Asynchronous compilation
+⚙️ While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
 Line Editor is idle. This way, your shell will start up even faster next time!
 
 Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
@@ -118,69 +60,130 @@ the `auto-compile-ignore` setting. For example:
 
 In any case, you can compile sources manually at any time with `znap compile`.
 
-### Example `.zshrc` File
+### Easy re-install
+🏭 Znap saves the URL of each remote you clone into
+`${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Should you ever "accidentally the whole thing",
+just do `znap clone` without arguments to quickly re-download all plugins in parallel.
+
+
+## Installation
+ 1. `cd` to the dir where your (want to) keep your plugins. If you don't have one yet, you'll need
+    to make one:
+    ```zsh
+    % mkdir ~/zsh
+    % cd ~/zsh
+    ```
+ 1. In there, `git clone` this repo:
+    ```zsh
+    % git clone https://github.com/marlonrichert/zsh-snap.git
+    ```
+    * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
+      plugins dir, by adding this to your `.zshrc` file (_before_ your `source` Znap):
+      ```zsh
+      zstyle ':znap:*' plugins-dir ~/zsh
+      ```
+ 1. Add this line _at the top_ of your `.zshrc` file (or at least before your use Znap to manage
+    any plugins):
+    ```zsh
+    source ~/zsh/zsh-snap/znap.zsh
+    ```
+ 1. **Restart your shell.**
+
+
+## Example `.zshrc` file
 ```zsh
+
 # Source Znap at the start of your .zshrc file.
-source ~/.zsh/zsh-snap/znap.zsh
+source ~/zsh/zsh-snap/znap.zsh
 
-# `znap prompt` makes your prompt appear **instantly.**
-# You can start typing right away!
-znap prompt agnoster
 
-# For OhMyZsh or other repos containing multiple themes, use this syntax instead:
-znap prompt ohmyzsh robbyrussell
+# `znap prompt` makes your prompt appear in ~40ms. You can start typing right away!
+znap prompt agnoster/agnoster-zsh-theme
 
-# Now your prompt is visible and you can already start typing, even though your .zshrc file hasn't
-# even finished loading yet!
 
-# Then, while your prompt is visible and you're typing commands, the rest of your `.zshrc` file
-# continues to be executed.
+# Now your prompt is visible and you can type, even though your .zshrc file hasn't finished loading
+# yet! In the background, the rest of your `.zshrc` file continues to be executed.
 
-# Use Znap to load only those parts of OhMyZsh or Prezto that you really need.
-znap source ohmyzsh lib/{git,theme-and-appearance} plugins/git
-znap source prezto modules/{environment,history}
 
-# Use Znap to load your plugins, like this:
-znap source zsh-autocomplete
-znap source zsh-edit
+# Use `znap source` to load only those parts of Oh-My-Zsh or Prezto that you really need:
+znap source sorin-ionescu/prezto modules/{environment,history}
+
+# `znap prompt` also supports Oh-My-Zsh themes. Just make sure you load the required libs first:
+znap source ohmyzsh/ohmyzsh \
+  lib/{git,theme-and-appearance} \
+  plugins/git
+znap prompt ohmyzsh/ohmyzsh robbyrussell
+
+
+# Use `znap source` to load your plugins:
+znap source marlonrichert/zsh-autocomplete
+znap source marlonrichert/zsh-edit
+
+# `znap source` finds the right file to source automatically, but you can also specify one
+# explicitly:
+znap source asdf-vm/asdf asdf.sh
 
 # Note that if a plugin requires additional config, there is nothing special you need to do. Just
 # use normal Zsh syntax:
 
-znap source zsh-hist
+znap source marlonrichert/zsh-hist
 bindkey '^[q' push-line-or-edit
 
 export ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
-znap source zsh-syntax-highlighting
+znap source zsh-users/zsh-syntax-highlighting
 
-# Use Znap to add repos to your `$path`. This useful for when a repo doesn't contain a plugin, but
-# rather a standalone command.
-typeset -gU PATH path=(
-  $(znap path github-markdown-toc)
+
+# Use `znap clone` to download repos that aren't plugins. All downloads in the same call will occur
+# in parallel. Any repos you already have will be skipped silently.
+znap clone \
+  asdf-community/asdf-direnv \
+  ekalinin/github-markdown-toc \
+  trapd00r/LS_COLORS
+
+
+# All repos managed by Znap are automatically available as dynamically-named dirs. This makes it
+# easier to add commands to your `$path`...
+export -U path=(
+  ~[github-markdown-toc]
   $path[@]
   .
 )
 
-# Use Znap to cache the output of slow `eval` commands:
+# ...or functions to `$fpath`.
+export -U fpath=(
+  ~[asdf]/completions
+  $fpath[@]
+)
 
-# This runs inside the LS_COLORS repo.
+# Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
+# repo and its contents from any location. In addition, your plugins dir itself can be accessed
+# with `cd ~znap` or `ls ~znap`. Try it on the command line!
+
+
+# Use `znap eval` to cache the output of slow commands:
+
+# If the first arg is a repo, then the command will run inside it. Plus, whenever you update the
+# repo with `znap pull`, the cache automatically gets regenerated.
 znap eval LS_COLORS 'gdircolors -b LS_COLORS'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
-# These don't have a repo, but the first arg will be used to name the cache file.
+# Here we include the full path to `direnv` in the command string, so that the cache will be
+# regenerated whenever the version of `direnv` changes.
+znap eval asdf-direnv "asdf exec $(asdf which direnv) hook zsh"
+
+# These don't belong to any repo, but the first arg will be used to name the cache file.
 znap eval brew-shellenv 'brew shellenv'
 znap eval pyenv-init 'pyenv init -'
 znap eval pipenv-completion 'pipenv --completion'
 
-# This includes the full path to `direnv` in the command string, so that the cache will be
-# regenerated whenever the version of `direnv` changes.
-znap eval asdf-direnv "asdf exec $(asdf which direnv) hook zsh"
 ```
 
-Again, always **restart your shell** for changes to take effect.
+As always, make sure you **restart your shell** for changes to take effect.
+
 
 ## Author
 © 2020 [Marlon Richert](https://github.com/marlonrichert)
+
 
 ## License
 This project is licensed under the MIT License. See the

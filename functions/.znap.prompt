@@ -14,12 +14,11 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   if ! autoload +X -Uz $setup 2>/dev/null; then
     unfunction $setup
 
-    local basedir=$(.znap.path) || return
-    local -aU matches=( $basedir/{$plugin,*$plugin*}(-/) )
+    local -aU matches=( ~znap/{$plugin,*$plugin*}(-/) )
     local repo=$matches[1]
 
     if [[ -z $repo ]]; then
-      print -u2 "znap prompt: no such theme '$*' in $basedir"
+      print -u2 "znap prompt: no such theme '$*' in" ~znap
       .znap.help prompt
       return 66
     fi
@@ -30,8 +29,8 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
       unfunction $setup
 
       local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
-      print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! $basedir/$setup
-      fpath=( $basedir $fpath[@] )
+      print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! ~znap/$setup
+      fpath=( ~znap $fpath[@] )
     fi
   fi
 }
@@ -46,8 +45,11 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   local plugin=$1
   if [[ $plugin == */* ]]; then
     plugin=${${plugin##*/}%.git}
-    [[ -d $(.znap.path)/$plugin ]] ||
-      .znap.clone $1
+    () {
+      setopt localoptions NO_nomatch
+      [[ -d ~[$plugin] ]] ||
+        .znap.clone $1
+    }
   fi
 
   local theme=${2:-$plugin}

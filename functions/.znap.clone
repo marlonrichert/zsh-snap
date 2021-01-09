@@ -14,10 +14,8 @@ zmodload -Fa zsh/files b:zf_mkdir
   local -aU repos=( $@ ); (( $#repos > 0 )) ||
     repos=( $lines[@] )
 
-  local basedir=$(.znap.path) || return
-
   if (( $#repos < 1 )); then
-    print -u2 "znap clone: no repositories in $basedir or $file"
+    print -u2 "znap clone: no repositories found in $file"
     .znap.help clone
     return 72
   fi
@@ -40,12 +38,14 @@ zmodload -Fa zsh/files b:zf_mkdir
 }
 
 .znap.clone.task() {
+  emulate zsh; setopt $_znap_opts[@] NO_nomatch
+
   local url=$1; [[ $1 == (*/*/*|*:*|*.git(|/)) ]] ||
     url=$server$1.git
-  local dir=$basedir/$url:t:r
+  local dir=~[$url:t:r]
   [[ -d $dir ]] &&
     return 72
-  git -C $basedir clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
+  git -C ~znap clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
   .znap.compile $dir/***(-^/)
 }
 

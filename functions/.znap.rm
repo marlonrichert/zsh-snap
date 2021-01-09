@@ -18,14 +18,10 @@ zmodload -Fa zsh/parameter p:commands
     return 64
   fi
 
-  local basedir=$(.znap.path) || return
-  local -aU files=(
-    $basedir/(prompt_*|)$^@(*_setup|.zsh|)(.zwc|)
-  )
-
+  local -aU files=( ~znap/(prompt_*|)$^@(*_setup|.zsh|)(.zwc|) )
   (( $#files > 0 )) && {
     local pwd=$PWD
-    cd -q $basedir
+    cd -q ~znap
 
     if [[ -v commands[osascript] ]]; then
       print Moving $(eval "ls -d $files[@]:t") to Trash.

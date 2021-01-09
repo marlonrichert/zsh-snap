@@ -5,14 +5,13 @@
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts
 
-  local basedir=$(.znap.path) || return
-  local -a repos=( $basedir/$^@(#q/) ); (( $#repos > 0 )) ||
-    repos=( $basedir/*(/) )
+  local -a repos=( ~znap/$^@(#q/) ); (( $#repos > 0 )) ||
+    repos=( ~znap/*(/) )
 
   {
     local -i ret=1
     local pwd=$PWD
-    cd -q $basedir
+    cd -q ~znap
 
     .znap.multi '.znap.status.task '${(i)^repos}
     ret=$?

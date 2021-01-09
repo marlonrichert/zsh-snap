@@ -9,7 +9,20 @@ znap() {
       .znap.help
       return
     fi
+
     local cmd=$1; shift
+
+    case $cmd in
+      cd | ls )
+        print -u2 "Try '$cmd ~${${1:+[$1]}:-znap}' instead."
+        return 64
+        ;;
+      path )
+        print -u2 "Try '~${${1:+[$1]}:-znap}' instead."
+        return 64
+        ;;
+    esac
+
     local -A opts2=()
     zparseopts -D -A opts2 h -help
     local REPLY
