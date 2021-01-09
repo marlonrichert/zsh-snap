@@ -4,6 +4,8 @@
 zmodload -Fa zsh/parameter p:funcstack
 
 .znap.function() {
+  emulate -L zsh; setopt $_znap_opts
+
   local body=$@[-1]
   shift -p 1
   eval "$@ () {

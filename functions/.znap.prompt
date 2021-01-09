@@ -9,6 +9,8 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   emulate -L zsh; setopt $_znap_opts
 
   local setup=prompt_${theme}_setup
+  [[ -v functions[$setup] ]] &&
+    return
   if ! autoload +X -Uz $setup 2>/dev/null; then
     unfunction $setup
 
@@ -51,36 +53,39 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   local theme=${2:-$plugin}
   .znap.prompt.setup "$@" || return
 
+  .znap.prompt.echoti sc    # save cursor position
+  .znap.prompt.echoti civis # invisible cursor
+
   setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
-  prompt $theme || return
+
+  add-zsh-hook precmd .znap.prompt.precmd
+
+  prompt_themes+=( $theme )
+  prompt $theme
 
   local precmd=prompt_${theme}_precmd
   [[ -n $functions[$precmd] ]] &&
     $precmd
-
-  .znap.prompt.echoti sc     # save cursor position
-  .znap.prompt.echoti civis  # invisible cursor
 
   [[ -o promptcr ]] &&
     print -n $'\r'
 
   :
   print -nP "$PS1"
-  .znap.prompt.echoti cnorm  # normal, visible cursor
 
-  add-zsh-hook precmd .znap.prompt.precmd
+  .znap.prompt.echoti cnorm  # normal cursor
 }
 
 .znap.prompt.precmd() {
   add-zsh-hook -d precmd .znap.prompt.precmd
 
-  .znap.prompt.echoti civis  # invisible cursor
-  .znap.prompt.echoti rc     # restore cursor position
-  .znap.prompt.echoti invis  # invisible text
-
   add-zle-hook-widget line-init .znap.prompt.line-init
+
+  .znap.prompt.echoti civis  # invisible cursor
+  .znap.prompt.echoti invis  # invisible text
+  .znap.prompt.echoti rc  # restore cursor position
 
   return 0
 }
@@ -89,7 +94,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   add-zle-hook-widget -d line-init .znap.prompt.line-init
 
   zle .reset-prompt
-  .znap.prompt.echoti cnorm  # normal, visible cursor
+  .znap.prompt.echoti cnorm  # normal cursor
   zle -R
 
   return 0
@@ -97,7 +102,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt.echoti() {
   [[ -v terminfo[$1] ]] &&
-    echoti $1
+    echoti $@
 }
 
 .znap.prompt "$@"

@@ -51,9 +51,8 @@
   local -aU changes=( ${(M@)${(@)lines:#\#\# *}##( |)[^ ]##} )
   changes=( ${(@)${(i@)changes}# } )
 
-  local e=$'\e'
   [[ -z $ahead_behind && -z $changes ]] &&
-      ahead_behind="${e}[32m✔${e}[39m"
+      ahead_behind=$'\e[32m✓\e[39m'
 
   print -r $repo $rev ${branch:#*(main|master)*} $ahead_behind $changes
 }
