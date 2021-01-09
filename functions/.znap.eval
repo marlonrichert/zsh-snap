@@ -6,7 +6,7 @@
   if (( $# < 2 )); then
     print -u2 'znap eval: not enough arguments'
     .znap.help eval
-    return 1
+    return 64
   fi
 
   local repo=$(.znap.path)/$1 || return

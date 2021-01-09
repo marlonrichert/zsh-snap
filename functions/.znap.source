@@ -5,7 +5,7 @@
 if (( $# < 1 )); then
   print -u2 'znap source: not enough arguments'
   .znap.help source
-  return 1
+  return 64
 fi
 
 local plugin=$1
@@ -35,6 +35,6 @@ local f; for f in $files; do
       src=( $f${^~ext}~*.zwc(-.rY1) )
     fi
   }
-  . $src[1]; (( ret += ? ))
+  . $src[1]; (( ret = (ret || ?) ))
 done
 return ret

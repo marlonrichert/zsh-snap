@@ -22,7 +22,7 @@ znap() {
       fi
     else
       .znap.help "znap: '$cmd' is not a znap command"
-      return 1
+      return 64
     fi
   else
     .znap.help

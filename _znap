@@ -81,6 +81,5 @@ case $state in
     _arguments : "::prompt theme:($themes)"
     ;;
 esac
-ret=$(( ret && ? ))
 
-return ret
+return $(( ret && ? ))

@@ -4,15 +4,15 @@
 emulate -L zsh; setopt $_znap_opts
 
 [[ $1 == <-> ]] ||
-  return 1
+  return 64
 
 local -i fd=$1
 
 (( fd < 10 )) &&
-  return 1
+  return 65
 
 { : <&$fd } 2> /dev/null ||
-  return 1
+  return 75
 
 zle -F $fd 2> /dev/null
 exec {fd}<&-

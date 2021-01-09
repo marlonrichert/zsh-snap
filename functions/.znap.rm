@@ -10,12 +10,12 @@ zmodload -Fa zsh/parameter p:commands
   if (( $# < 1 )); then
     print -u2 'znap rm: not enough arguments'
     .znap.help rm
-    return 1
+    return 64
   fi
   if (( ${(M@)#@:#.##} > 0 )); then
     print -u2 znap rm: not a valid argument: ${(M@)@:#.##}
     .znap.help rm
-    return 1
+    return 64
   fi
 
   local basedir=$(.znap.path) || return

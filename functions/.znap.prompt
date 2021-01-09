@@ -21,7 +21,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
     if [[ -z $repo ]]; then
       print -u2 "znap prompt: no such theme '$*' in $basedir"
       .znap.help prompt
-      return 1
+      return 66
     fi
 
     local file=( $repo/***/$setup(-.) )
@@ -40,7 +40,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   if (( $# < 1 )); then
     print -u2 'znap prompt: not enough arguments'
     .znap.help prompt
-    return 1
+    return 64
   fi
 
   local plugin=$1
