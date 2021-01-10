@@ -65,6 +65,7 @@
 
   if zstyle -T :znap: auto-compile; then
     zmodload -Fa zsh/parameter p:funcstack
+
     source . () {
       builtin $funcstack[1] "$@"; local -i ret=$?
       .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
@@ -94,8 +95,8 @@
   '
 
   :znap:compinit() {
-    add-zsh-hook -d precmd :znap:compinit
-    unfunction :znap:compinit
+    add-zsh-hook -d precmd ${(%):-%N}
+    unfunction ${(%):-%N}
 
     if [[ ! -v _comp_setup || ! -f $_comp_dumpfile ]]; then
       autoload -Uz compinit

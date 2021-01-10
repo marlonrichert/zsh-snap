@@ -1,7 +1,6 @@
 #!/bin/zsh
 # create one or more lazy-loading functions
 # args: <func name>... <init code>
-zmodload -Fa zsh/parameter p:funcstack
 
 .znap.function() {
   emulate -L zsh; setopt $_znap_opts
@@ -11,7 +10,7 @@ zmodload -Fa zsh/parameter p:funcstack
   eval "$@ () {
     unfunction $@
     $body
-    \$funcstack[1] "\$@"
+    \${(%):-%N} "\$@"
   }"
 }
 

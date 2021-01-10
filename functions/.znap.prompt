@@ -81,7 +81,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
 }
 
 .znap.prompt.precmd() {
-  add-zsh-hook -d precmd .znap.prompt.precmd
+  add-zsh-hook -d precmd ${(%):-%N}
 
   add-zle-hook-widget line-init .znap.prompt.line-init
 
@@ -93,7 +93,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
 }
 
 .znap.prompt.line-init() {
-  add-zle-hook-widget -d line-init .znap.prompt.line-init
+  add-zle-hook-widget -d line-init ${(%):-%N}
 
   zle .reset-prompt
   .znap.prompt.echoti cnorm  # normal cursor
