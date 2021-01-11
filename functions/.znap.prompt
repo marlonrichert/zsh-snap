@@ -1,8 +1,8 @@
 #!/bin/zsh
 # instantly init prompt theme from repo
 # args: [<repo>] <theme>
-zmodload -Fa zsh/parameter p:functions
-zmodload -Fa zsh/terminfo p:terminfo
+zmodload -F zsh/parameter p:functions
+zmodload -F zsh/terminfo b:echoti p:terminfo
 autoload -Uz add-zle-hook-widget add-zsh-hook
 
 .znap.prompt.setup() {
@@ -49,7 +49,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
       setopt localoptions NO_nomatch
       [[ -d ~[$plugin] ]] ||
         .znap.clone $1
-    }
+    } $@
   fi
 
   local theme=${2:-$plugin}

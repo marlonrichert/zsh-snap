@@ -15,7 +15,7 @@ if [[ $plugin == */* ]]; then
     setopt localoptions NO_nomatch
     [[ -d ~[$plugin] ]] ||
       .znap.clone $1
-  }
+  } $@
 fi
 
 shift
@@ -37,7 +37,7 @@ local f; for f in $files; do
     else
       src=( $f${^~ext}~*.zwc(-.rY1) )
     fi
-  }
+  } $@
   . $src[1]; (( ret = (ret || ?) ))
 done
 return ret

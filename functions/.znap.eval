@@ -13,7 +13,7 @@
   () {
     setopt localoptions NO_nomatch
     repo=~[$1]
-  }
+  } $@
   shift
   local cmd="$@"
   local header="#${(q)cmd}"

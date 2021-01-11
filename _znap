@@ -57,7 +57,7 @@ case $state in
     () {
       setopt localoptions NO_nomatch
       repo=~[$words[1]]
-    }
+    } $@
     [[ -d $repo ]] &&
       _arguments : "*::file:_files -W $repo"
     ;;
@@ -78,7 +78,7 @@ case $state in
     () {
       setopt localoptions NO_nomatch
       repo=~[$words[1]]
-    }
+    } $@
     if [[ -d $repo ]]; then
       local -aU themes=( $repo/***.zsh-theme(#q.) )
       themes=( ${themes[@]:t:r} )
