@@ -8,36 +8,39 @@ if (( $# < 1 )); then
   return 64
 fi
 
-local plugin=$1
-if [[ $plugin == */* ]]; then
-  plugin=${${plugin##*/}%.git}
-  () {
-    setopt localoptions NO_nomatch
+local -aU src=()
+local -i ret=0
+() {
+  emulate -L zsh; setopt $_znap_opts
+
+  local plugin=$1
+  if [[ $plugin == */* ]]; then
+    plugin=${${plugin##*/}%.git}
     [[ -d ~[$plugin] ]] ||
       .znap.clone $1
-  } $@
-fi
+  fi
 
-shift
-local repo=~[$plugin]
-local -aU files=( $repo ); (( $# > 0 )) &&
-  files=( $repo/$^@ )
+  shift
+  local repo=~[$plugin]
+  local -aU files=( $repo ); (( $# > 0 )) &&
+    files=( $repo/$^@ )
 
-local -aU src
-local -i ret
-local -a words ext=( '(|.*).zsh*' '.sh' '' )
-local f; for f in $files; do
-  () {
-    emulate -L zsh; setopt $_znap_opts
+  local -aU tmp=()
+  local -a words ext=( 'plugin.zsh*' '(|.*).zsh*' '.sh' '' )
+  local f; for f in $files; do
+      if [[ -d $f ]]; then
+        tmp=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
+      elif [[ -r $f ]]; then
+        tmp=( $f )
+      else
+        tmp=( $f${^~ext}~*.zwc(-.rY1) )
+      fi
+      src+=( $tmp[1] )
+  done
+} "$@"
 
-    if [[ -d $f ]]; then
-      src=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
-    elif [[ -r $f ]]; then
-      src=( $f )
-    else
-      src=( $f${^~ext}~*.zwc(-.rY1) )
-    fi
-  } $@
-  . $src[1]; (( ret = (ret || ?) ))
+local s; for s in $src; do
+  . $s || ret=$?
 done
+
 return ret

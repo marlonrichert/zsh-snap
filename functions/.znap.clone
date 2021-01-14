@@ -38,7 +38,7 @@ zmodload -Fa zsh/files b:zf_mkdir
 }
 
 .znap.clone.task() {
-  emulate zsh; setopt $_znap_opts[@] NO_nomatch
+  emulate -L zsh; setopt $_znap_opts
 
   local url=$1; [[ $1 == (*/*/*|*:*|*.git(|/)) ]] ||
     url=$server$1.git

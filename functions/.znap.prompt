@@ -43,26 +43,27 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
   fi
 
   local plugin=$1
-  if [[ $plugin == */* ]]; then
-    plugin=${${plugin##*/}%.git}
-    () {
-      setopt localoptions NO_nomatch
+  () {
+    emulate -L zsh; setopt $_znap_opts
+
+    if [[ $plugin == */* ]]; then
+      plugin=${${plugin##*/}%.git}
       [[ -d ~[$plugin] ]] ||
         .znap.clone $1
-    } $@
-  fi
+    fi
+  } "$@"
 
   local theme=${2:-$plugin}
   .znap.prompt.setup "$@" || return
-
-  .znap.prompt.echoti sc    # save cursor position
-  .znap.prompt.echoti civis # invisible cursor
 
   setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
 
   add-zsh-hook precmd .znap.prompt.precmd
+
+  .znap.prompt.echoti sc    # save cursor position
+  .znap.prompt.echoti civis # invisible cursor
 
   prompt_themes+=( $theme )
   prompt $theme
