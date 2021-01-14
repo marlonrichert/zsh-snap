@@ -76,7 +76,7 @@ autoload -Uz add-zle-hook-widget add-zsh-hook
     print -n $'\r'
 
   :
-  print -nP "$PS1"
+  print -nPr - "$PS1"
 
   .znap.prompt.echoti cnorm  # normal cursor
 }
