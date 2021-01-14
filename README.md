@@ -31,16 +31,16 @@ to ~40ms (depending on your prompt theme).
 🥫 Commands like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
 `eval "$(pipenv --completion)"` can be very slow to evaluate. If instead of
 `eval "$( <command> )"`, you use `znap eval <name> <command>`, then the output of `<command>` will
-get cached, which can speed things up considerably. Plus, if `<name>` is the name of a repo, then
- `foo` will conveniently be evaluated inside it.
+get cached, which can speed things up considerably. Plus, if `<name>` is a repo, then `<command>`
+will conveniently be evaluated inside it.
 
 There are three cases that will cause `znap eval` to regenerate a cache:
 * If `<name>` is a repo and the repo's Git index is newer than the cache.
 * If the last argument to `znap eval` has changed. Thus, if `<command>` includes a variable, then
-  its cached output will be regenerated whenever the variable changes.
+  its cached output will be regenerated whenever the variable changes. See the end of the
+  [example `.zshrc` file below]((#example-zshrc-file)) for a practical use of this.
 * If the cache is missing. Thus, you can use `znap rm <name>.zsh` to force `znap eval` to
-  regenerate the `<name>` cache. See the end of the [example `.zshrc` file
-  below]((#example-zshrc-file)) for a practical use of this.
+  regenerate the `<name>` cache.
 
 ### Parallel downloads
 🛣 When you do `znap pull`, updates for all of your repos are downloaded in parallel.
@@ -145,14 +145,14 @@ znap clone \
 # easier to add commands to your `$path`...
 export -U path=(
   ~[github-markdown-toc]
-  $path[@]
+  $path
   .
 )
 
 # ...or functions to `$fpath`.
 export -U fpath=(
   ~[asdf]/completions
-  $fpath[@]
+  $fpath
 )
 
 # Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
