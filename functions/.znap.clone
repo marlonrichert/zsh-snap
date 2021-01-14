@@ -42,7 +42,7 @@ zmodload -Fa zsh/files b:zf_mkdir
 
   local url=$1; [[ $1 == (*/*/*|*:*|*.git(|/)) ]] ||
     url=$server$1.git
-  local dir=~[$url:t:r]
+  local dir=~znap/$url:t:r
   [[ -d $dir ]] &&
     return 72
   git -C ~znap clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
