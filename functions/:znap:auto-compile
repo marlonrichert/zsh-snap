@@ -1,0 +1,13 @@
+#!/bin/zsh
+local 0=${(%):-%N}
+add-zsh-hook -d preexec $0
+unfunction $0
+
+local -a exclude=()
+zstyle -a :znap: auto-compile-ignore exclude
+local -a include=(
+  $_comp_dumpfile
+  $^fpath/*~*.zwc(-^/)
+  ${ZDOTDIR:-$HOME}/.z(log(in|out)|profile|sh(env|rc))(-^/)
+)
+.znap.compile ${include:#(${(~j:|:)~exclude})}
