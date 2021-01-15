@@ -24,9 +24,8 @@ local -i ret=0
   local repo=~[$plugin]
   local -aU files=( $repo ); (( $# > 0 )) &&
     files=( $repo/$^@ )
-
   local -aU tmp=()
-  local -a words ext=( 'plugin.zsh*' '(|.*).zsh*' '.sh' '' )
+  local -a words ext=( '.plugin.zsh' '(|.*).zsh*' '.sh' '' )
   local f; for f in $files; do
       if [[ -d $f ]]; then
         tmp=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
