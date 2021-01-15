@@ -2,22 +2,6 @@
 zmodload -Fa zsh/files b:zf_mkdir b:zf_rm
 autoload -Uz add-zsh-hook
 
-export -U zsh_directory_name_functions=(
-  :znap:dirname
-  $zsh_directory_name_functions[@]
-)
-
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-[[ ! -d $XDG_CACHE_HOME ]] &&
-  zf_mkdir -p $XDG_CACHE_HOME
-
-zstyle -s :completion: cache-path cache_path ||
-  zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zcompcache"
-
-typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zcompdump}
-[[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:A} -nt $_comp_dumpfile ]] &&
-  zf_rm -f $_comp_dumpfile
-
 if zstyle -T :znap: auto-compile; then
   zmodload -Fa zsh/parameter p:funcstack
 
@@ -29,11 +13,29 @@ if zstyle -T :znap: auto-compile; then
   add-zsh-hook preexec :znap:auto-compile
 fi
 
+export -U zsh_directory_name_functions=(
+  :znap:dirname
+  $zsh_directory_name_functions[@]
+)
+
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+[[ ! -d $XDG_CACHE_HOME ]] &&
+  zf_mkdir -p $XDG_CACHE_HOME
+
+typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zcompdump}
+[[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:A} -nt $_comp_dumpfile ]] &&
+  zf_rm -f $_comp_dumpfile
+
+zstyle -s :completion: cache-path _ ||
+  zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zcompcache"
+zstyle -s ':completion:*' completer _ ||
+  zstyle ':completion:*' completer _expand _complete _ignored
+
+.znap.function bindkey 'zmodload zsh/complist'
 .znap.function compdef ':znap:compinit'
 .znap.function _bash_complete compgen complete '
   autoload -Uz bashcompinit
   bashcompinit
   bashcompinit() { : }
 '
-
 add-zsh-hook precmd :znap:compinit
