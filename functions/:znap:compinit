@@ -3,8 +3,8 @@ local 0=${(%):-%N}
 add-zsh-hook -d precmd $0
 unfunction $0
 
+zmodload zsh/complist
 if [[ ! -v _comp_setup || ! -f $_comp_dumpfile ]]; then
-  zmodload zsh/complist
   autoload -Uz compinit
   compinit -C -d $_comp_dumpfile
 fi
