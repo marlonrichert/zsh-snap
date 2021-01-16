@@ -1,4 +1,6 @@
 #!/bin/zsh
+emulate -L zsh; setopt $_znap_opts
+
 local 0=${(%):-%N}
 add-zsh-hook -d preexec $0
 unfunction $0
