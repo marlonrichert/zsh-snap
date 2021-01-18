@@ -25,17 +25,8 @@
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  local file; for file in $1/${GIT_DIR:-.git}/***/info/exclude(.); do
-    local -aU lines
-    [[ -r $file ]] &&
-      lines=( ${(f)"$(<$file)"} )
-    lines+=( '*.zwc' )
-    print -r "${(F)lines}" >! $file 2>/dev/null
-  done
-
-  git -C $1 fetch --recurse-submodules -j$(ulimit -n) &>/dev/null
-
-  local repo=${$(eval "ls -d $1:t")%/}
+  git -C $1 fetch --recurse-submodules -j$(ulimit -n) &>/dev/null ||
+    return  # Bail out if this is not a Git repo.
 
   local log="$(git -C $1 log -n1 --decorate --oneline)"
   local rev
@@ -44,17 +35,25 @@
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
   fi
 
-  lines=( "${(f)$(git -C $1 status -sb)}" )
-  local branch=${${lines[1]#'## '}%...*}
-  local ahead_behind=${${(M)lines[1]% \[*\]}# }
-  local -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
-  local MATCH MBEGIN MEND
-  changes=( ${(i@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
+  # Add `*.zwc` to repo's ignore list.
+  local -aU lines
+  local file; for file in $1/${GIT_DIR:-.git}/***/info/exclude(.); do
+    [[ -r $file ]] &&
+      lines=( ${(f)"$(< $file)"} )
+    lines+=( '*.zwc' )
+    print -r "${(F)lines}" >! $file 2>/dev/null
+  done
 
+  lines=( "${(f)$(git -C $1 status -sb)}" )
+  local MATCH MBEGIN MEND
+  local -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
+  changes=( ${(i@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
+  local ahead_behind=${${(M)lines[1]% \[*\]}# }
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'
 
-  print -r $repo $rev ${branch:#*(main|master)*} $ahead_behind $changes
+  print -r ${$(eval "ls -d $1:t")%/} $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} \
+    $ahead_behind $changes
 }
 
 .znap.status "$@"
