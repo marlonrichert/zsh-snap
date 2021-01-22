@@ -47,7 +47,7 @@
   lines=( "${(f)$(git -C $1 status -sb)}" )
   local MATCH MBEGIN MEND
   local -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
-  changes=( ${(i@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
+  changes=( ${(@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
   local ahead_behind=${${(M)lines[1]% \[*\]}# }
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'

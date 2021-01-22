@@ -13,7 +13,7 @@ zmodload -Fa zsh/parameter p:commands
     return 64
   fi
   if (( ${(M@)#@:#.##} > 0 )); then
-    print -u2 znap rm: not a valid argument: ${(M@)@:#.##}
+    print -u2 "znap rm: not a valid argument: ${(M)@:#.##}"
     .znap.help rm
     return 64
   fi

@@ -17,7 +17,7 @@ zmodload -Fa zsh/files b:zf_mkdir
   if (( $#repos < 1 )); then
     print -u2 "znap clone: no repositories found in $file"
     .znap.help clone
-    return 72
+    return 78
   fi
 
   local server; zstyle -s :znap:clone: default-server server ||
@@ -44,7 +44,7 @@ zmodload -Fa zsh/files b:zf_mkdir
     url=$server$1.git
   local dir=~znap/$url:t:r
   [[ -d $dir ]] &&
-    return 72
+    return 66
   git -C ~znap clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
   .znap.compile $dir/***(-^/)
 }
