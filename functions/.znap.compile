@@ -2,13 +2,13 @@
 # compile asynchronously
 # args: [<file>...]
 zmodload -F zsh/files b:zf_rm
-autoload -Uz add-zle-hook-widget
+autoload -Uz add-zsh-hook
 typeset -gHa _znap_compile_queue=()
 typeset -gHi _znap_compile_fd
 
 .znap.compile() {
-  _znap_compile_queue+=( $@ )
-  add-zle-hook-widget line-finish .znap.compile.next
+  _znap_compile_queue+=( ${@:-$PWD} )
+  add-zsh-hook preexec .znap.compile.next
 }
 
 .znap.compile.next() {
@@ -17,7 +17,7 @@ typeset -gHi _znap_compile_fd
   .znap.close-fd $_znap_compile_fd
 
   if (( $#_znap_compile_queue == 0 )); then
-    add-zle-hook-widget -d line-finish ${(%):-%N}
+    add-zsh-hook preexec ${(%):-%N}
     return 0
   fi
 
