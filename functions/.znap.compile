@@ -1,6 +1,6 @@
 #!/bin/zsh
 # compile asynchronously
-# args: [ <dir> ... ]
+# args: [ ( <dir> | <file> ) ... ]
 zmodload -F zsh/files b:zf_rm
 autoload -Uz add-zsh-hook
 typeset -gHa _znap_compile_queue=()
@@ -27,27 +27,30 @@ typeset -gHi _znap_compile_fd
   local src=$_znap_compile_queue[1]
   shift _znap_compile_queue
   exec {_znap_compile_fd}< <(
+    local -a sources=( $src ); [[ -d $src ]] &&
+      sources=( $src/***~**.zwc~**.git(|hub)(|/***)(-.) )
+    for src in $sources[@]; do
+      [[ -w $src:h ]] ||
+        return
 
-    [[ -w $src:h ]] ||
-      return
+      local bin=$src.zwc
 
-    local bin=$src.zwc
+      [[ $bin -ot $src ]] &&
+        zf_rm -f $bin 2>/dev/null || return
 
-    [[ $bin -ot $src ]] &&
-      zf_rm -f $bin 2>/dev/null || return
+      [[ -r $src ]] ||
+        return
 
-    [[ -r $src ]] ||
-      return
+      local line
+      IFS='' read -r line < $src
+      if [[ $line != \#* ]]; then
+        zf_rm -f $bin 2>/dev/null
+        return
+      fi
 
-    local line
-    IFS='' read -r line < $src
-    if [[ $line != \#* ]]; then
-      zf_rm -f $bin 2>/dev/null
-      return
-    fi
-
-    [[ -e $bin ]] ||
-      zcompile -Uz $src 2>/dev/null
+      [[ -e $bin ]] ||
+        zcompile -Uz $src 2>/dev/null
+    done
   )
   zle -F $_znap_compile_fd .znap.compile.next
 
