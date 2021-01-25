@@ -42,4 +42,4 @@ fi
   bashcompinit() { : }
 '
 
-unfunction ${(%):-(%N)}
+unfunction $0
