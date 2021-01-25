@@ -6,9 +6,7 @@ local -a fds=()
 local fd
 {
   local cmd; for cmd in $@; do
-    exec {fd}< <(
-      eval "$cmd"
-    )
+    exec {fd}< <( eval "$cmd" )
     fds+=( $fd )
   done
 } always {

@@ -91,10 +91,14 @@ autoload -Uz add-zsh-hook
   print -nPr - "$PS1"
 
   .znap.prompt.echoti cnorm  # normal cursor
+
+  add-zsh-hook precmd .znap.prompt.precmd
 }
 
 .znap.prompt.precmd() {
-  add-zsh-hook -d precmd ${(%):-%N}
+  local 0=${(%):-%N}
+  add-zsh-hook -d precmd $0
+  unfunction $0
 
   add-zle-hook-widget line-init .znap.prompt.line-init
   local -i i; for (( i = 1; i <= _znap__hook_widgets; i++ )); do
@@ -106,16 +110,22 @@ autoload -Uz add-zsh-hook
   .znap.prompt.echoti invis  # invisible text
   .znap.prompt.echoti rc  # restore cursor position
 
+  add-zle-hook-widget line-init .znap.prompt.line-init
+
   return 0
 }
 
 .znap.prompt.line-init() {
-  add-zle-hook-widget -d line-init ${(%):-%N}
+  local 0=${(%):-%N}
+  add-zle-hook-widget -d line-init $0
+  unfunction $0
 
   zle .reset-prompt
   .znap.prompt.echoti cnorm  # normal cursor
   zle -R
 
+  unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.setup
+  autoload -Uz .znap.prompt
   return 0
 }
 

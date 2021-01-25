@@ -41,3 +41,5 @@ fi
   bashcompinit
   bashcompinit() { : }
 '
+
+unfunction ${(%):-(%N)}

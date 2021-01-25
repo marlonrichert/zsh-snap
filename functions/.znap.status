@@ -35,16 +35,9 @@
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
   fi
 
-  # Add `*.zwc` to repo's ignore list.
-  local -aU lines
-  local file; for file in $1/${GIT_DIR:-.git}/***/info/exclude(.); do
-    [[ -r $file ]] &&
-      lines=( ${(f)"$(< $file)"} )
-    lines+=( '*.zwc' )
-    print -r "${(F)lines}" >! $file 2>/dev/null
-  done
+  .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
-  lines=( "${(f)$(git -C $1 status -sb)}" )
+  local -aU lines=( "${(f)$(git -C $1 status -sb)}" )
   local MATCH MBEGIN MEND
   local -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
   changes=( ${(@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )

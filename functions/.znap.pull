@@ -16,6 +16,7 @@ zmodload -Fa zsh/files b:zf_rm
 
     .znap.multi '.znap.pull.task '${(i)^repos}
     ret=$?
+    .znap.compile ~znap/*(-/)
 
     [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
       zf_rm -f $_comp_dumpfile
@@ -30,14 +31,12 @@ zmodload -Fa zsh/files b:zf_rm
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  .znap.clean $1/***(-/)
-  local -i ret
-  print ${$(eval 'ls -d '$1:t)%/}: $(
-    git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1; ret=$?
+  print -n "${$(eval 'ls -d '$1:t)%/}: "
+  .znap.ignore $1 '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  print $(
+    git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1
   )
   zf_rm -f $1.zsh $1.zsh.zwc
-  .znap.compile $1/***(-^/)
-  return ret
 }
 
 .znap.pull "$@"

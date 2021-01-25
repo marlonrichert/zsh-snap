@@ -8,7 +8,7 @@ emulate zsh
   local basedir=${${(%):-%x}:A:h}
   local funcdir=$basedir/functions
   typeset -gU FPATH fpath=( $funcdir $basedir $fpath )
-  autoload -Uz znap $funcdir/*znap*~*.zwc
+  builtin autoload -Uz znap $funcdir/*znap*~*.zwc
 
   local pluginsdir; zstyle -s :znap: plugins-dir pluginsdir ||
     pluginsdir=$basedir:h
