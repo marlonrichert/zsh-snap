@@ -1,6 +1,6 @@
 #!/bin/zsh
 # show git status of each repo
-# args: [<repo>...]
+# args: [ <repo> ... ]
 
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts

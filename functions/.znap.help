@@ -1,6 +1,6 @@
 #!/bin/zsh
 # print help text
-# args: [<znap command>|<help text>]
+# args: [ <znap command> | <help text> ]
 zmodload -Fa zsh/mapfile p:mapfile
 zmodload -Fa zsh/parameter p:functions
 

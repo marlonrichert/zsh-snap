@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Delete repos and/or cache files
-# args: <repo>|<cache name>...
+# args: ( <repo> | <cache name> ) ...
 zmodload -Fa zsh/files b:zf_rm
 zmodload -Fa zsh/parameter p:commands
 

@@ -1,6 +1,6 @@
 #!/bin/zsh
 # git pull repos in parallel
-# args: [<repo>...]
+# args: [ <repo> ... ]
 zmodload -Fa zsh/files b:zf_rm
 
 .znap.pull() {

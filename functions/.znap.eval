@@ -1,6 +1,6 @@
 #!/bin/zsh
 # run command, then cache & eval output
-# args: <repo>|<name> <command>
+# args: ( <repo> | <name> ) <command>
 
 .znap.eval() {
   if (( $# < 2 )); then

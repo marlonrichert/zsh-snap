@@ -1,6 +1,6 @@
 #!/bin/zsh
 # instantly init prompt theme from repo
-# args: [<repo>] <theme>
+# args: [ <repo> ] <theme>
 zmodload -F zsh/parameter p:functions
 zmodload -F zsh/terminfo b:echoti p:terminfo
 autoload -Uz add-zsh-hook

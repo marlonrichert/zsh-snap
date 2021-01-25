@@ -1,6 +1,6 @@
 #!/bin/zsh
 # remove outdated binaries from directories
-# args: <dir>...
+# args: <dir> ...
 zmodload -Fa zsh/files b:zf_rm
 
 .znap.clean() {
