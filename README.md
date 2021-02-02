@@ -48,6 +48,10 @@ to type the full path to each repo, you can now do, for example, `ls ~[<repo>]/<
 `${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Should you ever "accidentally the whole thing",
 just do `znap clone` without arguments to quickly re-clone all repos in parallel.
 
+### Automatic `compinit` and `bashcompinit`
+⏭ You no longer need to put `compinit` or `bashcompinit` in your `.zshrc` file. Znap will run
+these for you as needed.
+
 ### Automatic completion cache invalidation
 ♻️ Znap automatically deletes and regenerates your comp dump file whenever you install or update a
 plugin or change your `.zshrc` file.
@@ -79,8 +83,8 @@ the `auto-compile-ignore` setting. For example:
 In any case, you can compile sources manually at any time with `znap compile`.
 
 ## Installation
- 1. `cd` to the dir where your (want to) keep your plugins and/or Git repos in general. If you
-    don't have one yet, you'll need
+ 1. `cd` to the dir where your (want to) keep your plugins and/or Git repos. If you don't have one
+    yet, you'll need
     to make one:
     ```zsh
     % mkdir ~/git
@@ -88,7 +92,7 @@ In any case, you can compile sources manually at any time with `znap compile`.
     ```
  1. In there, `git clone` this repo:
     ```zsh
-    % git clone https://github.com/marlonrichert/zsh-snap.git
+    % git clone --depth 1 https://github.com/marlonrichert/zsh-snap.git
     ```
     * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
       plugins dir, by adding this to your `.zshrc` file (_before_ your `source` Znap):
@@ -105,9 +109,8 @@ In any case, you can compile sources manually at any time with `znap compile`.
 
 ## Example `.zshrc` file
 ```zsh
-
 # Source Znap at the start of your .zshrc file.
-source ~/zsh/zsh-snap/znap.zsh
+source ~/git/zsh-snap/znap.zsh
 
 
 # `znap prompt` makes your prompt appear in ~40ms. You can start typing right away!
@@ -119,12 +122,11 @@ znap prompt agnoster/agnoster-zsh-theme
 
 
 # Use `znap source` to load only those parts of Oh-My-Zsh or Prezto that you really need:
+znap source ohmyzsh/ohmyzsh plugins/git
 znap source sorin-ionescu/prezto modules/{environment,history}
 
 # `znap prompt` also supports Oh-My-Zsh themes. Just make sure you load the required libs first:
-znap source ohmyzsh/ohmyzsh \
-  lib/{git,theme-and-appearance} \
-  plugins/git
+znap source ohmyzsh/ohmyzsh lib/{git,theme-and-appearance}
 znap prompt ohmyzsh/ohmyzsh robbyrussell
 
 
@@ -162,15 +164,15 @@ export -U path=(
   .
 )
 
-# ...or functions to `$fpath`.
+# ...or functions to your `$fpath`.
 export -U fpath=(
   ~[asdf]/completions
   $fpath
 )
 
 # Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
-# repo and its contents from any location. In addition, your plugins dir itself can be accessed
-# with `cd ~znap` or `ls ~znap`. Try it on the command line!
+# repo or its contents from any location. In addition, your plugins dir itself can be accessed with
+#`cd ~znap` or `ls ~znap`. Try it on the command line!
 
 
 # Use `znap eval` to cache the output of slow commands:
