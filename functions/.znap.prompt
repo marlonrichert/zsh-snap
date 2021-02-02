@@ -59,8 +59,7 @@ autoload -Uz add-zsh-hook
   setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
-
-  add-zsh-hook precmd .znap.prompt.precmd
+  prompt_themes+=( $theme )
 
   # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
   typeset -gHi _znap__hook_widgets=0
@@ -70,7 +69,6 @@ autoload -Uz add-zsh-hook
     }"
   }
   {
-    prompt_themes+=( $theme )
     prompt $theme
 
     local precmd=prompt_${theme}_precmd
@@ -86,7 +84,6 @@ autoload -Uz add-zsh-hook
 
   [[ -o promptcr ]] &&
     print -n $'\r'
-
   :
   print -nPr - "$PS1"
 
