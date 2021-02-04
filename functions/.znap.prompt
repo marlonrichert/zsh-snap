@@ -30,7 +30,7 @@ autoload -Uz add-zsh-hook
 
       local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
       print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! ~znap/$setup
-      fpath=( ~znap $fpath[@] )
+      fpath=( ~znap $fpath )
     fi
   fi
 }

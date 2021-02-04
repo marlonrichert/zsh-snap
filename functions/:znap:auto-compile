@@ -9,7 +9,7 @@ local -a exclude=()
 zstyle -a :znap: auto-compile-ignore exclude
 local -a include=(
   $_comp_dumpfile
-  $^fpath/*~*.zwc(-^/)
+  $fpath[@]
   ${ZDOTDIR:-$HOME}/.z(log(in|out)|profile|sh(env|rc))(-^/)
 )
 .znap.compile ${include:#(${(~j:|:)~exclude})}

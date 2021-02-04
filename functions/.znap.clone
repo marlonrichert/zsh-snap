@@ -46,7 +46,7 @@ zmodload -Fa zsh/files b:zf_mkdir
   [[ -d $dir ]] &&
     return 66
   git -C ~znap clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
-  .znap.compile $dir/***(-^/)
+  .znap.compile $dir
 }
 
 .znap.clone "$@"

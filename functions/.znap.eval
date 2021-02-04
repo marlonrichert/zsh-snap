@@ -27,7 +27,6 @@
     print -r "$(eval $cmd)" >>! $cache
   fi
 
-
   {
     [[ -d $repo ]] &&
       cd -q $repo
