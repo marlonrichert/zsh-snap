@@ -56,19 +56,19 @@ autoload -Uz add-zsh-hook
   local theme=${2:-$plugin}
   .znap.prompt.setup "$@" || return
 
-  setopt prompt{bang,cr,percent,subst} NO_promptsp
   autoload -Uz promptinit
   promptinit
   prompt_themes+=( $theme )
 
-  # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
-  typeset -gHi _znap__hook_widgets=0
-  add-zle-hook-widget() {
-    eval ":znap:add-zle-hook-widget:$(( ++_znap__hook_widgets ))() {
-      add-zle-hook-widget $*
-    }"
-  }
   {
+    # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
+    typeset -gHi _znap__hook_widgets=0
+    add-zle-hook-widget() {
+      eval ":znap:add-zle-hook-widget:$(( ++_znap__hook_widgets ))() {
+        add-zle-hook-widget $*
+      }"
+    }
+    setopt prompt{bang,cr,percent,subst} NO_promptsp
     prompt $theme
 
     local precmd=prompt_${theme}_precmd
@@ -96,6 +96,9 @@ autoload -Uz add-zsh-hook
   local 0=${(%):-%N}
   add-zsh-hook -d precmd $0
   unfunction $0
+
+  [[ -v prompt_opts ]] ||
+    setopt promptsp
 
   add-zle-hook-widget line-init .znap.prompt.line-init
   local -i i; for (( i = 1; i <= _znap__hook_widgets; i++ )); do
