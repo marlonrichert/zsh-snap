@@ -30,7 +30,7 @@ zmodload -Fa zsh/parameter p:commands
         'tell application "Finder" to delete every item of {'${(j:, :)items}'}' >/dev/null
     else
       print zf_rm $(eval "ls -d $files[@]:t")
-      zf_rm -irs $files[@]
+      zf_rm -irsf $files[@]
     fi
   } always {
     [[ -x $pwd ]] &&
