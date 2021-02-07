@@ -29,8 +29,8 @@ zmodload -Fa zsh/parameter p:commands
       osascript -e \
         'tell application "Finder" to delete every item of {'${(j:, :)items}'}' >/dev/null
     else
-      print zf_rm $(eval "ls -d $files[@]:t")
-      zf_rm -irs $files[@]
+      print Removing $(eval "ls -d $files[@]:t")
+      zf_rm -frs $files[@]
     fi
   } always {
     [[ -x $pwd ]] &&
