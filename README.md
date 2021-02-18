@@ -177,18 +177,21 @@ export -U fpath=(
 
 # Use `znap eval` to cache the output of slow commands:
 
-# If the first arg is a repo, then the command will run inside it. Plus, whenever you update the
-# repo with `znap pull`, the cache automatically gets regenerated.
-znap eval LS_COLORS 'gdircolors -b LS_COLORS'
+# If the first arg is a repo, then the command will run inside it. Plus, whenever you update a
+# repo with `znap pull`, its eval cache gets regenerated automatically.
+znap eval trapd00r/LS_COLORS 'gdircolors -b LS_COLORS'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
-# Here we include the full path to `direnv` in the command string, so that the cache will be
-# regenerated whenever the version of `direnv` changes.
-znap eval asdf-direnv "asdf exec $(asdf which direnv) hook zsh"
+# The cache gets regenerated, too, when the eval command has changed. So, for example, since we
+# include the full path to `direnv` in the command string, the cache will be regenerated whenever
+# the version of `direnv` changes.
+znap eval asdf-community/asdf-direnv "asdf exec $(asdf which direnv) hook zsh"
 
 # These don't belong to any repo, but the first arg will be used to name the cache file.
 znap eval brew-shellenv 'brew shellenv'
-znap eval pyenv-init 'pyenv init -'
+znap eval pyenv-init ${${:-=pyenv}:A}' init -'
+znap eval pip-completion 'pip completion --zsh'
+znap eval pipx-completion 'register-python-argcomplete pipx'
 znap eval pipenv-completion 'pipenv --completion'
 
 ```

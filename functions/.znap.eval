@@ -9,27 +9,28 @@
     return 64
   fi
 
-  local repo=~znap/$1 cache pwd=$PWD
-  local cache=$repo.zsh
-  shift
-  local cmd="$@"
-  local header="#${(q)cmd}"
   local -i ret=1
-  if () {
-    emulate -L zsh; setopt $_znap_opts
-    local line
+  local dir=~znap/$1 pwd=$PWD
+  if [[ $1 == */* ]]; then
+    dir=~znap/${${1##*/}%.git}
+    [[ -d $dir ]] ||
+      .znap.clone $1
+  fi
+  {
+    [[ -d $dir ]] &&
+      cd -q $dir
+    shift
+    local cmd="$@"
+    local line header="#${(q)cmd}"
+    local cache=$dir.zsh
     [[ -r $cache ]] &&
       IFS='' read -r line < $cache
-    [[ $line != $header ||
-      -d $repo && -f $repo/.git/index && $repo/.git/index -nt $cache ]]
-  } "$@"; then
-    print -r "$header" >! $cache
-    print -r "$(eval $cmd)" >>! $cache
-  fi
-
-  {
-    [[ -d $repo ]] &&
-      cd -q $repo
+    if [[ $line != $header ||
+        ( -d $dir && -f $dir/.git/index && $dir/.git/index -nt $cache ) ]]; then
+      print -r "$header" >! $cache
+      cd -q $dir
+      print -r "$(eval $cmd)" >>! $cache
+    fi
     . $cache; ret=$?
   } always {
     [[ -x $pwd ]] &&
