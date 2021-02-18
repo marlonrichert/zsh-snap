@@ -6,6 +6,11 @@ case $1 in
       emulate -L zsh; setopt $_znap_opts
 
       repo=~znap/$2
+      if [[ $2 == */* ]]; then
+        repo=~znap/${${2##*/}%.git}
+        [[ -d $repo ]] ||
+          .znap.clone $2
+      fi
       if [[ -d $repo ]]; then
         reply=( $repo )
         return 0

@@ -1,7 +1,7 @@
 # ⚡️Znap!
-**Znap** is the light-weight plugin manager & Git repo manager for Zsh that's easy to grok. While
-tailored for Zsh plugins specifically, Znap also functions as a general-pupose utility for managing
-Git repos.
+**Znap** is the light-weight Git repo manager & Zsh plugin manager & that's easy to grok. While
+tailed to Zsh plugins specifically, Znap can help you manage any number of Git repos, without them
+needing to be plugins.
 
 * [Features](#features)
 * [Installation](#installation)
@@ -10,28 +10,30 @@ Git repos.
 * [License](#license)
 
 ## Features
-* [Low resource usage](#low-resource-usage)
-* [Zero configuration](#zero-configuration)
-* [Instant prompt](#instant-prompt)
-* [Parallel processing](#parallel-processing)
-* [Easy re-install](#easy-re-install)
-* [Automatic completion cache invalidation](#automatic-completion-cache-invalidation)
-* [Command caching](#command-caching)
-* [Asynchronous compilation](#asynchronous-compilation)
+* 🐥 [Low resource usage](#low-resource-usage)
+* 🔌 [Zero configuration](#zero-configuration)
+* 🏃 [Instant prompt](#instant-prompt)
+* 👨‍👩‍👧‍👦 [Multi repo management](#multi-repo-management)
+* 🛣 [Parallel processing](#parallel-processing)
+* 🏭 [Easy re-install](#easy-re-install)
+* ⏭ [Automatic `compinit` and `bashcompinit`](#automatic-compinit-and-bashcompinit)
+* ♻️ [Automatic completion cache invalidation](#automatic-completion-cache-invalidation)
+* 🥫 [Command caching](#command-caching)
+* ⚙️ [Asynchronous compilation](#asynchronous-compilation)
 
 ### Low resource usage
-🐥 Only ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
+Only ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
 
 ### Zero configuration
-🔌 `git clone` the repo [into the right place](#installation), `source` the `.zsh` file, and you're
+`git clone` the repo [into the right place](#installation), `source` the `.zsh` file, and you're
 good to go.
 
 ### Instant prompt
-🏃 Add `znap prompt <theme name>` to your [`.zshrc` file](#example-zshrc) to reduce your startup
+Add `znap prompt <theme name>` to your [`.zshrc` file](#example-zshrc) to reduce your startup
 time to ~40ms (depending on your prompt theme).
 
 ### Multi repo management
-👨‍👩‍👧‍👦 Do `znap status` to run `git fetch` and see an abbreviated `git status` for all your repos at
+Do `znap status` to run `git fetch` and see an abbreviated `git status` for all your repos at
 once. Do `znap pull` to run `git pull` in all your repos. Use `znap ignore <repo> <pattern> ...`
 to add entries to your repo's local exclude list.
 
@@ -40,24 +42,24 @@ to type the full path to each repo, you can now do, for example, `ls ~[<repo>]/<
 `cd ~[<repo>]/<subdir>...`. And, of course, completions are available for these.
 
 ### Parallel processing
-🛣 When you do `znap pull`, updates for all of your repos are downloaded in parallel. Use
+When you do `znap pull`, updates for all of your repos are downloaded in parallel. Use
 `znap multi <command> ...` to run any number of tasks of any kind in parallel.
 
 ### Easy re-install
-🏭 Znap saves the URL of each remote you clone into
+Znap saves the URL of each remote you clone into
 `${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Should you ever "accidentally the whole thing",
 just do `znap clone` without arguments to quickly re-clone all repos in parallel.
 
 ### Automatic `compinit` and `bashcompinit`
-⏭ You no longer need to put `compinit` or `bashcompinit` in your `.zshrc` file. Znap will run
+You no longer need to put `compinit` or `bashcompinit` in your `.zshrc` file. Znap will run
 these for you as needed.
 
 ### Automatic completion cache invalidation
-♻️ Znap automatically deletes and regenerates your comp dump file whenever you install or update a
+Znap automatically deletes and regenerates your comp dump file whenever you install or update a
 plugin or change your `.zshrc` file.
 
 ### Command caching
-🥫 Commands like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
+Commands like `eval "$(brew shellenv)"`, `eval "$(pyenv init -)"` and
 `eval "$(pipenv --completion)"` can be very slow to evaluate. If instead of
 `eval "$( <command> )"`, you use `znap eval <name> <command>`, then the output of `<command>` will
 get cached, which can speed things up considerably. Plus, if `<name>` is a repo, then `<command>`
@@ -72,7 +74,7 @@ There are three cases that will cause `znap eval` to regenerate a cache:
   regenerate the `<name>` cache.
 
 ### Asynchronous compilation
-⚙️ While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
 Line Editor is idle. This way, your shell will start up even faster next time!
 
 Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
@@ -83,28 +85,28 @@ the `auto-compile-ignore` setting. For example:
 In any case, you can compile sources manually at any time with `znap compile`.
 
 ## Installation
- 1. `cd` to the dir where your (want to) keep your plugins and/or Git repos. If you don't have one
-    yet, you'll need
-    to make one:
-    ```zsh
-    % mkdir ~/git
-    % cd ~/git
-    ```
- 1. In there, `git clone` this repo:
-    ```zsh
-    % git clone --depth 1 https://github.com/marlonrichert/zsh-snap.git
-    ```
-    * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find your
-      plugins dir, by adding this to your `.zshrc` file (_before_ your `source` Znap):
+  1. `cd` to the dir where your (want to) keep your Git repos. If you don't have one yet, you'll
+      need to make one:
       ```zsh
-      zstyle ':znap:*' plugins-dir ~/git
+      % mkdir -pm 0700 ~/git
+      % cd ~/git
       ```
- 1. Add this line _at the top_ of your `.zshrc` file (or at least before your use Znap to manage
-    any plugins):
-    ```zsh
-    source ~/git/zsh-snap/znap.zsh
-    ```
- 1. **Restart your shell.**
+  1.  In there, `git clone` this repo:
+      ```zsh
+      % git clone --depth 1 https://github.com/marlonrichert/zsh-snap.git
+      ```
+      * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find
+        the dir containing your Git repos, by adding this to your `.zshrc` file (_before_ the
+        following step):
+        ```zsh
+        zstyle ':znap:*' git-dir ~/git
+        ```
+  1.  Add this line _at the start_ of your `.zshrc` file (or at least before you make any calls to
+      `znap`):
+      ```zsh
+      source ~/git/zsh-snap/znap.zsh
+      ```
+  1.  **Restart your shell.**
 
 
 ## Example `.zshrc` file
@@ -144,35 +146,8 @@ znap source asdf-vm/asdf asdf.sh
 znap source marlonrichert/zsh-hist
 bindkey '^[q' push-line-or-edit
 
-export ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
+ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-users/zsh-syntax-highlighting
-
-
-# Use `znap clone` to download repos that aren't plugins. All downloads in the same call will occur
-# in parallel. Any repos you already have will be skipped silently.
-znap clone \
-  asdf-community/asdf-direnv \
-  ekalinin/github-markdown-toc \
-  trapd00r/LS_COLORS
-
-
-# All repos managed by Znap are automatically available as dynamically-named dirs. This makes it
-# easier to add commands to your `$path`...
-export -U path=(
-  ~[github-markdown-toc]
-  $path
-  .
-)
-
-# ...or functions to your `$fpath`.
-export -U fpath=(
-  ~[asdf]/completions
-  $fpath
-)
-
-# Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
-# repo or its contents from any location. In addition, your plugins dir itself can be accessed with
-#`cd ~znap` or `ls ~znap`. Try it on the command line!
 
 
 # Use `znap eval` to cache the output of slow commands:
@@ -194,6 +169,24 @@ znap eval pip-completion 'pip completion --zsh'
 znap eval pipx-completion 'register-python-argcomplete pipx'
 znap eval pipenv-completion 'pipenv --completion'
 
+
+# All repos managed by Znap are automatically available as dynamically-named dirs. This makes it
+# easier to add commands to your `$path`...
+path=(
+  ~[ekalinin/github-markdown-toc]
+  $path
+  .
+)
+
+# ...or functions to your `$fpath`.
+fpath=(
+  ~[asdf-community/asdf-direnv]/completions
+  $fpath
+)
+
+# Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
+# repo or its contents from any location. In addition, your plugins dir itself can be accessed with
+#`cd ~znap` or `ls ~znap`. Try it on the command line!
 ```
 
 As always, make sure you **restart your shell** for changes to take effect.
