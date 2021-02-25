@@ -1,6 +1,6 @@
 # ⚡️Znap!
-**Znap** is the light-weight Git repo manager & Zsh plugin manager & that's easy to grok. While
-tailed to Zsh plugins specifically, Znap can help you manage any number of Git repos, without them
+**Znap** is the light-weight Git repo manager & Zsh plugin manager that's easy to grok. While
+tailored to Zsh plugins specifically, Znap can help you manage any number of Git repos, without them
 needing to be plugins.
 
 * [Features](#features)
