@@ -3,8 +3,7 @@ local repo
 case $1 in
   n)
     () {
-      emulate -L zsh; setopt $_znap_opts
-
+      emulate -L zsh; setopt extendedglob
       repo=~znap/$2
       if [[ $2 == */* ]]; then
         repo=~znap/${${2##*/}%.git}
@@ -20,14 +19,12 @@ case $1 in
     ;;
   d)
     () {
-      emulate -L zsh; setopt $_znap_opts
-
-      for repo in ~znap/*(-/); do
-        if [[ $2 == $repo(|/*) ]]; then
-          reply=( $repo:t $#repo )
-          return 0
-        fi
-      done
+      emulate -L zsh; setopt extendedglob
+      if [[ $2 == ~znap/* ]]; then
+        repo=${${2#~znap/}:h1}
+        reply=( $repo ${#:-~znap/$repo} )
+        return 0
+      fi
       return 66
     } "$@"
     ;;
