@@ -43,9 +43,12 @@ zmodload -Fa zsh/files b:zf_mkdir
   local url=$1; [[ $1 == (*/*/*|*:*|*.git(|/)) ]] ||
     url=$server$1.git
   local dir=~znap/$url:t:r
-  [[ -d $dir ]] &&
-    return 66
-  git -C ~znap clone --recurse-submodules -j$(ulimit -n) --depth=1 --shallow-submodules $url
+  if [[ -d $dir ]] && git -C $repo config --worktree --bool core.sparseCheckout >/dev/null; then
+    git -C $repo sparse-checkout disable 2>/dev/null
+    return
+  fi
+  git -C ~znap clone --depth=1 --filter=blob:none -j$(ulimit -n) --recurse-submodules \
+    --shallow-submodules -- $url
   .znap.compile $dir
 }
 

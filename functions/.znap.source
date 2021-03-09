@@ -13,28 +13,44 @@ local -i ret=0
 () {
   emulate -L zsh; setopt $_znap_opts
 
-  local plugin=$1
-  if [[ $plugin == */* ]]; then
+  local plugin=$1 url=$1
+  shift
+  [[ $plugin == */* ]] &&
     plugin=${${plugin##*/}%.git}
-    [[ -d ~[$plugin] ]] ||
-      .znap.clone $1
+
+  local repo=~[$plugin]
+  if [[ ! -d $repo ]]; then
+    .znap.checkout $url
+    repo=~[$plugin]
   fi
 
-  shift
-  local repo=~[$plugin]
   local -aU files=( $repo ); (( $# > 0 )) &&
     files=( $repo/$^@ )
   local -aU tmp=()
   local -a words ext=( '.plugin.zsh' '(|.*).zsh*' '.sh' '' )
   local f; for f in $files; do
-      if [[ -d $f ]]; then
-        tmp=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
-      elif [[ -r $f ]]; then
-        tmp=( $f )
-      else
-        tmp=( $f${^~ext}~*.zwc(-.rY1) )
+    if [[ ! -e $f ]] && git -C $repo config --worktree --bool core.sparseCheckout >/dev/null
+    then
+      git -C $repo sparse-checkout add ${f#$repo}
+      git -C $repo checkout >/dev/null
+      if [[ -f $f || ! -e $f ]]; then
+        if [[ $f:h == $repo ]]; then
+          git -C $repo sparse-checkout disable 2>/dev/null
+        else
+          git -C $repo sparse-checkout add ${${f:h}#$repo}
+        fi
       fi
-      src+=( $tmp[1] )
+    fi
+    if [[ -d $f ]]; then
+      tmp=( ${f%\/}/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(N-.rY1) )
+    elif [[ -f $f ]]; then
+      tmp=( $f )
+    else
+      tmp=( $f$^~ext(N) )
+      (( $#tmp[@] )) ||
+        print -u2 "znap source: no such file: $f:A"
+    fi
+    src+=( $tmp[1] )
   done
 } "$@"
 

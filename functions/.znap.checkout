@@ -1,0 +1,23 @@
+#!/bin/zsh
+# clone only parts of a repo
+# args: ( <user>/<repo> | <url> ) <subdir> ...
+# setopt localoptions verbose xtrace
+emulate -L zsh; setopt $_znap_opts
+
+local dir=~[$1:t:r]
+if [[ ! -d $dir ]]; then
+  local url=$1
+  if [[ $url != (*/*/*|*:*|*.git(|/)) ]]; then
+    local server; zstyle -s :znap:checkout: default-server server ||
+      server='https://github.com/'
+    url=$server$1.git
+  fi
+  git -C ~znap clone --depth 1 --filter=blob:none --no-checkout -- $url
+  dir=~[$1:t:r]
+  git -C $dir sparse-checkout init
+fi
+shift
+if (( $# )); then
+  git -C $dir sparse-checkout add $@
+  git -C $dir checkout
+fi
