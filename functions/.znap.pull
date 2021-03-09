@@ -34,7 +34,7 @@ zmodload -Fa zsh/files b:zf_rm
   print -n "${$(eval 'ls -d '$1:t)%/}: "
   .znap.ignore $1 '*.zwc'  # Add `*.zwc` to repo's local ignore list.
   print $(
-    git -C $1 pull --rebase --recurse-submodules -j$(ulimit -n) 2>&1
+    git -C $1 pull --autostash --rebase --recurse-submodules -j$(ulimit -n) 2>&1
   )
   zf_rm -f $1.zsh $1.zsh.zwc
 }
