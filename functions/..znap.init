@@ -13,10 +13,10 @@ if zstyle -T :znap: auto-compile; then
     .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
     return ret
   }
-  add-zsh-hook preexec :znap:auto-compile
+  add-zsh-hook preexec ..znap.auto-compile
 fi
 
-add-zsh-hook zsh_directory_name :znap:dirname
+add-zsh-hook zsh_directory_name ..znap.dirname
 
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 [[ ! -d $XDG_CACHE_HOME/zsh ]] &&
@@ -33,8 +33,8 @@ zstyle -s ':completion:*' completer _ ||
 
 .znap.function bindkey 'zmodload zsh/complist'
 if [[ ! -v _comp_setup ]]; then
-  .znap.function compdef ':znap:compinit'
-  add-zsh-hook precmd :znap:compinit
+  .znap.function compdef '..znap.compinit'
+  add-zsh-hook precmd ..znap.compinit
 fi
 .znap.function _bash_complete compgen complete '
   autoload -Uz bashcompinit

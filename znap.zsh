@@ -9,7 +9,7 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
   local -a basedir=( (#i)${${(%):-%x}:h} )  # case correction
   local funcdir=$basedir/functions
   fpath=( $funcdir $basedir $fpath )
-  builtin autoload -Uz znap $funcdir/*znap*~*.zwc
+  builtin autoload -Uz znap $funcdir/(|.).znap*~*.zwc
 
   local pluginsdir; zstyle -s :znap: plugins-dir pluginsdir ||
     pluginsdir=$basedir:h
@@ -19,5 +19,5 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
   fi
   hash -d znap=$pluginsdir
 
-  :znap:init "$@"
+  ..znap.init "$@"
 }
