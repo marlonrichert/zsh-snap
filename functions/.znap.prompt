@@ -5,6 +5,11 @@ zmodload -F zsh/parameter p:functions
 zmodload -F zsh/terminfo b:echoti p:terminfo
 autoload -Uz add-zsh-hook
 
+.znap.prompt.echoti() {
+  [[ -v terminfo[$1] ]] &&
+    echoti $@
+}
+
 .znap.prompt.setup() {
   emulate -L zsh; setopt $_znap_opts
 
@@ -54,12 +59,14 @@ autoload -Uz add-zsh-hook
   } "$@"
 
   local theme=${2:-$plugin}
-  .znap.prompt.setup "$@" || return
+  .znap.prompt.setup "$@" ||
+    return
 
   autoload -Uz promptinit
   promptinit
   prompt_themes+=( $theme )
 
+  add-zsh-hook precmd .znap.prompt.precmd
   {
     # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
     typeset -gHi _znap__hook_widgets=0
@@ -68,12 +75,18 @@ autoload -Uz add-zsh-hook
         add-zle-hook-widget $*
       }"
     }
+
     setopt prompt{bang,cr,percent,subst} NO_promptsp
     prompt $theme
 
     local precmd=prompt_${theme}_precmd
     [[ -n $functions[$precmd] ]] &&
       $precmd
+    functions[:znap:$precmd]=$functions[$precmd]
+    eval "$precmd() {
+      functions[$precmd]=\$functions[:znap:$precmd]
+      unfunction :znap:$precmd
+    }"
   } always {
     unfunction add-zle-hook-widget
     autoload -Uz add-zle-hook-widget
@@ -106,11 +119,8 @@ autoload -Uz add-zsh-hook
   done
   unset _znap__hook_widgets
 
-  .znap.prompt.echoti civis  # invisible cursor
-  .znap.prompt.echoti invis  # invisible text
-  .znap.prompt.echoti rc  # restore cursor position
-
-  add-zle-hook-widget line-init .znap.prompt.line-init
+  .znap.prompt.echoti civis # invisible cursor
+  .znap.prompt.echoti rc    # restore cursor position
 
   return 0
 }
@@ -127,11 +137,6 @@ autoload -Uz add-zsh-hook
   unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.setup
   autoload -Uz .znap.prompt
   return 0
-}
-
-.znap.prompt.echoti() {
-  [[ -v terminfo[$1] ]] &&
-    echoti $@
 }
 
 .znap.prompt "$@"
