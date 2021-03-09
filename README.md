@@ -4,6 +4,7 @@ tailored to Zsh plugins specifically, Znap can help you manage any number of Git
 needing to be plugins.
 
 * [Features](#features)
+* [Requirements](#requirements)
 * [Installation](#installation)
 * [Example `.zshrc` file](#example-zshrc-file)
 * [Author](#author)
@@ -83,6 +84,14 @@ the `auto-compile-ignore` setting. For example:
 `zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'`.
 
 In any case, you can compile sources manually at any time with `znap compile`.
+
+## Requirements
+Recommended:
+* Tested to work with **Zsh 5.7** or newer.
+
+Minimum:
+* Should theoretically work with Zsh 5.3, but I'm unable to test that. Definitely won't work with
+  anything older.
 
 ## Installation
   1. `cd` to the dir where your (want to) keep your Git repos. If you don't have one yet, you'll
