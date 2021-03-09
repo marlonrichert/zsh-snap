@@ -95,12 +95,13 @@ In any case, you can compile sources manually at any time with `znap compile`.
       ```zsh
       % git clone --depth 1 https://github.com/marlonrichert/zsh-snap.git
       ```
-      * _(optional)_ If you want to install Znap elsewhere, you'll need to tell it where to find
-        the dir containing your Git repos, by adding this to your `.zshrc` file (_before_ the
-        following step):
+      * _(optional)_ By default, Znap clones all plugins into its parent directory (`~/git`, if you
+        followed the first step). If you want to install them elsewhere, you can configure the
+        plugins directory by adding this to your `.zshrc` file (_before_ the following step):
         ```zsh
-        zstyle ':znap:*' git-dir ~/git
+        zstyle ':znap:*' plugins-dir ~/.local/share/znap
         ```
+        **Note**: Make sure that the directory exists!
   1.  Add this line _at the start_ of your `.zshrc` file (or at least before you make any calls to
       `znap`):
       ```zsh
