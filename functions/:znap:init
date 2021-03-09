@@ -3,7 +3,10 @@ zmodload -Fa zsh/files b:zf_mkdir b:zf_rm
 autoload -Uz add-zsh-hook
 
 if zstyle -T :znap: auto-compile; then
-  zmodload -Fa zsh/parameter p:funcstack
+  () {
+    setopt localoptions NO_warncreateglobal
+    zmodload -Fa zsh/parameter p:funcstack
+  }
 
   source . () {
     builtin $0 "$@"; local -i ret=$?
@@ -13,10 +16,7 @@ if zstyle -T :znap: auto-compile; then
   add-zsh-hook preexec :znap:auto-compile
 fi
 
-export -U zsh_directory_name_functions=(
-  :znap:dirname
-  $zsh_directory_name_functions[@]
-)
+add-zsh-hook zsh_directory_name :znap:dirname
 
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 [[ ! -d $XDG_CACHE_HOME/zsh ]] &&
