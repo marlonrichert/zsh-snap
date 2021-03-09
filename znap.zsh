@@ -13,6 +13,10 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
 
   local pluginsdir; zstyle -s :znap: plugins-dir pluginsdir ||
     pluginsdir=$basedir:h
+  if ! [[ -d $pluginsdir ]]; then
+    zmodload -F zsh/files b:zf_mkdir
+    zf_mkdir -pm 0700 $pluginsdir
+  fi
   hash -d znap=$pluginsdir
 
   :znap:init "$@"

@@ -94,7 +94,7 @@ Minimum:
   anything older.
 
 ## Installation
-  1. `cd` to the dir where your (want to) keep your Git repos. If you don't have one yet, you'll
+  1.  `cd` to the dir where your (want to) keep your Git repos. If you don't have one yet, you'll
       need to make one:
       ```zsh
       % mkdir -pm 0700 ~/git
@@ -110,7 +110,6 @@ Minimum:
         ```zsh
         zstyle ':znap:*' plugins-dir ~/.local/share/znap
         ```
-        **Note**: Make sure that the directory exists!
   1.  Add this line _at the start_ of your `.zshrc` file (or at least before you make any calls to
       `znap`):
       ```zsh
