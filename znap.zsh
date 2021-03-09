@@ -1,5 +1,6 @@
 #!/bin/zsh
 emulate zsh
+typeset -gU PATH path FPATH fpath MANPATH manpath
 () {
   emulate -L zsh
   typeset -gHa _znap_opts=( extendedglob globdots globstarshort rcquotes NO_nomatch nullglob )
@@ -7,7 +8,7 @@ emulate zsh
 
   local -a basedir=( (#i)${${(%):-%x}:h} )  # case correction
   local funcdir=$basedir/functions
-  typeset -gU FPATH fpath=( $funcdir $basedir $fpath )
+  fpath=( $funcdir $basedir $fpath )
   builtin autoload -Uz znap $funcdir/*znap*~*.zwc
 
   local pluginsdir; zstyle -s :znap: plugins-dir pluginsdir ||
