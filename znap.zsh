@@ -5,7 +5,7 @@ emulate zsh
   typeset -gHa _znap_opts=( extendedglob globdots globstarshort rcquotes NO_nomatch nullglob )
   setopt $_znap_opts
 
-  local basedir=${${(%):-%x}:A:h}
+  local -a basedir=( (#i)${${(%):-%x}:h} )  # case correction
   local funcdir=$basedir/functions
   typeset -gU FPATH fpath=( $funcdir $basedir $fpath )
   builtin autoload -Uz znap $funcdir/*znap*~*.zwc
