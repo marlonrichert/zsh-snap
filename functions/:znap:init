@@ -19,15 +19,15 @@ export -U zsh_directory_name_functions=(
 )
 
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-[[ ! -d $XDG_CACHE_HOME ]] &&
-  zf_mkdir -p $XDG_CACHE_HOME
+[[ ! -d $XDG_CACHE_HOME/zsh ]] &&
+  zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh
 
-typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zcompdump}
+typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
 [[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:A} -nt $_comp_dumpfile ]] &&
   zf_rm -f $_comp_dumpfile
 
 zstyle -s :completion: cache-path _ ||
-  zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zcompcache"
+  zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/compcache"
 zstyle -s ':completion:*' completer _ ||
   zstyle ':completion:*' completer _expand _complete _ignored
 
