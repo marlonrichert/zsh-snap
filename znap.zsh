@@ -6,7 +6,7 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
   typeset -gHa _znap_opts=( extendedglob globdots globstarshort rcquotes NO_nomatch nullglob )
   setopt $_znap_opts
 
-  local -a basedir=( (#i)${${(%):-%x}:h} )  # case correction
+  local -a basedir=( (#i)${${(%):-%x}:A:h} )  # case correction
   local funcdir=$basedir/functions
   fpath=( $funcdir $basedir $fpath )
   builtin autoload -Uz znap $funcdir/(|.).znap*~*.zwc

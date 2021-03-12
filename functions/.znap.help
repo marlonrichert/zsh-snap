@@ -8,14 +8,14 @@ zmodload -Fa zsh/parameter p:functions
   emulate -L zsh; setopt $_znap_opts
 
   typeset -gHA _ZNAP_ARGS=()
-  local f; for f in ${${(%):-%x}:h}/.znap.[^.]##; do
+  local f; for f in ${${(%):-%x}:A:h}/.znap.[^.]##; do
     _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
   done
 
   local -i fd=1
   if (( $# > 0 )); then
     if [[ -v functions[.znap.$1] ]]; then
-      local -a funcfile=( ${(f)mapfile[${${(%):-%x}:h}/.znap.$1]} )
+      local -a funcfile=( ${(f)mapfile[${${(%):-%x}:A:h}/.znap.$1]} )
       print -l "usage: znap $1 ${funcfile[3]#'# args: '}"
       local help="${funcfile[2]#'# '}"
       local first=${${=help}[1]}
