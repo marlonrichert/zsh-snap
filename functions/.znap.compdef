@@ -1,0 +1,37 @@
+#!/bin/zsh
+# add output of command as completion function
+# args: <function> <command>
+local 0=${(%):-%N}
+zmodload -Fa zsh/files b:zf_mkdir
+
+$0() {
+  local name=$1 generator=$2
+
+  local cache_dir=$XDG_CACHE_HOME/zsh-snap/fpath
+  [[ -d $cache_dir ]] ||
+    zf_mkdir -pm 0700 $cache_dir
+  fpath=( $cache_dir $fpath[@] )
+
+  local cache_file=$cache_dir/$name
+  [[ -f $cache_file ]] ||
+    eval "$generator" > $cache_file
+  autoload -Uz $cache_file
+
+  local line
+  IFS='' read -r line < $cache_file
+
+  [[ $line != '#compdef '* ]] &&
+    return 1
+
+  local -a cmds=( ${=line#'#compdef '} )
+  local c; for c in $cmds[@]; do
+    if [[ ${${:-=$c}:A} -nt $cache_file ]]; then
+      eval "$generator" >| $cache_file
+      break
+    fi
+  done
+  [[ -v _comp_setup ]] &&
+    compdef $name $cmds[@]
+}
+
+$0 "$@"

@@ -179,6 +179,12 @@ znap eval pipx-completion 'register-python-argcomplete pipx'
 znap eval pipenv-completion 'pipenv --completion'
 
 
+# Use `znap compdef` to add generated completion functions:
+znap compdef _kubectl 'kubectl completion zsh'
+znap compdef _rustup  'rustup completions zsh'
+znap compdef _cargo   'rustup completions zsh cargo'
+
+
 # All repos managed by Znap are automatically available as dynamically-named dirs. This makes it
 # easier to add commands to your `$path`...
 path=(
