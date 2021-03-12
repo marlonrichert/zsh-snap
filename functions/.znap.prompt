@@ -20,23 +20,23 @@ autoload -Uz add-zsh-hook
   autoload +X -Uz $setup 2>/dev/null &&
     return
 
-    unfunction $setup
+  unfunction $setup
 
-    local -aU matches=( ~znap/{$plugin,*$plugin*}(-/) )
-    local repo=$matches[1]
-    if [[ -z $repo ]]; then
-      print -u2 "znap prompt: no such theme '$*' in" ~znap
-      .znap.help prompt
-      return 66
-    fi
+  local -aU matches=( ~znap/{$plugin,*$plugin*}(-/) )
+  local repo=$matches[1]
+  if [[ -z $repo ]]; then
+    print -u2 "znap prompt: no such theme '$*' in" ~znap
+    .znap.help prompt
+    return 66
+  fi
 
-    local file=( $repo/***/$setup(-.) )
+  local file=( $repo/***/$setup(-.) )
   if autoload +X -Uz $file 2>/dev/null; then
     fpath=( $file:h $fpath[@] )
     return
   fi
 
-      unfunction $setup
+  unfunction $setup
 
   local cache_dir=$XDG_CACHE_HOME/zsh-snap/prompt
   [[ -d $cache_dir ]] ||
@@ -45,9 +45,9 @@ autoload -Uz add-zsh-hook
 
   local cache_file=$cache_dir/$setup
   if [[ ! -f $cache_file || $repo/${GIT_DIR:-.git}/index -nt $cache_file ]]; then
-      local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
+    local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
     print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! $cache_file
-    fi
+  fi
 
   autoload +X -Uz $setup
 }
@@ -89,11 +89,11 @@ autoload -Uz add-zsh-hook
     }
 
     setopt prompt{bang,cr,percent,subst} NO_promptsp
-    prompt $theme
+    prompt $theme >/dev/null
 
     local precmd=prompt_${theme}_precmd
     [[ -n $functions[$precmd] ]] &&
-      $precmd
+      $precmd >/dev/null
     functions[:znap:$precmd]=$functions[$precmd]
     eval "$precmd() {
       functions[$precmd]=\$functions[:znap:$precmd]
@@ -104,15 +104,12 @@ autoload -Uz add-zsh-hook
     autoload -Uz add-zle-hook-widget
   }
 
-  .znap.prompt.echoti sc    # save cursor position
-  .znap.prompt.echoti civis # invisible cursor
-
+  .znap.prompt.echoti sc
   [[ -o promptcr ]] &&
     print -n $'\r'
   :
   print -nPr - "$PS1"
-
-  .znap.prompt.echoti cnorm  # normal cursor
+  .znap.prompt.echoti cnorm
 
   add-zsh-hook precmd .znap.prompt.precmd
 }
@@ -131,9 +128,6 @@ autoload -Uz add-zsh-hook
   done
   unset _znap__hook_widgets
 
-  .znap.prompt.echoti civis # invisible cursor
-  .znap.prompt.echoti rc    # restore cursor position
-
   return 0
 }
 
@@ -142,9 +136,8 @@ autoload -Uz add-zsh-hook
   add-zle-hook-widget -d line-init $0
   unfunction $0
 
+  PS1='' zle .reset-prompt
   zle .reset-prompt
-  .znap.prompt.echoti cnorm  # normal cursor
-  zle -R
 
   unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.setup
   autoload -Uz .znap.prompt
