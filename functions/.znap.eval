@@ -1,6 +1,7 @@
 #!/bin/zsh
-# run command, then cache & eval output
+# run command, then cache_file & eval output
 # args: ( <repo> | <name> ) <command>
+zmodload -Fa zsh/files b:zf_mkdir
 
 .znap.eval() {
   if (( $# < 2 )); then
@@ -10,28 +11,31 @@
   fi
 
   local -i ret=1
-  local dir=~znap/$1 pwd=$PWD
+  local repo=~znap/$1 pwd=$PWD
   if [[ $1 == */* ]]; then
-    dir=~znap/${${1##*/}%.git}
-    [[ -d $dir ]] ||
+    repo=~znap/${${1##*/}%.git}
+    [[ -d $repo ]] ||
       .znap.clone $1
   fi
   {
-    [[ -d $dir ]] &&
-      cd -q $dir
     shift
     local cmd="$@"
     local line header="#${(q)cmd}"
-    local cache=$dir.zsh
-    [[ -r $cache ]] &&
-      IFS='' read -r line < $cache
+    local cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
+    [[ -d $cache_dir ]] ||
+      zf_mkdir -pm 0700 $cache_dir
+    local cache_file=$cache_dir/${repo:t}.zsh
+    [[ -r $cache_file ]] &&
+      IFS='' read -r line < $cache_file
     if [[ $line != $header ||
-        ( -d $dir && -f $dir/.git/index && $dir/.git/index -nt $cache ) ]]; then
-      print -r "$header" >! $cache
-      cd -q $dir
-      print -r "$(eval $cmd)" >>! $cache
+        ( -d $repo && -f $repo/${GIT_DIR:-.git}/index
+          && $repo/${GIT_DIR:-.git}/index -nt $cache_file ) ]]; then
+      print -r "$header" >! $cache_file
+      [[ -d $repo ]] &&
+        cd -q $repo
+      print -r "$(eval $cmd)" >>! $cache_file
     fi
-    . $cache; ret=$?
+    . $cache_file; ret=$?
   } always {
     [[ -x $pwd ]] &&
       cd -q $pwd

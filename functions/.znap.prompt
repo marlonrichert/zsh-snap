@@ -1,6 +1,7 @@
 #!/bin/zsh
 # instantly init prompt theme from repo
 # args: [ <repo> ] <theme>
+zmodload -Fa zsh/files b:zf_mkdir
 zmodload -F zsh/parameter p:functions
 zmodload -F zsh/terminfo b:echoti p:terminfo
 autoload -Uz add-zsh-hook
@@ -16,12 +17,13 @@ autoload -Uz add-zsh-hook
   local setup=prompt_${theme}_setup
   [[ -v functions[$setup] ]] &&
     return
-  if ! autoload +X -Uz $setup 2>/dev/null; then
+  autoload +X -Uz $setup 2>/dev/null &&
+    return
+
     unfunction $setup
 
     local -aU matches=( ~znap/{$plugin,*$plugin*}(-/) )
     local repo=$matches[1]
-
     if [[ -z $repo ]]; then
       print -u2 "znap prompt: no such theme '$*' in" ~znap
       .znap.help prompt
@@ -29,15 +31,25 @@ autoload -Uz add-zsh-hook
     fi
 
     local file=( $repo/***/$setup(-.) )
+  if autoload +X -Uz $file 2>/dev/null; then
     fpath=( $file:h $fpath[@] )
-    if ! autoload +X -Uz $setup 2>/dev/null; then
+    return
+  fi
+
       unfunction $setup
 
+  local cache_dir=$XDG_CACHE_HOME/zsh-snap/prompt
+  [[ -d $cache_dir ]] ||
+    zf_mkdir -pm 0700 $cache_dir
+  fpath=( $cache_dir $fpath[@] )
+
+  local cache_file=$cache_dir/$setup
+  if [[ ! -f $cache_file || $repo/${GIT_DIR:-.git}/index -nt $cache_file ]]; then
       local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
-      print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! ~znap/$setup
-      fpath=( ~znap $fpath )
+    print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! $cache_file
     fi
-  fi
+
+  autoload +X -Uz $setup
 }
 
 .znap.prompt() {

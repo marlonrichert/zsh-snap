@@ -18,7 +18,7 @@ zmodload -Fa zsh/parameter p:commands
     return 64
   fi
 
-  local -aU files=( ~znap/(prompt_*|)$^@(*_setup|.zsh|)(.zwc|) )
+  local -aU files=( ~znap/$^@ )
   (( $#files > 0 )) && {
     local pwd=$PWD
     cd -q ~znap
