@@ -9,10 +9,11 @@ if zstyle -T :znap: auto-compile; then
   }
 
   source . () {
-    builtin $0 "$@"; local -i ret=$?
+    builtin ${(%):-%N} "$@"; local -i ret=$?
     .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
     return ret
   }
+
   add-zsh-hook preexec ..znap.auto-compile
 fi
 
@@ -42,4 +43,4 @@ fi
   bashcompinit() { : }
 '
 
-unfunction $0
+unfunction ${(%):-%N}
