@@ -31,12 +31,13 @@ zmodload -Fa zsh/files b:zf_rm
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  print -n "${$(eval 'ls -d '$1:t)%/}: "
   .znap.ignore $1 '*.zwc'  # Add `*.zwc` to repo's local ignore list.
-  print $(
-    git -C $1 pull --autostash --rebase --recurse-submodules -j$(ulimit -n) 2>&1
-  )
-  zf_rm -f $1.zsh $1.zsh.zwc
+  if (( $(git -C $1 rev-list --right-only --count @..@{u}) )); then
+    .znap.status $1:t
+    git -C $1 pull -q --autostash --rebase --recurse-submodules -j$(ulimit -n) 2>&1
+    zf_rm -f $1.zsh $1.zsh.zwc
+    .znap.status $1:t
+  fi
 }
 
 .znap.pull "$@"
