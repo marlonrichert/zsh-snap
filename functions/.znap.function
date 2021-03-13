@@ -7,8 +7,8 @@
 
   local body=$@[-1]
   shift -p 1
-  eval "$@ () {
-    unfunction $@
+  eval "$* () {
+    unfunction $*
     $body
     \${(%):-%N} "\$@"
   }"
