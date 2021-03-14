@@ -12,13 +12,10 @@ zmodload -Fa zsh/files b:zf_mkdir
 
   local -i ret=1
   local repo=~znap/$1 pwd=$PWD
-  if [[ $1 == */* ]]; then
-    repo=~znap/${${1##*/}%.git}
-    [[ -d $repo ]] ||
-      .znap.clone $1
-  fi
+  [[ $1 == */* ]] &&
+    repo=~[$1]
+  shift
   {
-    shift
     local cmd="$@"
     local line header="#${(q)cmd}"
     local cache_dir=$XDG_CACHE_HOME/zsh-snap/eval

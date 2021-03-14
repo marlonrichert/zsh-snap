@@ -1,17 +1,16 @@
 #!/bin/zsh
-local repo
 case $1 in
   n)
     () {
       emulate -L zsh; setopt extendedglob
-      repo=~znap/$2
+      local dir=~znap/$2
       if [[ $2 == */* ]]; then
-        repo=~znap/${${2##*/}%.git}
-        [[ -d $repo ]] ||
+        dir=~znap/${${2##*/}%.git}
+        [[ -d $dir ]] ||
           .znap.clone $2
       fi
-      if [[ -d $repo ]]; then
-        reply=( $repo )
+      if [[ -d $dir ]]; then
+        reply=( $dir )
         return 0
       fi
       return 66
@@ -21,8 +20,8 @@ case $1 in
     () {
       emulate -L zsh; setopt extendedglob
       if [[ $2 == ~znap/* ]]; then
-        repo=${${2#~znap/}:h1}
-        reply=( $repo ${#:-~znap/$repo} )
+        local name=${${2#~znap/}:h1}
+        reply=( "$name" ${#:-~znap/$name} )
         return 0
       fi
       return 66

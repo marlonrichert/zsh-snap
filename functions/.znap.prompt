@@ -22,14 +22,6 @@ autoload -Uz add-zsh-hook
 
   unfunction $setup
 
-  local -aU matches=( ~znap/{$plugin,*$plugin*}(-/) )
-  local repo=$matches[1]
-  if [[ -z $repo ]]; then
-    print -u2 "znap prompt: no such theme '$*' in" ~znap
-    .znap.help prompt
-    return 66
-  fi
-
   local file=( $repo/***/$setup(-.) )
   if autoload +X -Uz $file 2>/dev/null; then
     fpath=( $file:h $fpath[@] )
@@ -46,6 +38,10 @@ autoload -Uz add-zsh-hook
   local cache_file=$cache_dir/$setup
   if [[ ! -f $cache_file || $repo/${GIT_DIR:-.git}/index -nt $cache_file ]]; then
     local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
+
+    [[ -n $theme_file ]] ||
+      return
+
     print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! $cache_file
   fi
 
@@ -59,20 +55,14 @@ autoload -Uz add-zsh-hook
     return 64
   fi
 
-  local plugin=$1
-  () {
-    emulate -L zsh; setopt $_znap_opts
-
-    if [[ $plugin == */* ]]; then
-      plugin=${${plugin##*/}%.git}
-      [[ -d ~[$plugin] ]] ||
-        .znap.clone $1
-    fi
-  } "$@"
-
-  local theme=${2:-$plugin}
-  .znap.prompt.setup "$@" ||
-    return
+  local repo=~znap/$1; [[ $1 == */* ]] &&
+    repo=~[$1]
+  local theme=${2:-${repo##*/}}
+  if ! .znap.prompt.setup "$@"; then
+    local -i ret=$?
+    print -u2 'znap prompt: no such theme:' $@
+    return ret
+  fi
 
   autoload -Uz promptinit
   promptinit
@@ -104,7 +94,6 @@ autoload -Uz add-zsh-hook
     autoload -Uz add-zle-hook-widget
   }
 
-  .znap.prompt.echoti sc
   [[ -o promptcr ]] &&
     print -n $'\r'
   :

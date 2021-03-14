@@ -24,12 +24,12 @@ zmodload -Fa zsh/parameter p:commands
     cd -q ~znap
 
     if [[ -v commands[osascript] ]]; then
-      print Moving $(eval "ls -d $files[@]:t") to Trash.
+      print Moving $(eval ls -d $files[@]:t) to Trash.
       local items=( '(POSIX file "'${^files:a}'")' )
       osascript -e \
         'tell application "Finder" to delete every item of {'${(j:, :)items}'}' >/dev/null
     else
-      print Removing $(eval "ls -d $files[@]:t")
+      print Removing $(eval ls -d $files[@]:t)
       zf_rm -frs $files[@]
     fi
   } always {

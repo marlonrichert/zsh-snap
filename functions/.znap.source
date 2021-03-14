@@ -13,15 +13,9 @@ local -i ret=0
 () {
   emulate -L zsh; setopt $_znap_opts
 
-  local plugin=$1
-  if [[ $plugin == */* ]]; then
-    plugin=${${plugin##*/}%.git}
-    [[ -d ~[$plugin] ]] ||
-      .znap.clone $1
-  fi
-
+  local repo=~znap/$1; [[ $1 == */* ]] &&
+    repo=~[$1]
   shift
-  local repo=~[$plugin]
   local -aU files=( $repo ); (( $# > 0 )) &&
     files=( $repo/$^@ )
   local -aU tmp=()

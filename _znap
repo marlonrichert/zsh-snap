@@ -48,16 +48,13 @@ esac
 ret=$(( ret && ? ))
 
 local -aU plugins=( ~znap/*(/) ); plugins=( ${plugins[@]:t} )
-local repo
 case $state in
   dirs)
     _alternative 'directories:directory:_files -/'
     ;;
   files)
-    () {
-      setopt localoptions NO_nomatch
-      repo=~[$words[1]]
-    } $@
+    local repo=~znap/$1; [[ $1 == */* ]] &&
+      repo=~[$1]
     [[ -d $repo ]] &&
       _arguments : "*::file:_files -W $repo"
     ;;
@@ -75,10 +72,8 @@ case $state in
     _alternative "repositories:plugin:($plugins)" "themes:prompt theme:($prompt_themes)"
     ;;
   subthemes)
-    () {
-      setopt localoptions NO_nomatch
-      repo=~[$words[1]]
-    } $@
+    local repo=~znap/$1; [[ $1 == */* ]] &&
+      repo=~[$1]
     if [[ -d $repo ]]; then
       local -aU themes=( $repo/***.zsh-theme(#q.) )
       themes=( ${themes[@]:t:r} )

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# show git status of each repo
+# show one-line Git status for each repo
 # args: [ <repo> ... ]
 
 .znap.status() {
