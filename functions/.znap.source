@@ -15,7 +15,7 @@ local -i ret=0
 
   local plugin=$1
   if [[ $plugin == */* ]]; then
-    plugin=${${plugin##*/}%.git}
+    plugin=${${plugin}%.git}
     [[ -d ~[$plugin] ]] ||
       .znap.clone $1
   fi
