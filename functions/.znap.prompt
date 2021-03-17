@@ -17,35 +17,28 @@ autoload -Uz add-zsh-hook
   local setup=prompt_${theme}_setup
   [[ -v functions[$setup] ]] &&
     return
-  autoload +X -Uz $setup 2>/dev/null &&
+  autoload +X -Uz $setup &>/dev/null &&
     return
 
   unfunction $setup
 
-  local file=( $repo/***/$setup(-.) )
-  if autoload +X -Uz $file 2>/dev/null; then
-    fpath=( $file:h $fpath[@] )
-    return
-  fi
-
-  unfunction $setup
-
-  local cache_dir=$XDG_CACHE_HOME/zsh-snap/prompt
-  [[ -d $cache_dir ]] ||
-    zf_mkdir -pm 0700 $cache_dir
-  fpath=( $cache_dir $fpath[@] )
-
-  local cache_file=$cache_dir/$setup
-  if [[ ! -f $cache_file || $repo/${GIT_DIR:-.git}/index -nt $cache_file ]]; then
-    local -a theme_file=( $repo/***/${~theme:-*}.zsh-theme(-.Y1) )
-
-    [[ -n $theme_file ]] ||
+  local -a file=( $repo/***/$setup(-.Y1) )
+  if [[ -n $file ]]; then
+    if autoload +X -Uz $file &>/dev/null; then
+      fpath=( $file:h $fpath[@] )
       return
-
-    print -r - .znap.source $repo:t ${theme_file[1]#$repo/} >! $cache_file
+    fi
+    unfunction $file
   fi
 
-  autoload +X -Uz $setup
+  file=( $repo/***/*$theme*.zsh-theme(-.Y1) )
+
+  [[ -n $file ]] ||
+    return
+
+  eval "$setup() {
+    source $file
+  }"
 }
 
 .znap.prompt() {
@@ -57,18 +50,21 @@ autoload -Uz add-zsh-hook
 
   local repo=~znap/$1; [[ $1 == */* ]] &&
     repo=~[$1]
-  local theme=${2:-${repo##*/}}
-  if ! .znap.prompt.setup "$@"; then
+  local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%(-prompt|(-zsh|)-theme|.zsh)}}
+  if ! .znap.prompt.setup; then
     local -i ret=$?
     print -u2 'znap prompt: no such theme:' $@
     return ret
   fi
 
+  .znap.prompt.echoti civis
+  .znap.prompt.echoti sc
+  add-zsh-hook precmd .znap.prompt.precmd
+
   autoload -Uz promptinit
   promptinit
   prompt_themes+=( $theme )
 
-  add-zsh-hook precmd .znap.prompt.precmd
   {
     # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
     typeset -gHi _znap__hook_widgets=0
@@ -79,16 +75,18 @@ autoload -Uz add-zsh-hook
     }
 
     setopt prompt{bang,cr,percent,subst} NO_promptsp
-    prompt $theme >/dev/null
+    prompt $theme
 
     local precmd=prompt_${theme}_precmd
-    [[ -n $functions[$precmd] ]] &&
-      $precmd >/dev/null
-    functions[:znap:$precmd]=$functions[$precmd]
-    eval "$precmd() {
-      functions[$precmd]=\$functions[:znap:$precmd]
-      unfunction :znap:$precmd
-    }"
+    if [[ -n $functions[$precmd] ]]; then
+      $precmd
+      functions[:znap:$precmd]=$functions[$precmd]
+      eval "$precmd() {
+        functions[$precmd]=\$functions[:znap:$precmd]
+        unfunction :znap:$precmd
+        $precmd \"\$@\"
+      }"
+    fi
   } always {
     unfunction add-zle-hook-widget
     autoload -Uz add-zle-hook-widget
@@ -99,8 +97,6 @@ autoload -Uz add-zsh-hook
   :
   print -nPr - "$PS1"
   .znap.prompt.echoti cnorm
-
-  add-zsh-hook precmd .znap.prompt.precmd
 }
 
 .znap.prompt.precmd() {
@@ -108,10 +104,11 @@ autoload -Uz add-zsh-hook
   add-zsh-hook -d precmd $0
   unfunction $0
 
-  [[ -v prompt_opts ]] ||
-    setopt promptsp
+  .znap.prompt.echoti civis
+  .znap.prompt.echoti rc
 
   add-zle-hook-widget line-init .znap.prompt.line-init
+
   local -i i; for (( i = 1; i <= _znap__hook_widgets; i++ )); do
     eval :znap:add-zle-hook-widget:$i
   done
@@ -125,8 +122,10 @@ autoload -Uz add-zsh-hook
   add-zle-hook-widget -d line-init $0
   unfunction $0
 
-  PS1='' zle .reset-prompt
-  zle .reset-prompt
+  .znap.prompt.echoti cnorm
+
+  [[ -v prompt_opts ]] ||
+    setopt promptsp
 
   unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.setup
   autoload -Uz .znap.prompt
