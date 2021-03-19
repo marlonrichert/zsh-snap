@@ -1,0 +1,11 @@
+#!/bin/zsh
+emulate -L zsh; setopt $_znap_opts
+
+local server=$1 url=$2
+[[ $url != (*/*/*|*:*|*.git(|/)) ]] &&
+  url=$server$url.git
+local repo=~znap/$url:t:r
+[[ -d $repo ]] &&
+  return 66
+git -C ~znap clone --recurse-submodules -j$(ulimit -n) --depth 1 --shallow-submodules -- $url
+.znap.compile $repo
