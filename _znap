@@ -38,6 +38,8 @@ case $words[1] in
     _arguments : ': :->repos-themes' '*:: :->subthemes' ;;
   pull)
     _arguments : "*:: :->plugins" ;;
+  restart)
+    _arguments : ':file:_files' ;;
   rm)
     _arguments : '*:: :->repos-caches' ;;
   source)
