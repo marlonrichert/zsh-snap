@@ -11,36 +11,6 @@ autoload -Uz add-zsh-hook
     echoti $@
 }
 
-.znap.prompt.setup() {
-  emulate -L zsh; setopt $_znap_opts
-
-  local setup=prompt_${theme}_setup
-  [[ -v functions[$setup] ]] &&
-    return
-  autoload +X -Uz $setup &>/dev/null &&
-    return
-
-  unfunction $setup
-
-  local -a file=( $repo/***/$setup(-.Y1) )
-  if [[ -n $file ]]; then
-    if autoload +X -Uz $file &>/dev/null; then
-      fpath=( $file:h $fpath[@] )
-      return
-    fi
-    unfunction $file
-  fi
-
-  file=( $repo/***/*$theme*.zsh-theme(-.Y1) )
-
-  [[ -n $file ]] ||
-    return
-
-  eval "$setup() {
-    source $file
-  }"
-}
-
 .znap.prompt() {
   if (( $# < 1 )); then
     print -u2 'znap prompt: not enough arguments'
@@ -51,10 +21,9 @@ autoload -Uz add-zsh-hook
   local repo=~znap/$1; [[ $1 == */* ]] &&
     repo=~[$1]
   local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%(-prompt|(-zsh|)-theme|.zsh)}}
-  if ! .znap.prompt.setup; then
-    local -i ret=$?
+  if ! .znap.prompt.load $repo $theme; then
     print -u2 'znap prompt: no such theme:' $@
-    return ret
+    return 66
   fi
 
   .znap.prompt.echoti civis
@@ -127,8 +96,8 @@ autoload -Uz add-zsh-hook
   [[ -v prompt_opts ]] ||
     setopt promptsp
 
-  unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.setup
-  autoload -Uz .znap.prompt
+  unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.load
+  autoload -Uz .znap.prompt .znap.prompt.load
   return 0
 }
 
