@@ -3,10 +3,6 @@ emulate zsh
 typeset -gU PATH path FPATH fpath MANPATH manpath
 () {
   emulate -L zsh
-  typeset -gHa _znap_opts=(
-    extendedglob globstarshort nullglob rcexpandparam NO_shortloops warncreateglobal
-  )
-  setopt $_znap_opts
 
   local basedir=${${(%):-%x}:A:h}
 
@@ -17,6 +13,9 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
     print -u2 "znap: parent dir = ${${(%):-%x}:A:h}"
     return 65
   fi
+
+  . $basedir/.znap.opts.zsh
+  setopt $_znap_opts
 
   local funcdir=$basedir/functions
   fpath=( $funcdir $basedir $fpath )

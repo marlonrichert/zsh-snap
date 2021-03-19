@@ -1,0 +1,35 @@
+#!/bin/zsh
+zmodload -F zsh/parameter p:functions
+
+.znap.prompt.load() {
+  emulate -L zsh; setopt $_znap_opts
+
+  local repo=$1 theme=$2
+  local setup=prompt_${theme}_setup
+
+  [[ -v functions[$setup] ]] &&
+    return
+  autoload +X -Uz $setup &>/dev/null &&
+    return
+  unfunction $setup
+
+  local -a file=( $repo/***/$setup(-.Y1) )
+  if [[ -n $file ]]; then
+    if autoload +X -Uz $file &>/dev/null; then
+      fpath=( $file:h $fpath[@] )
+      return
+    fi
+    unfunction $file
+  fi
+
+  file=( $repo/***/$theme.zsh-theme(-.Y1) )
+
+  [[ -n $file ]] ||
+    return
+
+  eval "$setup() {
+    source $file
+  }"
+}
+
+.znap.prompt.load "$@"
