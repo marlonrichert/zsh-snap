@@ -20,7 +20,8 @@ case $1 in
     () {
       emulate -L zsh; setopt extendedglob
       if [[ $2 == ~znap/* ]]; then
-        local name=${${2#~znap/}:h1}
+        # local name=${${2#~znap/}:h1}  <- Zsh 5.8+
+        local name=${${2#~znap/}%%/*}
         reply=( "$name" ${#:-~znap/$name} )
         return 0
       fi
