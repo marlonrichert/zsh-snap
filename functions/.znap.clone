@@ -1,5 +1,5 @@
 #!/bin/zsh
-# git clone remotes in parallel to plugins dir
+# make shallow git clones in parallel to plugins dir
 # args: ( <user>/<repo> | <url> ) ...
 zmodload -Fa zsh/files b:zf_mkdir
 
