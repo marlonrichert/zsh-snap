@@ -13,23 +13,25 @@ $0() {
   fpath=( $cache_dir $fpath[@] )
 
   local cache_file=$cache_dir/$name
-  [[ -f $cache_file ]] ||
+  if [[ -r $cache_file ]]; then
+    local line
+    IFS='' read -r line < $cache_file
+
+    [[ $line != '#compdef '* ]] &&
+      return 1
+
+    local -a cmds=( ${=line#'#compdef '} )
+    local c; for c in $cmds[@]; do
+      if [[ ${${:-=$c}:A} -nt $cache_file ]]; then
+        eval "$generator" >| $cache_file
+        break
+      fi
+    done
+  else
     eval "$generator" > $cache_file
+  fi
   autoload -Uz $cache_file
 
-  local line
-  IFS='' read -r line < $cache_file
-
-  [[ $line != '#compdef '* ]] &&
-    return 1
-
-  local -a cmds=( ${=line#'#compdef '} )
-  local c; for c in $cmds[@]; do
-    if [[ ${${:-=$c}:A} -nt $cache_file ]]; then
-      eval "$generator" >| $cache_file
-      break
-    fi
-  done
   [[ -v _comp_setup ]] &&
     compdef $name $cmds[@]
 }

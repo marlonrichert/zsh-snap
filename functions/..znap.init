@@ -35,14 +35,16 @@ zstyle -s ':completion:*' completer _ ||
   zstyle ':completion:*' completer _expand _complete _ignored
 
 .znap.function bindkey 'zmodload zsh/complist'
-if [[ ! -v _comp_setup ]]; then
-  .znap.function compdef '..znap.compinit'
-  add-zsh-hook precmd ..znap.compinit
-fi
-.znap.function _bash_complete compgen complete '
-  autoload -Uz bashcompinit
-  bashcompinit
-  bashcompinit() { : }
-'
+typeset -gHa _znap_compdef=()
+compdef() {
+  _znap_compdef+=( "${(j: :)${(@q+)@}}" )
+}
+add-zsh-hook precmd ..znap.compinit
+[[ -v functions[_bash_complete] ]] ||
+  .znap.function _bash_complete compgen complete '
+    autoload -Uz bashcompinit
+    bashcompinit
+    bashcompinit() { : }
+  '
 
 unfunction ${(%):-%N}

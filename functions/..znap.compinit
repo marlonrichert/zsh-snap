@@ -5,8 +5,13 @@ unfunction $0
 
 zmodload zsh/complist
 if [[ ! -v _comp_setup || ! -f $_comp_dumpfile ]]; then
+  unfunction compdef
   autoload -Uz compinit
   compinit -C -d $_comp_dumpfile
 fi
+local args; for args in "$_znap_compdef[@]"; do
+  eval "compdef $args"
+done
+unset _znap_compdef
 
 compinit() { : }
