@@ -64,7 +64,7 @@ autoload -Uz add-zsh-hook
   [[ -o promptcr ]] &&
     print -n $'\r'
   :
-  print -nPr - "$PS1"
+  print -nPr -- "$PS1"
   .znap.prompt.echoti cnorm
 }
 

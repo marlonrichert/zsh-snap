@@ -12,7 +12,7 @@ zmodload -Fa zsh/files b:zf_rm
   {
     local -i ret=1
     local pwd=$PWD
-    cd -q ~znap
+    cd -q -- ~znap
 
     .znap.multi '.znap.pull.task '${(i)^repos}
     ret=$?
@@ -23,7 +23,7 @@ zmodload -Fa zsh/files b:zf_rm
 
   } always {
     [[ -x $pwd ]] &&
-      cd -q $pwd
+      cd -q -- $pwd
   }
   return ret
 }

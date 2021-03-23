@@ -21,7 +21,7 @@ zmodload -Fa zsh/parameter p:commands
   local -aU files=( ~znap/$^@(N) )
   (( $#files > 0 )) && {
     local pwd=$PWD
-    cd -q ~znap
+    cd -q -- ~znap
 
     if [[ -v commands[osascript] ]]; then
       print Moving $(eval ls -d $files[@]:t) to Trash.
@@ -34,7 +34,7 @@ zmodload -Fa zsh/parameter p:commands
     fi
   } always {
     [[ -x $pwd ]] &&
-      cd -q $pwd
+      cd -q -- $pwd
   }
 
   local -aU repos=()
@@ -42,7 +42,7 @@ zmodload -Fa zsh/parameter p:commands
   for f in $@; do
     repos=( "${(M@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" )
     if (( $#repos > 0 )); then
-      print -nPr - "Remove %B$repos%b from $receipts?"
+      print -nPr -- "Remove %B$repos%b from $receipts?"
       read -q "? [yn] " &&
         print -l "${(@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" >! $receipts
       print -l

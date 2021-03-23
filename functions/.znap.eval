@@ -29,13 +29,13 @@ zmodload -Fa zsh/files b:zf_mkdir
           && $repo/${GIT_DIR:-.git}/index -nt $cache_file ) ]]; then
       print -r "$header" >! $cache_file
       [[ -d $repo ]] &&
-        cd -q $repo
+        cd -q -- $repo
       print -r "$(eval $cmd)" >>! $cache_file
     fi
     . $cache_file; ret=$?
   } always {
     [[ -x $pwd ]] &&
-      cd -q $pwd
+      cd -q -- $pwd
   }
   return ret
 }
