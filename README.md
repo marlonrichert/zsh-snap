@@ -1,14 +1,9 @@
 # ⚡️Znap!
 **Znap** is the light-weight Git repo manager & Zsh plugin manager that's easy to grok. While
-tailored to Zsh plugins specifically, Znap can help you manage any number of Git repos, without them
-needing to be plugins.
+tailored to Zsh plugins specifically, Znap can help you manage any number of Git repos, without
+them needing to be plugins.
 
-* [Features](#features)
-* [Requirements](#requirements)
-* [Installation](#installation)
-* [Example `.zshrc` file](#example-zshrc-file)
-* [Author](#author)
-* [License](#license)
+Please see [the included `.zshrc` file](.zshrc) for usage examples.
 
 ## Features
 * 🐥 [Low resource usage](#low-resource-usage)
@@ -23,7 +18,7 @@ needing to be plugins.
 * ⚙️ [Asynchronous compilation](#asynchronous-compilation)
 
 ### Low resource usage
-Only ~18 kilobytes of [source code](#functions). Takes little disk space and little memory.
+Only ~30 kilobytes of [source code](#functions). Takes little disk space and little memory.
 
 ### Zero configuration
 `git clone` the repo [into the right place](#installation), `source` the `.zsh` file, and you're
