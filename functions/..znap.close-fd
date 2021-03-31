@@ -1,6 +1,4 @@
 #!/bin/zsh
-# close file descriptor & remove handler
-# args: <file descriptor number>
 emulate -L zsh; setopt $_znap_opts
 
 [[ $1 == <10-> ]] ||

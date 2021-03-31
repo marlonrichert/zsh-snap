@@ -14,7 +14,7 @@ typeset -gHi _znap_compile_fd
 .znap.compile.next() {
   emulate -L zsh; setopt $_znap_opts
 
-  .znap.close-fd $_znap_compile_fd
+  ..znap.close-fd $_znap_compile_fd
 
   if (( $#_znap_compile_queue == 0 )); then
     add-zsh-hook preexec ${(%):-%N}
