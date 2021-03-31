@@ -10,5 +10,5 @@ local file; for file in $@ {/etc/z,$HOME/.z}shenv(N) \
   print -nP '%F{green}✓%f '
 done
 
-print '\nRestarting Zsh.'
-exec zsh
+print '\nRestarting Zsh.\n'
+zsh -l && exit

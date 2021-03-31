@@ -35,7 +35,7 @@ zmodload -Fa zsh/files b:zf_rm
   local behind
   if behind=$( git -C $1 rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
     print -n -- ${"$( .znap.status $1:t )"%$'\n'}' '
-    if git -C $1 pull -q --autostash --rebase --recurse-submodules -j$(ulimit -n) 2>&1; then
+    if git -C $1 pull -q --autostash --rebase --recurse-submodules -j$(ulimit -n) 1>/dev/null; then
       print -nr -- '-> '
       .znap.status $1:t
     fi

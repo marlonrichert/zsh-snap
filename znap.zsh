@@ -21,19 +21,21 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
   fpath=( $funcdir $basedir $fpath )
   builtin autoload -Uz znap $funcdir/(|.).znap*~*.zwc
 
-  local pluginsdir; zstyle -s :znap: plugins-dir pluginsdir ||
-    pluginsdir=$basedir:h:A
+  local gitdir
+  zstyle -s :znap: repos-dir gitdir ||
+    zstyle -s :znap: plugins-dir gitdir ||
+      gitdir=$basedir:h:A
 
-  if [[ -z $pluginsdir ]]; then
-    print -u2 "znap: Plugins dir is null. Aborting."
+  if [[ -z $gitdir ]]; then
+    print -u2 "znap: Repos dir is null. Aborting."
     return 65
   fi
 
-  if ! [[ -d $pluginsdir ]]; then
+  if ! [[ -d $gitdir ]]; then
     zmodload -F zsh/files b:zf_mkdir
-    zf_mkdir -pm 0700 $pluginsdir
+    zf_mkdir -pm 0700 $gitdir
   fi
-  hash -d znap=$pluginsdir
+  hash -d znap=$gitdir
 
   ..znap.init "$@"
 } "$@"
