@@ -1,5 +1,5 @@
 #!/bin/zsh
-# git pull repos in parallel
+# update repos in parallel
 # args: [ <repo> ... ]
 zmodload -Fa zsh/files b:zf_rm
 

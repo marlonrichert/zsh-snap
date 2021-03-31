@@ -1,6 +1,6 @@
 #
-# WARNING: It's a BAD practice to manually source your .zshrc file. To safely apply changes, do
-# `znap restart`.
+# ⚠️ WARNING: Never manually `source` your .zshrc file! It can have unexpected side effects.
+# Instead, to safely apply changes, use `znap restart`.
 #
 
 # Source Znap at the start of your .zshrc file.
@@ -30,10 +30,10 @@ znap source marlonrichert/zsh-edit
 # `znap source` finds the right file automatically, but you can also specify one explicitly:
 znap source asdf-vm/asdf asdf.sh
 
-# No special syntax is needed for configuring plugins. Just use normal Zsh commands:
+# No special syntax is needed for configuring plugins. Just use normal Zsh statements:
 
 znap source marlonrichert/zsh-hist
-bindkey '^[q' push-line-or-edit
+zle -A push-line{-or-edit,}
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-users/zsh-syntax-highlighting
@@ -75,3 +75,4 @@ fpath+=( ~[asdf-community/asdf-direnv]/completions )
 # Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
 # repo or its contents from any location. In addition, your plugins dir itself can be accessed with
 # `cd ~znap` or `ls ~znap`.
+

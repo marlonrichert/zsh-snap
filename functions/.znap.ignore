@@ -1,5 +1,5 @@
 #!/bin/zsh
-# exclude locally from Git
+# add local exclude patterns to repo
 # args: <repo> <pattern> ...
 emulate -L zsh; setopt $_znap_opts
 

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# print help text
+# print help text for command
 # args: [ <znap command> | <help text> ]
 zmodload -Fa zsh/mapfile p:mapfile
 zmodload -Fa zsh/parameter p:functions
@@ -28,6 +28,7 @@ zmodload -Fa zsh/parameter p:functions
   print -u$fd 'usage: znap <command> [<args>]'
   local MATCH MBEGIN MEND
   print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"
+  print -u$fd '\nFor more info on a command, type `znap help <command>`.\n'
 }
 
 .znap.help "$@"

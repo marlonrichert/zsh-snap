@@ -1,5 +1,5 @@
 #!/bin/zsh
-# instantly init prompt theme from repo
+# instant prompt from repo
 # args: [ <repo> ] <theme>
 zmodload -Fa zsh/files b:zf_mkdir
 zmodload -F zsh/parameter p:functions

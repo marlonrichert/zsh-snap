@@ -1,5 +1,5 @@
 #!/bin/zsh
-# remove outdated binaries from directories
+# remove outdated .zwc binaries from directories
 # args: <dir> ...
 zmodload -Fa zsh/files b:zf_rm
 
