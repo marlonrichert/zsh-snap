@@ -19,10 +19,14 @@ fi
 
 add-zsh-hook zsh_directory_name ..znap.dirname
 
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+[[ -d $XDG_CONFIG_HOME/zsh ]] ||
+  zf_mkdir -pm 0700 $XDG_CONFIG_HOME/zsh
+
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-[[ ! -d $XDG_CACHE_HOME/zsh ]] &&
+[[ -d $XDG_CACHE_HOME/zsh ]] ||
   zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh
-[[ ! -d $XDG_CACHE_HOME/zsh-snap ]] &&
+[[ -d $XDG_CACHE_HOME/zsh-snap ]] ||
   zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh-snap
 
 typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}

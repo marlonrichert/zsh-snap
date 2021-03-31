@@ -1,5 +1,5 @@
 #!/bin/zsh
-# delete repos and/or cache files
+# delete repos
 # args: ( <repo> | <cache name> ) ...
 zmodload -Fa zsh/files b:zf_rm
 zmodload -Fa zsh/parameter p:commands
@@ -38,13 +38,13 @@ zmodload -Fa zsh/parameter p:commands
   }
 
   local -aU repos=()
-  local f receipts=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos
+  local f receipts=$XDG_CONFIG_HOME/zsh/znap-repos
   for f in $@; do
     repos=( "${(M@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" )
     if (( $#repos > 0 )); then
       print -nPr -- "Remove %B$repos%b from $receipts?"
       read -q "? [yn] " &&
-        print -l "${(@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" >! $receipts
+        print -l "${(@)${(f)"$(<$receipts)"}:#**/${f}(|.git(|/))}" >| $receipts
       print -l
     fi
   done

@@ -1,15 +1,12 @@
 #!/bin/zsh
-# make shallow git clones in parallel to plugins dir
+# make shallow git clones in parallel
 # args: ( <user>/<repo> | <url> ) ...
 zmodload -Fa zsh/files b:zf_mkdir
 
 .znap.clone() {
   emulate -L zsh; setopt $_znap_opts
 
-  local dir=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/
-  [[ -d $dir ]] ||
-    zf_mkdir -p $dir
-  local file=$dir/znap-repos
+  local file=$XDG_CONFIG_HOME/zsh/znap-repos
   local -aU lines=(); [[ -f $file ]] &&
     lines=( "${(f)"$(< $file)"}" )
   local -aU repos=( $@ ); (( $#repos )) ||
