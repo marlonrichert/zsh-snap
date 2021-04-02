@@ -9,31 +9,38 @@ if (( $# < 1 )); then
 fi
 
 local -aU src=()
-local -i ret=0
 () {
   emulate -L zsh; setopt $_znap_opts
 
-  local repo=~znap/$1; [[ $1 == */* ]] &&
-    repo=~[$1]
+  local repo=~[$1]
   shift
-  local -aU files=( $repo ); (( $# > 0 )) &&
-    files=( $repo/$^@ )
-  local -aU tmp=()
-  local -a words ext=( '.plugin.zsh' '(|.*).zsh*' '.sh' '' )
-  local f; for f in $files; do
-      if [[ -d $f ]]; then
-        tmp=( $f/(#i){*(${(~j:|:)${=${f:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1) )
-      elif [[ -r $f ]]; then
-        tmp=( $f )
-      else
-        tmp=( $f${^~ext}~*.zwc(-.rY1) )
+  local -a tmp ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
+  local -aU dirs=( $repo/${^~@}(-/) ); (( # )) ||
+    dirs=( $repo )
+  local d; for d in $dirs[@]; do
+    tmp=( $d/(#i){*(${(~j:|:)${=${d:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1))
+    src+=( $tmp[1] )
+  done
+  local -aU names=( $repo/$^@ )
+  names=( ${names:|dirs} )
+  local name; for name in $names[@]; do
+    tmp=( $repo/$name$^~ext(-.rY1) )
+    src+=( $tmp[1] )
+  done
+  local pat e
+  for pat in $names[@]; do
+    for e in $ext[@]; do
+      tmp=( $repo/$~pat*~^*$~e(-.) )
+      if (( $#tmp[@] )); then
+        src+=( $tmp[@] )
+        break
       fi
-      src+=( $tmp[1] )
+    done
   done
 } "$@"
 
+local -i ret=1
 local s; for s in $src; do
-  . $s || ret=$?
+  . $s && ret=0
 done
-
 return ret

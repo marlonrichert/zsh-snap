@@ -20,7 +20,7 @@ znap prompt ohmyzsh/ohmyzsh robbyrussell
 
 
 # Use `znap source` to load only those parts of Oh-My-Zsh or Prezto that you really need:
-znap source ohmyzsh/ohmyzsh plugins/git
+znap source ohmyzsh/ohmyzsh 'lib/(*~(git|theme-and-appearance).zsh)' plugins/git
 znap source sorin-ionescu/prezto modules/{environment,history}
 
 # Use `znap source` to load your plugins:
@@ -34,6 +34,9 @@ znap source asdf-vm/asdf asdf.sh
 
 znap source marlonrichert/zsh-hist
 zle -A push-line{-or-edit,}
+
+ZSH_AUTOSUGGEST_STRATEGY=( history )
+znap source zsh-users/zsh-autosuggestions
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets )
 znap source zsh-users/zsh-syntax-highlighting
@@ -69,8 +72,11 @@ znap compdef _cargo   'rustup completions zsh cargo'
 # easier to add commands to your `$path`...
 path+=( ~[ekalinin/github-markdown-toc] )
 
-# ...or functions to your `$fpath`.
-fpath+=( ~[asdf-community/asdf-direnv]/completions )
+# ...or (completion) functions to your `$fpath`.
+fpath+=(
+  ~[asdf-community/asdf-direnv]/completions
+  ~[zsh-users/zsh-completions]/src
+)
 
 # Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
 # repo or its contents from any location. In addition, your plugins dir itself can be accessed with
