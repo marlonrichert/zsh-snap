@@ -5,7 +5,7 @@ unfunction $0
 
 zmodload zsh/complist
 if [[ ! -v _comp_setup || ! -f $_comp_dumpfile ]]; then
-  unfunction compdef
+  unfunction compdef compinit
   autoload -Uz compinit
   compinit -C -d $_comp_dumpfile
 fi

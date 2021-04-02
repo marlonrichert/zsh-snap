@@ -40,6 +40,7 @@ zstyle -s ':completion:*' completer _ ||
 
 .znap.function bindkey 'zmodload zsh/complist'
 typeset -gHa _znap_compdef=()
+compinit() { : }
 compdef() {
   _znap_compdef+=( "${(j: :)${(@q+)@}}" )
 }
