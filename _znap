@@ -22,8 +22,8 @@ case $words[1] in
     _arguments : '*:: :->dirs' ;;
   clone)
     _arguments : ':remote repository:_urls' ;;
-  close-fd)
-    _arguments : ':file descriptor:_file_descriptors' ;;
+  compdef)
+    _arguments : ':command:_default' ;;
   compile)
     _arguments : '*:: :->files-functions' ;;
   eval)
@@ -32,50 +32,47 @@ case $words[1] in
     _arguments : ':command:_default' '*::function:_functions' ;;
   help)
     _arguments : ":action:(( $actions ))" ;;
+  ignore)
+    _arguments : ':command:_default' ;;
   multi)
     _arguments : ':command:_default' ;;
   prompt)
-    _arguments : ': :->repos-themes' '*:: :->subthemes' ;;
+    _arguments : ': :->repos' '*:: :->themes' ;;
   pull)
-    _arguments : "*:: :->plugins" ;;
+    _arguments : "*:: :->repos" ;;
   restart)
     _arguments : ':file:_files' ;;
   rm)
-    _arguments : '*:: :->repos-caches' ;;
+    _arguments : '*:: :->repos' ;;
   source)
-    _arguments : ": :->plugins" '*:: :->files' ;;
+    _arguments : ": :->repos" '*:: :->files' ;;
   status)
-    _arguments : "*:: :->plugins" ;;
+    _arguments : "*:: :->repos" ;;
 esac
 ret=$(( ret && ? ))
 
-local -aU plugins=( ~znap/*(/) ); plugins=( ${plugins[@]:t} )
+local -aU repos=( ~znap/*(/:t) )
 case $state in
   dirs)
     _alternative 'directories:directory:_files -/'
     ;;
   files)
-    local repo=~znap/$1; [[ $1 == */* ]] &&
-      repo=~[$1]
+    local repo=~[$words[1]]
     [[ -d $repo ]] &&
-      _arguments : "*::file:_files -W $repo"
+      _arguments : "*::file:_files -W $repo -F '*.zwc'"
     ;;
   repos-caches)
     local -aU caches=( ~znap/*.zsh(#q.) )
-    _alternative "repositories:plugin:($plugins)" "cache-files:cache:(${caches[@]:t:r})"
+    _alternative "repositories:repo:($repos)" "cache-files:cache:(${caches[@]:t:r})"
     ;;
   files-functions)
     _alternative "files:file:_files" "functions:function:_functions"
     ;;
-  plugins)
-    _alternative "repositories:plugin:($plugins)"
+  repos)
+    _alternative "repositories:repo:($repos)"
     ;;
-  repos-themes)
-    _alternative "repositories:plugin:($plugins)" "themes:prompt theme:($prompt_themes)"
-    ;;
-  subthemes)
-    local repo=~znap/$1; [[ $1 == */* ]] &&
-      repo=~[$1]
+  themes)
+    local repo=~[$words[1]]
     if [[ -d $repo ]]; then
       local -aU themes=( $repo/***.zsh-theme(#q.) )
       themes=( ${themes[@]:t:r} )
