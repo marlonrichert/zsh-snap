@@ -3,6 +3,7 @@ Setup:
 % autoload -Uz .znap.clone.task
 % git() { print $@[-1] }
 % .znap.compile() { print ${(D)1} }
+% .znap.ignore() { : }
 % hash -d znap=$(mktemp -d)
 %
 ```
