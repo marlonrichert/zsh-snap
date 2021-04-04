@@ -24,13 +24,13 @@ local -aU src=()
   local -aU names=( $repo/$^@ )
   names=( ${names:|dirs} )
   local name; for name in $names[@]; do
-    tmp=( $repo/$name$^~ext(-.rY1) )
+    tmp=( $name$^~ext(-.rY1) )
     src+=( $tmp[1] )
   done
   local pat e
   for pat in $names[@]; do
     for e in $ext[@]; do
-      tmp=( $repo/$~pat*~^*$~e(-.) )
+      tmp=( $~pat~^**$~e(-.) )
       if (( $#tmp[@] )); then
         src+=( $tmp[@] )
         break

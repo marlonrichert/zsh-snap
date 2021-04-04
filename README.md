@@ -21,11 +21,11 @@ Minimum:
 Please see [the included `.zshrc` file](.zshrc) for examples of how to use Znap in your dotfiles.
 
 ### Named dirs
-Znap makes your plugins dir and all its subdirs of available as [named
+Znap makes your Git repos dir and all its subdirs of available as [named
 directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
 ```
-% ls ~znap  # `ls` your plugins dir
-% cd ~znap  # `cd` to your plugins dir
+% ls ~znap  # `ls` your repos dir
+% cd ~znap  # `cd` to your repos dir
 % cd ~[github-markdown-toc] # `cd` to a repo
 % ls ~[asdf]/completions    # `ls` a subdir in a repo
 ```
@@ -69,7 +69,7 @@ your `.zshrc` file. Znap will run these for you as needed.
 ### Automatic cache invalidation
 Znap automatically regenerates your [comp dump
 file](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Use-of-compinit) whenever you
-install or update a plugin or change your `.zshrc` file.
+install or update a repo or change your `.zshrc` file.
 
 Znap also automatically regenerates its internal cache for each command when…
 * …a cache file is older than the Git index of its associated repo.

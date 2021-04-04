@@ -17,9 +17,8 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
   . $basedir/.znap.opts.zsh
   setopt $_znap_opts
 
-  local funcdir=$basedir/functions
-  fpath=( $funcdir $basedir $fpath )
-  builtin autoload -Uz znap $funcdir/(|.).znap*~*.zwc
+  fpath=( $basedir $fpath )
+  builtin autoload -Uz $basedir/functions/{znap,(|.).znap.*~*.zwc}
 
   local gitdir
   zstyle -s :znap: repos-dir gitdir ||
