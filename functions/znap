@@ -4,7 +4,7 @@ zmodload -F zsh/zutil b:zparseopts
 znap() {
   if (( $#@ > 0 )); then
     local -A opts1=()
-    zparseopts -D -A opts1 h -help
+    zparseopts -D -A opts1 - h -help
     if (( $#@ == 0 )); then
       .znap.help
       return
