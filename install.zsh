@@ -46,7 +46,7 @@ emulate zsh
   print "\nUpdating ${(D)zshrc}..."
   [[ -f $zshrc ]] &&
     local contents="$( < $zshrc 2>/dev/null )"
-  local -a lines=( "${(f)contents}" )
+  local -a lines=( "${(f@)contents}" )
   lines=( "${lines[@]:#[[:space:]]#source */znap.zsh*}" )
   lines=( "${lines[@]:#[[:space:]]#zstyle *:znap:* *-dir *}" )
   conf+=( "${(M)lines[@]:#[[:space:]]#zstyle *:znap:* *}" )
