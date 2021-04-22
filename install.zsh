@@ -54,5 +54,7 @@ emulate zsh
   print -lr $conf[@] "$cmd" "$lines[@]" >| $zshrc
 
   print 'Installation complete.\n'
-  zsh -l && exit
+
+  autoload -Uz $repo/functions/.znap.restart
+  .znap.restart
 }

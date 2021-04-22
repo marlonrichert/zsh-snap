@@ -1,14 +1,18 @@
 #!/bin/zsh
 # validate dotfiles & safely restart Zsh
-# args: [<additional dotfile to check>] ...
-print -n 'Validating: '
-local file; for file in $@ {/etc/z,$HOME/.z}shenv(N) \
-    {/etc/z,${ZDOTDIR:-$HOME}/.z}{profile,shrc,login,logout}(N); do
-  print -n " $file "
-  zsh -nf $file ||
-    return
-  print -nP '%F{green}✓%f '
-done
-
-print '\nRestarting Zsh.\n'
-zsh -l && exit
+# args: --
+local zdotdir=$ZDOTDIR
+{
+  unset ZDOTDIR
+  print 'Validating...'
+  if zsh --interactive --multios --zle /dev/null >/dev/null; then
+    print 'Restarting...'
+    exec zsh
+  else
+    local -i ret=$?
+    print -u2 'Restart failed. Please fix the error(s) above.'
+    return ret
+  fi
+} always {
+  ZDOTDIR=$zdotdir
+}
