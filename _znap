@@ -1,21 +1,21 @@
 #compdef znap
 
 [[ -v _ZNAP_ARGS ]] ||
-  znap &> /dev/null
+    znap &> /dev/null
 
-local -a actions=()
+local -a subcommands=()
 local k; for k in ${(ko)_ZNAP_ARGS}; do
-  actions+=( "$k\:'$_ZNAP_ARGS[$k]'" )
+  subcommands+=( "$k\:'$_ZNAP_ARGS[$k]'" )
 done
 
 local ret=1
 local -a context line state state_descr
 local -A opt_args
-_arguments -A '' ":action:(( $actions ))" '*:: :->next'
+_arguments -A '' ":command:(( $subcommands ))" '*:: :->next'
 ret=$?
 
 [[ $state == next ]] ||
-  return ret
+    return ret
 
 case $words[1] in
   clean)
@@ -23,19 +23,19 @@ case $words[1] in
   clone)
     _arguments : ':remote repository:_urls' ;;
   compdef)
-    _arguments : ':command:_default' ;;
+    _arguments : ':default:_default' ;;
   compile)
     _arguments : '*:: :->files-functions' ;;
   eval)
-    _arguments : ': :->repos-caches' ':command:_default' ;;
+    _arguments : ': :->repos-caches' ':default:_default' ;;
   function)
-    _arguments : ':command:_default' '*::function:_functions' ;;
+    _arguments : ':default:_default' '*::function:_functions' ;;
   help)
-    _arguments : ":action:(( $actions ))" ;;
+    _arguments : ":command:(( $subcommands ))" ;;
   ignore)
-    _arguments : ':command:_default' ;;
+    _arguments : ':default:_default' ;;
   multi)
-    _arguments : ':command:_default' ;;
+    _arguments : ':default:_default' ;;
   prompt)
     _arguments : ': :->repos' '*:: :->themes' ;;
   pull)
@@ -51,7 +51,7 @@ case $words[1] in
 esac
 ret=$(( ret && ? ))
 
-local -aU repos=( ~znap/*(/:t) )
+local -aU repos=( ~znap/*(-/:t) )
 case $state in
   dirs)
     _alternative 'directories:directory:_files -/'
@@ -74,7 +74,7 @@ case $state in
   themes)
     local repo=~[$words[1]]
     if [[ -d $repo ]]; then
-      local -aU themes=( $repo/***.zsh-theme(#q.) )
+      local -aU themes=( $repo/***.zsh-theme(-.) )
       themes=( ${themes[@]:t:r} )
       _arguments : "::prompt theme:($themes)"
     fi

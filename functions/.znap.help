@@ -1,11 +1,11 @@
 #!/bin/zsh
 # print help text for command
-# args: [ <znap command> | <help text> ]
+# args: [ <subcommand> ]
 zmodload -Fa zsh/mapfile p:mapfile
 zmodload -Fa zsh/parameter p:functions
 
 .znap.help() {
-  emulate -L zsh; setopt $_znap_opts
+  emulate -LR zsh; setopt $_znap_opts
 
   typeset -gHA _ZNAP_ARGS=()
   local f; for f in ${${(%):-%x}:A:h}/.znap.[^.]##; do
@@ -16,7 +16,7 @@ zmodload -Fa zsh/parameter p:functions
   if (( $# > 0 )); then
     if [[ -v functions[.znap.$1] ]]; then
       local -a funcfile=( ${(f)mapfile[${${(%):-%x}:A:h}/.znap.$1]} )
-      print -l "usage: znap $1 ${funcfile[3]#'# args: '}"
+      print -lP -- "Usage: %F{10}znap%f $1 ${funcfile[3]#'# args: '}"
       local help="${funcfile[2]#'# '}"
       local first=${${=help}[1]}
       print -l "${(C)first} ${help#$first }."
@@ -25,10 +25,15 @@ zmodload -Fa zsh/parameter p:functions
     fd=2
     print -u$fd $@
   fi
-  print -u$fd 'usage: znap <command> [<args>]'
+  print -Pu$fd -- \
+'Usage: %F{10}znap%f <command> [ <arguments> ]
+
+Commands:'
   local MATCH MBEGIN MEND
   print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"
-  print -u$fd '\nFor more info on a command, type `znap help <command>`.\n'
+  print -Pu$fd -- '
+For more info on a command, type `%F{10}znap%f help <command>`.
+'
 }
 
 .znap.help "$@"

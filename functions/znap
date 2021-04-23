@@ -34,7 +34,7 @@ znap() {
         $func $@
       fi
     else
-      print -u2 "znap: '$cmd' is not a znap command"
+      print -u2 "znap: '$cmd' is not a valid command"
       .znap.help
       return $(( sysexits[(i)USAGE] + 63 ))
     fi
