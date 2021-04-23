@@ -15,7 +15,7 @@ autoload -Uz add-zsh-hook
   if (( $# < 1 )); then
     print -u2 'znap prompt: not enough arguments'
     .znap.help prompt
-    return 64
+    return $(( sysexits[(i)USAGE] + 63 ))
   fi
 
   local repo=~znap/$1; [[ $1 == */* ]] &&
@@ -23,7 +23,7 @@ autoload -Uz add-zsh-hook
   local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%(-prompt|(-zsh|)-theme|.zsh)}}
   if ! .znap.prompt.load $repo $theme; then
     print -u2 'znap prompt: no such theme:' $@
-    return 66
+    return $(( sysexits[(i)NOINPUT] + 63 ))
   fi
 
   .znap.prompt.echoti civis

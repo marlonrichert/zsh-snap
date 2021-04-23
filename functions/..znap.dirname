@@ -13,7 +13,7 @@ case $1 in
         reply=( $dir )
         return 0
       fi
-      return 66
+      return 1
     } "$@"
     ;;
   d)
@@ -25,7 +25,7 @@ case $1 in
         reply=( "$name" ${#:-~znap/$name} )
         return 0
       fi
-      return 66
+      return 1
     } "$@"
     ;;
   c)

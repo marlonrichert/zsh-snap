@@ -9,7 +9,7 @@ $0() {
 
   local cache_dir=$XDG_CACHE_HOME/zsh-snap/fpath
   [[ -d $cache_dir ]] ||
-    zf_mkdir -pm 0700 $cache_dir
+      zf_mkdir -pm 0700 $cache_dir
   fpath=( $cache_dir $fpath[@] )
 
   local cache_file=$cache_dir/$name
@@ -18,7 +18,7 @@ $0() {
     IFS='' read -r line < $cache_file
 
     [[ $line != '#compdef '* ]] &&
-      return 1
+        return $(( sysexits[(i)DATAERR] + 63 ))
 
     local -a cmds=( ${=line#'#compdef '} )
     local c; for c in $cmds[@]; do
@@ -33,7 +33,7 @@ $0() {
   autoload -Uz $cache_file
 
   [[ -v _comp_setup ]] &&
-    compdef $name $cmds[@]
+      compdef $name $cmds[@]
 }
 
 $0 "$@"

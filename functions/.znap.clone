@@ -15,24 +15,23 @@ zmodload -Fa zsh/files b:zf_mkdir
   if (( $#repos < 1 )); then
     print -u2 "znap clone: no repositories found in $file"
     .znap.help clone
-    return 78
+    return $(( sysexits[(i)CONFIG] + 63 ))
   fi
 
   local server; zstyle -s :znap:clone: default-server server ||
     server='https://github.com/'
 
-  local -i ret=1
-  .znap.multi ".znap.clone.task $server "$^repos
-  ret=$?
+  {
+    .znap.multi ".znap.clone.task $server "$^repos
+    return
+  } always {
+    lines=( ${lines:#(${repos[@]})} )
+    lines+=( $repos[@] )
+    print -l ${(i)lines} >| $file
 
-  lines=( ${lines:#(${repos[@]})} )
-  lines+=( $repos[@] )
-  print -l ${(i)lines} >| $file
-
-  [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
-    zf_rm -f $_comp_dumpfile
-
-  return ret
+    [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
+      zf_rm -f $_comp_dumpfile
+  }
 }
 
 .znap.clone "$@"

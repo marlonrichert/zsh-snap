@@ -15,11 +15,11 @@ znap() {
     case $cmd in
       cd | ls )
         print -u2 "Try '$cmd ~${${1:+[$1]}:-znap}' instead."
-        return 64
+        return $(( sysexits[(i)USAGE] + 63 ))
         ;;
       path )
         print -u2 "Try '~${${1:+[$1]}:-znap}' instead."
-        return 64
+        return $(( sysexits[(i)USAGE] + 63 ))
         ;;
     esac
 
@@ -34,8 +34,9 @@ znap() {
         $func $@
       fi
     else
-      .znap.help "znap: '$cmd' is not a znap command"
-      return 64
+      print -u2 "znap: '$cmd' is not a znap command"
+      .znap.help
+      return $(( sysexits[(i)USAGE] + 63 ))
     fi
   else
     .znap.help

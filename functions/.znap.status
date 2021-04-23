@@ -9,17 +9,15 @@
     repos=( ~znap/*(/) )
 
   {
-    local -i ret=1
     local pwd=$PWD
     cd -q -- ~znap
 
     .znap.multi '.znap.status.task '${(i)^repos}
-    ret=$?
+    return
   } always {
     [[ -x $pwd ]] &&
       cd -q -- $pwd
   }
-  return ret
 }
 
 .znap.status.task() {

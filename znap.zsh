@@ -4,14 +4,33 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
 () {
   emulate -L zsh
 
+  [[ ${(t)sysexits} != *readonly ]] &&
+      readonly -ga sysexits=(
+          USAGE   # 64
+          DATAERR
+          NOINPUT
+          NOUSER
+          NOHOST
+          UNAVAILABLE
+          SOFTWARE
+          OSERR
+          OSFILE
+          CANTCREAT
+          IOERR
+          TEMPFAIL
+          PROTOCOL
+          NOPERM
+          CONFIG  # 78
+      )
+  
   local basedir=${${(%):-%x}:A:h}
 
   if [[ -z $basedir ]]; then
-    print -u2 "znap: Base dir is null. Aborting."
+    print -u2 "znap: Could not find Znap's repo. Aborting."
     print -u2 "znap: file name = ${(%):-%x}"
     print -u2 "znap: absolute path = ${${(%):-%x}:A}"
     print -u2 "znap: parent dir = ${${(%):-%x}:A:h}"
-    return 65
+    return $(( sysexits[(i)NOINPUT] + 63 ))
   fi
 
   . $basedir/.znap.opts.zsh
@@ -26,8 +45,8 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
       gitdir=$basedir:h:A
 
   if [[ -z $gitdir ]]; then
-    print -u2 "znap: Repos dir is null. Aborting."
-    return 65
+    print -u2 "znap: Could not find repos dir. Aborting."
+    return $(( sysexits[(i)NOINPUT] + 63 ))
   fi
 
   if ! [[ -d $gitdir ]]; then

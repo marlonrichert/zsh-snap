@@ -10,22 +10,17 @@ zmodload -Fa zsh/files b:zf_rm
     repos=( ~znap/*(/) )
 
   {
-    local -i ret=1
     local pwd=$PWD
     cd -q -- ~znap
-
     .znap.multi '.znap.pull.task '${(i)^repos}
-    ret=$?
-    .znap.compile ~znap/*(-/)
-
-    [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
-      zf_rm -f $_comp_dumpfile
-
+    return
   } always {
     [[ -x $pwd ]] &&
-      cd -q -- $pwd
+        cd -q -- $pwd
+    [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
+        zf_rm -f $_comp_dumpfile
+    .znap.compile "$repos[@]"
   }
-  return ret
 }
 
 .znap.pull.task() {

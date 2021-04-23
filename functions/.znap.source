@@ -5,7 +5,7 @@
 if (( $# < 1 )); then
   print -u2 'znap source: not enough arguments'
   .znap.help source
-  return 64
+  return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
 local -aU src=()

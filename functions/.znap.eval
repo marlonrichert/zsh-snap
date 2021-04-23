@@ -7,10 +7,9 @@ zmodload -Fa zsh/files b:zf_mkdir
   if (( $# < 2 )); then
     print -u2 'znap eval: not enough arguments'
     .znap.help eval
-    return 64
+    return $(( sysexits[(i)USAGE] + 63 ))
   fi
 
-  local -i ret=1
   local repo=~znap/$1 pwd=$PWD
   [[ $1 == */* ]] &&
     repo=~[$1]
@@ -32,12 +31,12 @@ zmodload -Fa zsh/files b:zf_mkdir
         cd -q -- $repo
       print -r "$(eval $cmd)" >>! $cache_file
     fi
-    . $cache_file; ret=$?
+    . $cache_file
+    return
   } always {
     [[ -x $pwd ]] &&
       cd -q -- $pwd
   }
-  return ret
 }
 
 .znap.eval "$@"

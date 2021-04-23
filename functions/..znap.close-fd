@@ -2,12 +2,12 @@
 emulate -L zsh; setopt $_znap_opts
 
 [[ $1 == <10-> ]] ||
-  return 64
+    return $(( sysexits[(i)USAGE] + 63 ))
 
 local -i fd=$1
 
 { : <&$fd } 2> /dev/null ||
-  return 75
+    return
 
 zle -F $fd 2> /dev/null
 exec {fd}<&-
