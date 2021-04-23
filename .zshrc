@@ -46,7 +46,7 @@ znap source zsh-users/zsh-syntax-highlighting
 
 # If the first arg is a repo, then the command will run inside it. Plus, whenever you update a
 # repo with `znap pull`, its eval cache gets regenerated automatically.
-znap eval trapd00r/LS_COLORS 'gdircolors -b LS_COLORS'
+znap eval trapd00r/LS_COLORS 'dircolors -b LS_COLORS'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # The cache gets regenerated, too, when the eval command has changed. So, for example, since we
