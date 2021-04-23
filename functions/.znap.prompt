@@ -3,13 +3,7 @@
 # args: [ <repo> ] <theme>
 zmodload -Fa zsh/files b:zf_mkdir
 zmodload -F zsh/parameter p:functions
-zmodload -F zsh/terminfo b:echoti p:terminfo
 autoload -Uz add-zsh-hook
-
-.znap.prompt.echoti() {
-  [[ -v terminfo[$1] ]] &&
-    echoti $@
-}
 
 .znap.prompt() {
   if (( $# < 1 )); then
@@ -18,16 +12,15 @@ autoload -Uz add-zsh-hook
     return $(( sysexits[(i)USAGE] + 63 ))
   fi
 
-  local repo=~znap/$1; [[ $1 == */* ]] &&
-    repo=~[$1]
-  local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%(-prompt|(-zsh|)-theme|.zsh)}}
+  local repo=~znap/$1; [[ $1 == */* ]] && repo=~[$1]
+  local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
   if ! .znap.prompt.load $repo $theme; then
     print -u2 'znap prompt: no such theme:' $@
     return $(( sysexits[(i)NOINPUT] + 63 ))
   fi
 
-  .znap.prompt.echoti civis
-  .znap.prompt.echoti sc
+  ..znap.tput civis
+  ..znap.tput sc
   add-zsh-hook precmd .znap.prompt.precmd
 
   autoload -Uz promptinit
@@ -39,11 +32,11 @@ autoload -Uz add-zsh-hook
     typeset -gHi _znap__hook_widgets=0
     add-zle-hook-widget() {
       eval ":znap:add-zle-hook-widget:$(( ++_znap__hook_widgets ))() {
-        add-zle-hook-widget $*
+        add-zle-hook-widget ${(@q+)@}
       }"
     }
 
-    setopt prompt{bang,cr,percent,subst} NO_promptsp
+    setopt NO_promptsp
     prompt $theme
 
     local precmd=prompt_${theme}_precmd
@@ -65,16 +58,14 @@ autoload -Uz add-zsh-hook
     print -n $'\r'
   :
   print -nPr -- "$PS1"
-  .znap.prompt.echoti cnorm
+  ..znap.tput cnorm
 }
 
 .znap.prompt.precmd() {
-  local 0=${(%):-%N}
-  add-zsh-hook -d precmd $0
-  unfunction $0
+  add-zsh-hook -d precmd ${(%):-%N}
 
-  .znap.prompt.echoti civis
-  .znap.prompt.echoti rc
+  ..znap.tput civis
+  ..znap.tput rc
 
   add-zle-hook-widget line-init .znap.prompt.line-init
 
@@ -87,17 +78,13 @@ autoload -Uz add-zsh-hook
 }
 
 .znap.prompt.line-init() {
-  local 0=${(%):-%N}
-  add-zle-hook-widget -d line-init $0
-  unfunction $0
+  add-zle-hook-widget -d line-init ${(%):-%N}
 
-  .znap.prompt.echoti cnorm
+  ..znap.tput cnorm
 
   [[ -v prompt_opts ]] ||
     setopt promptsp
 
-  unfunction .znap.prompt .znap.prompt.echoti .znap.prompt.load
-  autoload -Uz .znap.prompt .znap.prompt.load
   return 0
 }
 
