@@ -29,9 +29,11 @@ zmodload -Fa zsh/files b:zf_rm
   .znap.ignore $1 '*.zwc'  # Add `*.zwc` to repo's local ignore list.
   local behind
   if behind=$( git -C $1 rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
+    ..znap.tput sc
     print -n -- ${"$( .znap.status $1:t )"%$'\n'}' '
     if git -C $1 pull -q --autostash --rebase --recurse-submodules -j$(ulimit -n) 1>/dev/null; then
-      print -nr -- '-> '
+      ..znap.tput rc
+      ..znap.tput el
       .znap.status $1:t
     fi
     local cache_dir=$XDG_CACHE_HOME/zsh-snap
