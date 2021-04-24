@@ -22,17 +22,24 @@ zmodload -F zsh/parameter p:functions
       fpath=( $file:h $fpath[@] )
       return
     fi
-  
+
     unfunction $file
   fi
 
   file=( $dir/***/*$theme*.{zsh-theme,plugin.zsh,.zsh}(-.Y1) )
 
   [[ -n $file ]] ||
-    return
+      return
 
   eval "$setup() {
-    $( < $file[1] )
+    unsetopt localoptions prompt{bang,cr,percent,sp,subst}
+    PS1='%# '
+    source $file[1]
+    local opt; for opt in bang cr percent sp subst; do
+      [[ -o prompt\$opt ]] &&
+          prompt_opts+=( \$opt )
+    done
+    setopt localoptions
   }"
 }
 

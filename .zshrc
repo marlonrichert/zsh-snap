@@ -14,9 +14,12 @@ znap prompt agnoster/agnoster-zsh-theme
 znap source ohmyzsh/ohmyzsh lib/{git,theme-and-appearance}
 znap prompt ohmyzsh/ohmyzsh robbyrussell
 
-
 # Now your prompt is visible and you can type, even though your .zshrc file hasn't finished loading
 # yet! In the background, the rest of your `.zshrc` file continues to be executed.
+
+# ℹ️ NOTE: For the best experience, the theme you pass to `znap prompt` should implement Zsh's
+# `promptinit` API. For more info, see
+# http://zsh.sourceforge.net/Doc/Release/User-Contributions.html#Writing-Themes
 
 
 # Use `znap source` to load only those parts of Oh-My-Zsh or Prezto that you really need:
