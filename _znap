@@ -33,7 +33,7 @@ case $words[1] in
   help)
     _arguments : ":command:(( $subcommands ))" ;;
   ignore)
-    _arguments : ':default:_default' ;;
+    _arguments : ': :->repos' ':default:_default' ;;
   multi)
     _arguments : ':default:_default' ;;
   prompt)
@@ -41,7 +41,7 @@ case $words[1] in
   pull)
     _arguments : "*:: :->repos" ;;
   restart)
-    _arguments : ':file:_files' ;;
+    false ;;
   rm)
     _arguments : '*:: :->repos' ;;
   source)
