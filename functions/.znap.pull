@@ -26,18 +26,16 @@ zmodload -Fa zsh/files b:zf_rm
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  .znap.ignore $1 '*.zwc'  # Add `*.zwc` to repo's local ignore list.
-  local behind
+  .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  local behind err
   if behind=$( git -C $1 rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
-    ..znap.tput sc
-    print -n -- ${"$( .znap.status $1:t )"%$'\n'}' '
-    if git -C $1 pull -q --autostash --rebase --recurse-submodules -j$(ulimit -n) 1>/dev/null; then
-      ..znap.tput rc
-      ..znap.tput el
-      .znap.status $1:t
-    fi
+    err="$(
+      git -C $1 pull -q --autostash --rebase --recurse-submodules -j$( ulimit -n ) 2>&1 > /dev/null
+    )" ||
+        print "$err"
+    .znap.status $1:t
     local cache_dir=$XDG_CACHE_HOME/zsh-snap
-    zf_rm -f $_comp_dumpfile $cache_dir/eval/${1:t}.zsh $cache_dir/fpath/_$1:t
+    zf_rm -f $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh $_comp_dumpfile
   fi
 }
 
