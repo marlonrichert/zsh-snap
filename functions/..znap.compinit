@@ -4,8 +4,7 @@ add-zsh-hook -d precmd $0
 unfunction $0
 
 zmodload zsh/complist
-unfunction bindkey 2>/dev/null
-if [[ ! -v _comp_setup || ! -f $_comp_dumpfile ]]; then
+if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   unfunction compdef compinit 2>/dev/null
   autoload -Uz compinit
   compinit -C -d $_comp_dumpfile

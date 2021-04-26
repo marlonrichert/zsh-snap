@@ -23,43 +23,35 @@ add-zsh-hook zsh_directory_name ..znap.dirname
 
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 [[ -d $XDG_CONFIG_HOME/zsh ]] ||
-  zf_mkdir -pm 0700 $XDG_CONFIG_HOME/zsh
+    zf_mkdir -pm 0700 $XDG_CONFIG_HOME/zsh
 
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 [[ -d $XDG_CACHE_HOME/zsh ]] ||
-  zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh
+    zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh
 [[ -d $XDG_CACHE_HOME/zsh-snap ]] ||
-  zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh-snap
+    zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh-snap
 
 typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
 [[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:A} -nt $_comp_dumpfile ]] &&
-  zf_rm -f $_comp_dumpfile
+    zf_rm -f $_comp_dumpfile
 
 zstyle -s :completion: cache-path _ ||
-  zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/compcache"
+    zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/compcache"
 zstyle -s ':completion:*' completer _ ||
-  zstyle ':completion:*' completer _expand _complete _ignored
+    zstyle ':completion:*' completer _expand _complete _ignored
 
+.znap.function bindkey 'zmodload zsh/complist'
 typeset -gHa _znap_compdef=()
-bindkey() {
-  local __opts__
-  zparseopts -E -A __opts__ - M
-  if [[ $__opts__[-M] == menuselect ]]; then
-    zmodload zsh/complist
-    unfunction bindkey
-  fi
-  builtin bindkey "$@"
-}
-compinit() { : }
 compdef() {
   _znap_compdef+=( "${(j: :)${(@q+)@}}" )
 }
+compinit() { : }
 add-zsh-hook precmd ..znap.compinit
 [[ -v functions[_bash_complete] ]] ||
-  .znap.function _bash_complete compgen complete '
-    autoload -Uz bashcompinit
-    bashcompinit
-    bashcompinit() { : }
-  '
+    .znap.function _bash_complete compgen complete '
+      autoload -Uz bashcompinit
+      bashcompinit
+      bashcompinit() { : }
+    '
 
 unfunction ${(%):-%N}
