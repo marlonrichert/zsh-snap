@@ -68,11 +68,9 @@ Theme file can be found in repo and wrapper function is created:
 % dir=$(mktemp -d)
 % mkdir -p $dir/foo/baz
 % print TEST > $dir/foo/baz/bar.zsh-theme
-% .znap.prompt.load $dir/foo bar; print $?; type -f prompt_bar_setup
+% .znap.prompt.load $dir/foo bar; print $?; print ${+functions[prompt_bar_setup]}
 0
-prompt_bar_setup () {
-	TEST
-}
+1
 % unfunction prompt_bar_setup
 % fpath=( "$fpath_[@]" )
 %
