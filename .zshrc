@@ -33,10 +33,12 @@ znap source marlonrichert/zsh-edit
 # `znap source` finds the right file automatically, but you can also specify one explicitly:
 znap source asdf-vm/asdf asdf.sh
 
+
 # No special syntax is needed for configuring plugins. Just use normal Zsh statements:
 
 znap source marlonrichert/zsh-hist
-zle -A push-line{-or-edit,}
+bindkey '^[q' push-line-or-edit
+bindkey -r '^Q' '^[Q'
 
 ZSH_AUTOSUGGEST_STRATEGY=( history )
 znap source zsh-users/zsh-autosuggestions
@@ -50,16 +52,17 @@ znap source zsh-users/zsh-syntax-highlighting
 # If the first arg is a repo, then the command will run inside it. Plus, whenever you update a
 # repo with `znap pull`, its eval cache gets regenerated automatically.
 znap eval trapd00r/LS_COLORS 'dircolors -b LS_COLORS'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+znap source marlonrichert/zcolors
+znap eval zcolors "zcolors ${(q)LS_COLORS}"
 
 # The cache gets regenerated, too, when the eval command has changed. So, for example, since we
 # include the full path to `direnv` in the command string, the cache will be regenerated whenever
 # the version of `direnv` changes.
-znap eval asdf-community/asdf-direnv "asdf exec $(asdf which direnv) hook zsh"
+znap eval asdf-community/asdf-direnv "asdf exec $( asdf which direnv ) hook zsh"
 
 # These don't belong to any repo, but the first arg will be used to name the cache file.
 znap eval brew-shellenv 'brew shellenv'
-znap eval pyenv-init ${${:-=pyenv}:A}' init -'
+znap eval pyenv-init ${${:-=pyenv}:A}' init -'  # Absolute path contains version number.
 znap eval pip-completion 'pip completion --zsh'
 znap eval pipx-completion 'register-python-argcomplete pipx'
 znap eval pipenv-completion 'pipenv --completion'
@@ -69,11 +72,17 @@ znap eval pipenv-completion 'pipenv --completion'
 znap compdef _kubectl 'kubectl completion zsh'
 znap compdef _rustup  'rustup completions zsh'
 znap compdef _cargo   'rustup completions zsh cargo'
+# These functions are automatically regenerated when any of the commands for which they complete is
+# newer than the function.
 
 
-# All repos managed by Znap are automatically available as dynamically-named dirs. This makes it
-# easier to add commands to your `$path`...
-path+=( ~[ekalinin/github-markdown-toc] )
+# All repos managed by Znap are automatically available as dynamically-named dirs.
+
+# This makes it easier to add commands to your `$path`...
+path+=(
+  ~[aureliojargas/clitest]
+  ~[ekalinin/github-markdown-toc]
+)
 
 # ...or (completion) functions to your `$fpath`.
 fpath+=(
@@ -81,7 +90,14 @@ fpath+=(
   ~[zsh-users/zsh-completions]/src
 )
 
-# Likewise, you can also do `cd ~[github-markdown-toc]` or `ls ~[asdf]/completions` to access a
-# repo or its contents from any location. In addition, your plugins dir itself can be accessed with
-# `cd ~znap` or `ls ~znap`.
+# Likewise, you can also do
+#   cd ~[github-markdown-toc]
+# or
+#   ls ~[asdf]/completions
+# to access a repo or its contents from any location.
+
+# In addition, your repos dir itself can be accessed with
+#   cd ~znap
+# or
+#   ls ~znap
 
