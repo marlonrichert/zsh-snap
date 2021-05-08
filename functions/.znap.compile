@@ -28,7 +28,7 @@ typeset -gHi _znap_compile_fd
   shift _znap_compile_queue
   exec {_znap_compile_fd}< <(
     local -a sources=( $src ); [[ -d $src ]] &&
-      sources=( $src/***~**.zwc~**/.git(|hub)(|/***)(-.)~**/.DS_Store~**.md(-.) )
+      sources=( $src/**~**.zwc~**/.git(|hub)(|/**)(-.)~**/.DS_Store~**.md(-.) )
     for src in $sources[@]; do
       [[ -w $src:h ]] ||
         return

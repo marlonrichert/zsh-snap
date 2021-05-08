@@ -74,7 +74,7 @@ case $state in
   themes)
     local repo=~[$words[1]]
     if [[ -d $repo ]]; then
-      local -aU themes=( $repo/***.zsh-theme(-.) )
+      local -aU themes=( $repo/**.zsh-theme(-.) )
       themes=( ${themes[@]:t:r} )
       _arguments : "::prompt theme:($themes)"
     fi

@@ -15,7 +15,7 @@ zmodload -F zsh/parameter p:functions
 
   unfunction $setup
 
-  local -a file=( $dir/***/$setup(-.Y1) )
+  local -a file=( $dir/**/$setup(-.Y1) )
   if [[ -n $file ]]; then
 
     if autoload +X -Uz $file &>/dev/null; then
@@ -26,7 +26,7 @@ zmodload -F zsh/parameter p:functions
     unfunction $file
   fi
 
-  file=( $dir/***/*$theme*.{zsh-theme,plugin.zsh,.zsh}(-.Y1) )
+  file=( $dir/**/*$theme*.{zsh-theme,plugin.zsh,.zsh}(-.Y1) )
 
   [[ -n $file ]] ||
       return
