@@ -6,17 +6,13 @@ zmodload -F zsh/parameter p:functions
 autoload -Uz add-zsh-hook
 
 .znap.prompt() {
-  if (( $# < 1 )); then
-    print -u2 'znap prompt: not enough arguments'
-    .znap.help prompt
-    return $(( sysexits[(i)USAGE] + 63 ))
-  fi
-
-  local repo=~znap/$1; [[ $1 == */* ]] && repo=~[$1]
-  local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
-  if ! .znap.prompt.load $repo $theme; then
-    print -u2 'znap prompt: no such theme:' $@
-    return $(( sysexits[(i)NOINPUT] + 63 ))
+  if (( # )); then
+    local repo=~znap/$1; [[ $1 == */* ]] && repo=~[$1]
+    local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
+    if ! .znap.prompt.load $repo $theme; then
+      print -u2 'znap prompt: no such theme:' $@
+      return $(( sysexits[(i)NOINPUT] + 63 ))
+    fi
   fi
 
   ..znap.tput civis
@@ -25,37 +21,39 @@ autoload -Uz add-zsh-hook
 
   autoload -Uz promptinit
   promptinit
-  prompt_themes+=( $theme )
+  setopt NO_promptsp
 
-  {
-    # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
-    typeset -gHi _znap__hook_widgets=0
-    add-zle-hook-widget() {
-      eval ":znap:add-zle-hook-widget:$(( ++_znap__hook_widgets ))() {
-        add-zle-hook-widget ${(@q+)@}
-      }"
+  if [[ -n $theme ]]; then
+    prompt_themes+=( $theme )
+    {
+      # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
+      typeset -gHi _znap__hook_widgets=0
+      add-zle-hook-widget() {
+        eval ":znap:add-zle-hook-widget:$(( ++_znap__hook_widgets ))() {
+          add-zle-hook-widget ${(@q+)@}
+        }"
+      }
+
+      prompt $theme
+
+      local precmd=prompt_${theme}_precmd
+      if [[ -n $functions[$precmd] ]]; then
+        $precmd
+        functions[:znap:$precmd]=$functions[$precmd]
+        eval "$precmd() {
+          functions[$precmd]=\$functions[:znap:$precmd]
+          unfunction :znap:$precmd
+          $precmd \"\$@\"
+        }"
+      fi
+    } always {
+      unfunction add-zle-hook-widget
+      autoload -Uz add-zle-hook-widget
     }
-
-    setopt NO_promptsp
-    prompt $theme
-
-    local precmd=prompt_${theme}_precmd
-    if [[ -n $functions[$precmd] ]]; then
-      $precmd
-      functions[:znap:$precmd]=$functions[$precmd]
-      eval "$precmd() {
-        functions[$precmd]=\$functions[:znap:$precmd]
-        unfunction :znap:$precmd
-        $precmd \"\$@\"
-      }"
-    fi
-  } always {
-    unfunction add-zle-hook-widget
-    autoload -Uz add-zle-hook-widget
-  }
+  fi
 
   [[ -o promptcr ]] &&
-    print -n $'\r'
+      print -n $'\r'
   :
   print -nPr -- "$PS1"
   ..znap.tput cnorm
@@ -83,7 +81,7 @@ autoload -Uz add-zsh-hook
   ..znap.tput cnorm
 
   [[ -v prompt_opts ]] ||
-    setopt promptsp
+      setopt promptsp
 
   return 0
 }

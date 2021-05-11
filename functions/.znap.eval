@@ -12,30 +12,29 @@ zmodload -Fa zsh/files b:zf_mkdir
 
   local repo=~znap/$1 pwd=$PWD
   [[ $1 == */* ]] &&
-    repo=~[$1]
+      repo=~[$1]
   shift
   {
-    local cmd="$@"
-    local line header="#${(q)cmd}"
+    local line header="#${(q)@}"
     local cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
     [[ -d $cache_dir ]] ||
-      zf_mkdir -pm 0700 $cache_dir
+        zf_mkdir -pm 0700 $cache_dir
     local cache_file=$cache_dir/${repo:t}.zsh
     [[ -r $cache_file ]] &&
       IFS='' read -r line < $cache_file
     if [[ $line != $header ||
-        ( -d $repo && -f $repo/${GIT_DIR:-.git}/index
-          && $repo/${GIT_DIR:-.git}/index -nt $cache_file ) ]]; then
+          ( -d $repo && -f $repo/${GIT_DIR:-.git}/index
+              && $repo/${GIT_DIR:-.git}/index -nt $cache_file ) ]]; then
       print -r "$header" >! $cache_file
       [[ -d $repo ]] &&
-        cd -q -- $repo
-      print -r "$(eval $cmd)" >>! $cache_file
+          cd -q -- $repo
+      eval "$@" >>| $cache_file
     fi
     . $cache_file
     return
   } always {
     [[ -x $pwd ]] &&
-      cd -q -- $pwd
+        cd -q -- $pwd
   }
 }
 
