@@ -6,7 +6,7 @@ tailored to Zsh plugins specifically, Znap can help you manage Git repos of any 
 Just copy-paste the following into your command line and press <kbd>Enter</kbd>:
 ```zsh
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
-zsh-snap/install.zsh
+source zsh-snap/install.zsh
 ```
 
 ### Requirements
