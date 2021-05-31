@@ -54,11 +54,6 @@ For more info on a command, type `znap help <command>`.
 
 ```
 
-### Easy re-install
-Znap saves the URL of each remote you clone into
-`${XDG_CONFIG_HOME:-$HOME/.config}/zsh/znap-repos`. Should you ever "accidentally the whole thing",
-just do `znap clone` without arguments to quickly re-clone all repos in parallel.
-
 ### Automatic `compinit` and `bashcompinit`
 You no longer need to call
 [`complist`](http://zsh.sourceforge.net/Doc/Release/Zsh-Modules.html#The-zsh_002fcomplist-Module),
