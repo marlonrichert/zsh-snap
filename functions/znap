@@ -14,11 +14,15 @@ znap() {
 
     case $cmd in
       cd | ls )
-        print -u2 "Try '$cmd ~${${1:+[$1]}:-znap}' instead."
+        print -u2 'znap: try `'"$cmd ~${${1:+[$1]}:-znap}"'` instead'
         return $(( sysexits[(i)USAGE] + 63 ))
         ;;
       path )
-        print -u2 "Try '~${${1:+[$1]}:-znap}' instead."
+        print -u2 'znap: try `path+=( ~'"${${1:+[$1]}:-znap}"' )` instead'
+        return $(( sysexits[(i)USAGE] + 63 ))
+        ;;
+      rm )
+        print -u2 'znap: try `rm ~'"${${1:+[$1]}:-znap}"'` instead'
         return $(( sysexits[(i)USAGE] + 63 ))
         ;;
     esac

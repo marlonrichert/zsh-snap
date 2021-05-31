@@ -42,8 +42,6 @@ case $words[1] in
     _arguments : "*:: :->repos" ;;
   restart)
     false ;;
-  rm)
-    _arguments : '*:: :->repos' ;;
   source)
     _arguments : ": :->repos" '*:: :->files' ;;
   status)
