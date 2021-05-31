@@ -1,31 +1,27 @@
 #!/bin/zsh
 # validate dotfiles & safely restart Zsh
 # args: --
-emulate -LR zsh -o multios
+emulate -LR zsh
 
-local zdotdir=$ZDOTDIR
-{
-  unset ZDOTDIR
-  print 'Validating dotfiles...'
-  local err="$(zsh --interactive --monitor --zle -c '' 2>&1 > /dev/null)"
-  local -i ret=$?
-  if (( ret )) || [[ -n $err ]]; then
-    [[ -n $err ]] &&
-        print -ru2 -- "$err"
-    print -nu2 'Validation failed'
-    (( ret )) &&
-        print -nu2 " with exit status $ret"
-    [[ -n $err ]] &&
-        print -nu2 '. Please fix the error(s) above'
-    print -u2 '.'
-    print -u2 'Restart aborted.'
-    (( ret )) ||
-        (( ret = sysexits[(i)DATAERR] + 63 ))
-    return ret
+print 'Validating dotfiles...'
+
+# These need to be two separate statements or we won't get the right `$?`.
+local msg
+msg="$( env -i zsh -ilc '' 2>&1 > /dev/null )"
+
+local err=$?
+if [[ err -ne 0 || -n $msg ]]; then
+  print -nu2 'Validation failed with '
+  if [[ -z $msg ]]; then
+    print -Pu2 "exit status %F{red}$err%f."
   else
-    print 'Restarting Zsh...'
-    exec zsh
+    print -nPu2 'the following errors:\n%F{red}'
+    print -nru2 -- "$msg"
+    print -P '%f'
   fi
-} always {
-  ZDOTDIR=$zdotdir
-}
+  print -u2 'Restart aborted.'
+  return err
+else
+  print 'Restarting Zsh...'
+  exec zsh
+fi
