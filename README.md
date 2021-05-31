@@ -6,7 +6,7 @@ tailored to Zsh plugins specifically, Znap can help you manage Git repos of any 
 Just copy-paste the following into your command line and press <kbd>Enter</kbd>:
 ```zsh
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
-source zsh-snap/install.zsh
+zsh-snap/install.zsh
 ```
 
 ### Requirements
@@ -19,40 +19,6 @@ Minimum:
 
 ## Features & Usage
 Please see [the included `.zshrc` file](.zshrc) for examples of how to use Znap in your dotfiles.
-
-### Named dirs
-Znap makes your Git repos dir and all its subdirs of available as [named
-directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
-```
-% ls ~znap  # `ls` your repos dir
-% cd ~znap  # `cd` to your repos dir
-% cd ~[github-markdown-toc] # `cd` to a repo
-% ls ~[asdf]/completions    # `ls` a subdir in a repo
-```
-
-### `znap` command
-Type `znap` without arguments for help on command-line usage:
-```
-usage: znap <command> [<args>]
-  clean    remove outdated .zwc binaries from directories
-  clone    make shallow git clones in parallel
-  compdef  add output of command as completion function
-  compile  compile asynchronously
-  eval     eval (cached) output of command
-  function create lazily loaded functions
-  help     print help text for command
-  ignore   add local exclude patterns to repo
-  multi    run tasks in parallel
-  prompt   instant prompt from repo
-  pull     update repos in parallel
-  restart  validate dotfiles & safely restart Zsh
-  rm       delete repos
-  source   source plugin or repo submodules & scripts
-  status   show one-line git status for each repo
-
-For more info on a command, type `znap help <command>`.
-
-```
 
 ### Automatic `compinit` and `bashcompinit`
 You no longer need to call
@@ -80,9 +46,45 @@ Line Editor is idle. This way, your shell will start up even faster next time!
 Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
 you want to exclude specific files only, you can do so by passing them as absolute-path patterns to
 the `auto-compile-ignore` setting. For example:
-`zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'`.
+```zsh
+zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'
+```
 
 In any case, you can compile sources manually at any time with `znap compile`.
+
+### Named dirs
+Znap makes your Git repos dir and all its subdirs of available as [named
+directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
+```
+% ls ~znap  # `ls` your repos dir
+% cd ~znap  # `cd` to your repos dir
+% cd ~[github-markdown-toc] # `cd` to a repo
+% ls ~[asdf]/completions    # `ls` a subdir in a repo
+% rm ~[git-fuzzy]           # remove a repo
+```
+
+### `znap` command
+```
+Usage: znap <command> [ <arguments> ]
+
+Commands:
+  clean    remove outdated .zwc binaries from directories
+  clone    make shallow git clones in parallel
+  compdef  add output of command as completion function
+  compile  compile asynchronously
+  eval     eval (cached) output of command
+  function create lazily loaded functions
+  help     print help text for command
+  ignore   add local exclude patterns to repo
+  multi    run tasks in parallel
+  prompt   instant prompt from repo
+  pull     update repos in parallel
+  restart  validate dotfiles & safely restart Zsh
+  source   source plugin or repo submodules & scripts
+  status   show one-line git status for each repo
+
+For more info on a command, type `znap help <command>`.
+```
 
 ## Author
 © 2020 [Marlon Richert](https://github.com/marlonrichert)
