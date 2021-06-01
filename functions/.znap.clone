@@ -17,7 +17,7 @@ zmodload -Fa zsh/files b:zf_mkdir
 
   local server; zstyle -s :znap:clone: default-server server ||
     server='https://github.com/'
-  .znap.multi ".znap.clone.task $server "$^repos
+  .znap.multi ".znap.clone.task $server "$^@
 }
 
 .znap.clone "$@"
