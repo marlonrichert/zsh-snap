@@ -12,7 +12,7 @@ if zstyle -T :znap: auto-compile; then
   source . () {
     builtin ${(%):-%N} "$@"
     local -i ret=$?
-    .znap.compile "$1:A" ${(M@)funcstack[@]:#*/*}
+    .znap.compile "$1:a" ${(M@)funcstack[@]:#*/*}
     return ret
   }
 
@@ -32,7 +32,7 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
     zf_mkdir -pm 0700 $XDG_CACHE_HOME/zsh-snap
 
 typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
-[[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:A} -nt $_comp_dumpfile ]] &&
+[[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:a} -nt $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
 
 zstyle -s :completion: cache-path _ ||

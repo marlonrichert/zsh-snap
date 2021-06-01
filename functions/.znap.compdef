@@ -22,7 +22,7 @@ $0() {
 
     local -a cmds=( ${=line#'#compdef '} )
     local c; for c in $cmds[@]; do
-      if [[ ${${:-=$c}:A} -nt $cache_file ]]; then
+      if [[ ${${:-=$c}:a} -nt $cache_file ]]; then
         eval "$generator" >| $cache_file
         break
       fi

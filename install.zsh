@@ -13,17 +13,14 @@ emulate zsh
     unhash -d znap 2>/dev/null
 
     local -a conf=()
-    local dir repo=${${(%):-%x}:A:h}
+    local dir repo=${${(%):-%x}:a:h}
 
     while [[ -z $dir ]]; do
       print 'Where do you (want to) keep your repos and/or plugins?'
       dir=${(D)repo:h}
       vared -p "> %F{12}" dir
 
-      [[ -z $dir ]] &&
-          break
-
-      dir=${${(e)~dir}:A}
+      dir=${${(e)~dir}:a}
       if [[ ! -e $dir ]]; then
         if read -q ${(%):-"?%fNo such dir %F{12}${(D)dir}%f. Create? [yn] "}; then
           zf_mkdir -pm 0700 - $dir ||
@@ -49,7 +46,7 @@ emulate zsh
     fi
 
     local cmd="source ${(D)repo}/znap.zsh"
-    local zshrc=${${:-${ZDOTDIR:-$HOME}/.zshrc}:A}
+    local zshrc=${${:-${ZDOTDIR:-$HOME}/.zshrc}:a}
 
     print -P "\nUpdating %F{12}${(D)zshrc}%f..."
 

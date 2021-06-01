@@ -22,14 +22,14 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
           NOPERM
           CONFIG  # 78
       )
-  
-  local basedir=${${(%):-%x}:A:h}
+
+  local basedir=${${(%):-%x}:a:h}
 
   if [[ -z $basedir ]]; then
     print -u2 "znap: Could not find Znap's repo. Aborting."
     print -u2 "znap: file name = ${(%):-%x}"
-    print -u2 "znap: absolute path = ${${(%):-%x}:A}"
-    print -u2 "znap: parent dir = ${${(%):-%x}:A:h}"
+    print -u2 "znap: absolute path = ${${(%):-%x}:a}"
+    print -u2 "znap: parent dir = ${${(%):-%x}:a:h}"
     return $(( sysexits[(i)NOINPUT] + 63 ))
   fi
 
@@ -41,8 +41,8 @@ typeset -gU PATH path FPATH fpath MANPATH manpath
 
   local gitdir
   zstyle -s :znap: repos-dir gitdir ||
-    zstyle -s :znap: plugins-dir gitdir ||
-      gitdir=$basedir:h:A
+      zstyle -s :znap: plugins-dir gitdir ||
+          gitdir=$basedir:a:h
 
   if [[ -z $gitdir ]]; then
     print -u2 "znap: Could not find repos dir. Aborting."
