@@ -34,20 +34,10 @@ znap prompt
 # Use ~[dynamically-named dirs] to add repos to your $path or $fpath.
 # Znap will download them automatically.
 #
-
-# Add commands to your $path...
-path=(
-    ~[aureliojargas/clitest]
-    ~[bigH/git-fuzzy]/bin
-    ~[ekalinin/github-markdown-toc]
-    $path
-)
-
-# ...and completions or other functions to your $fpath:
-fpath=(
+fpath+=(
+    ~[asdf-vm/asdf]/completions
     ~[asdf-community/asdf-direnv]/completions
     ~[zsh-users/zsh-completions]/src
-    $fpath
 )
 
 

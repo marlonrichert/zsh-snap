@@ -1,6 +1,7 @@
 #!/bin/zsh
 emulate zsh
 typeset -gU PATH path FPATH fpath MANPATH manpath
+path=( ~/.local/bin $path[@] )
 () {
   emulate -L zsh
 

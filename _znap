@@ -34,6 +34,8 @@ case $words[1] in
     _arguments : ":command:(( $subcommands ))" ;;
   ignore)
     _arguments : ': :->repos' ':default:_default' ;;
+  install)
+    _arguments : ':remote repository:_urls' ;;
   multi)
     _arguments : ':default:_default' ;;
   prompt)
@@ -45,6 +47,8 @@ case $words[1] in
   source)
     _arguments : ": :->repos" '*:: :->files' ;;
   status)
+    _arguments : "*:: :->repos" ;;
+  uninstall)
     _arguments : "*:: :->repos" ;;
 esac
 ret=$(( ret && ? ))

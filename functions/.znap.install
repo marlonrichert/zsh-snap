@@ -1,0 +1,30 @@
+#!/bin/zsh
+# symlink executables from repos to ~/.local/bin
+# args: <repo> ...
+emulate -L zsh; setopt $_znap_opts
+zmodload -F zsh/files b:zf_ln
+
+if (( $# < 1 )); then
+  print -u2 'znap install: not enough arguments'
+  .znap.help install
+  return $(( sysexits[(i)USAGE] + 63 ))
+fi
+
+local -i ret=0
+
+.znap.clone $@ ||
+    ret=$?
+
+local exe link repo
+for repo in $@; do
+  repo=~[$repo]
+  for exe in $repo/{,bin/}*(-*); do
+    link=~/.local/bin/$exe:t
+    if zf_ln -fns $exe $link; then
+      print -Pr -- "%F{14}$link%f -> %F{10}${exe}%f"
+    else
+      (( ret = sysexits[(i)CANTCREAT] + 63 ))
+    fi
+  done
+done
+return ret

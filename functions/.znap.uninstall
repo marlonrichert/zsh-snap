@@ -1,0 +1,27 @@
+#!/bin/zsh
+# remove repos & symlinked executables
+# args: <repo> ...
+emulate -L zsh; setopt $_znap_opts
+zmodload -F zsh/files b:zf_rm
+
+if (( $# < 1 )); then
+  print -u2 'znap uninstall: not enough arguments'
+  .znap.help uninstall
+  return $(( sysexits[(i)USAGE] + 63 ))
+fi
+
+local -a exe
+local -i ret=0
+local repo
+for repo in ~znap/${^@:t}; do
+  if [[ -d $repo ]]; then
+    exe=( $repo/{,bin/}*(-*:t) )
+    zf_rm -frs ~/.local/bin/$^exe $repo ||
+        ret=1
+    print -P %F{12}${repo:t}%f uninstalled.
+  else
+    print -Pu2 %F{12}${repo:t} %F{1}not found.%f
+    (( ret = sysexits[(i)NOINPUT] + 63 ))
+  fi
+done
+return ret

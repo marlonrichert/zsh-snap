@@ -26,11 +26,11 @@ zmodload -Fa zsh/parameter p:functions
     print -u$fd $@
   fi
   print -Pu$fd -- \
-'Usage: %F{10}znap%f <command> [ <arguments> ]
+'Usage: %F{10}znap%f <command> [ <argument> ... ]
 
 Commands:'
   local MATCH MBEGIN MEND
-  print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:8:)MATCH} $_ZNAP_ARGS[$MATCH]}"
+  print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:9:)MATCH} $_ZNAP_ARGS[$MATCH]}"
   print -Pu$fd -- '
 For more info on a command, type `%F{10}znap%f help <command>`.
 '

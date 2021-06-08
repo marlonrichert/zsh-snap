@@ -20,12 +20,33 @@ Minimum:
 ## Features & Usage
 Please see [the included `.zshrc` file](.zshrc) for examples of how to use Znap in your dotfiles.
 
+### Install executables
+Download repos simultaneously & symlink their executables to `~/.local/bin`:
+```zsh
+znap install aureliojargas/clitest bigH/git-fuzzy ekalinin/github-markdown-toc
+```
+To remove repos & symlinks, use `znap uninstall`:
+```zsh
+znap uninstall clitest git-fuzzy github-markdown-toc
+```
+
 ### Automatic `compinit` and `bashcompinit`
 You no longer need to call
 [`complist`](http://zsh.sourceforge.net/Doc/Release/Zsh-Modules.html#The-zsh_002fcomplist-Module),
 [`compinit` or
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
 your `.zshrc` file. Znap will run these for you as needed.
+
+### Named dirs
+Znap makes your Git repos dir and all its subdirs of available as [named
+directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
+```
+% ls ~znap  # `ls` your repos dir
+% cd ~znap  # `cd` to your repos dir
+% cd ~[github-markdown-toc] # `cd` to a repo
+% ls ~[asdf]/completions    # `ls` a subdir in a repo
+% rm ~[git-fuzzy]           # remove a repo
+```
 
 ### Automatic cache invalidation
 Znap automatically regenerates your [comp dump
@@ -52,38 +73,30 @@ zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' 
 
 In any case, you can compile sources manually at any time with `znap compile`.
 
-### Named dirs
-Znap makes your Git repos dir and all its subdirs of available as [named
-directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
-```
-% ls ~znap  # `ls` your repos dir
-% cd ~znap  # `cd` to your repos dir
-% cd ~[github-markdown-toc] # `cd` to a repo
-% ls ~[asdf]/completions    # `ls` a subdir in a repo
-% rm ~[git-fuzzy]           # remove a repo
-```
-
 ### `znap` command
 ```
-Usage: znap <command> [ <arguments> ]
+Usage: znap <command> [ <argument> ... ]
 
 Commands:
-  clean    remove outdated .zwc binaries from directories
-  clone    make shallow git clones in parallel
-  compdef  add output of command as completion function
-  compile  compile asynchronously
-  eval     eval (cached) output of command
-  function create lazily loaded functions
-  help     print help text for command
-  ignore   add local exclude patterns to repo
-  multi    run tasks in parallel
-  prompt   instant prompt from repo
-  pull     update repos in parallel
-  restart  validate dotfiles & safely restart Zsh
-  source   source plugin or repo submodules & scripts
-  status   show one-line git status for each repo
+  clean     remove outdated .zwc binaries from directories
+  clone     make shallow git clones in parallel
+  compdef   add output of command as completion function
+  compile   compile asynchronously
+  eval      eval (cached) output of command
+  function  create lazily loaded functions
+  help      print help text for command
+  ignore    add local exclude patterns to repo
+  install   symlink executables from repos to ~/.local/bin
+  multi     run tasks in parallel
+  prompt    instant prompt from repo
+  pull      update repos in parallel
+  restart   validate dotfiles & safely restart Zsh
+  source    source plugin or repo submodules & scripts
+  status    show one-line git status for each repo
+  uninstall remove repo and symlinked executables
 
 For more info on a command, type `znap help <command>`.
+
 ```
 
 ## Author
