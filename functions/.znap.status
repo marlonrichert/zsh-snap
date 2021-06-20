@@ -23,8 +23,8 @@
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  git -C $1 fetch --recurse-submodules -j$(ulimit -n) &>/dev/null ||
-    return  # Bail out if this is not a Git repo.
+  git -C $1 fetch -j$(ulimit -n) --recurse-submodules --tags &>/dev/null ||
+      return  # Bail out if this is not a Git repo.
 
   local log="$(git -C $1 log -n1 --decorate --oneline)"
   local rev

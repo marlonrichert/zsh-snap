@@ -3,7 +3,8 @@
 # args: [ <repo> ] <theme>
 zmodload -Fa zsh/files b:zf_mkdir
 zmodload -F zsh/parameter p:functions
-autoload -Uz add-zsh-hook
+zmodload -Fa zsh/zleparameter p:widgets
+autoload -Uz add-zsh-hook promptinit
 
 .znap.prompt() {
   if (( # )); then
@@ -19,37 +20,24 @@ autoload -Uz add-zsh-hook
   ..znap.tput sc
   add-zsh-hook precmd .znap.prompt.precmd
 
-  autoload -Uz promptinit
   promptinit
+  if [[ -n $theme ]]; then
+    prompt_themes+=( $theme )
+    prompt $theme
+    ..znap.tput sc
 
-  {
-    if [[ -n $theme ]]; then
-      prompt_themes+=( $theme )
-        # Prevent `zsh-syntax-highlighting` from sending us into an infinite loop.
-        typeset -gHi _znap__hook_widgets=0
-        add-zle-hook-widget() {
-          eval ":znap:add-zle-hook-widget:$(( ++_znap__hook_widgets ))() {
-            add-zle-hook-widget ${(@q+)@}
-          }"
-        }
+    local precmd=prompt_${theme}_precmd
+    if [[ -n $functions[$precmd] ]]; then
+      $precmd
 
-        prompt $theme
-
-        local precmd=prompt_${theme}_precmd
-        if [[ -n $functions[$precmd] ]]; then
-          $precmd
-          functions[:znap:$precmd]=$functions[$precmd]
-          eval "$precmd() {
-            functions[$precmd]=\$functions[:znap:$precmd]
-            unfunction :znap:$precmd
-            $precmd \"\$@\"
-          }"
-        fi
+      # Ensure $precmd doesn't get called twice before the first prompt.
+      functions[:znap:$precmd]=$functions[$precmd]
+      eval "$precmd() {
+        functions[$precmd]=\$functions[:znap:$precmd]
+        unfunction :znap:$precmd
+      }"
     fi
-  } always {
-    unfunction add-zle-hook-widget 2> /dev/null
-    autoload -Uz add-zle-hook-widget
-  }
+  fi
 
   setopt NO_promptsp
   [[ -o promptcr ]] &&
@@ -65,12 +53,17 @@ autoload -Uz add-zsh-hook
   ..znap.tput civis
   ..znap.tput rc
 
-  add-zle-hook-widget line-init .znap.prompt.line-init
+  # Clean up any mess that syntax highlighting might have made, to prevent an infinite loop.
+  if zstyle -L zle-hook types > /dev/null; then
+    local hook
+    for hook in isearch-{exit,update} line-{pre-redraw,init,finish} history-line-set keymap-select
+    do
+      [[ $widgets[zle-$hook] == user:_zsh_highlight_widget_orig-s<->.<->-r<->-zle-$hook ]] &&
+          zle -N zle-$hook azhw:zle-$hook
+    done
+  fi
 
-  local -i i; for (( i = 1; i <= _znap__hook_widgets; i++ )); do
-    eval :znap:add-zle-hook-widget:$i
-  done
-  unset _znap__hook_widgets
+  add-zle-hook-widget line-init .znap.prompt.line-init
 
   return 0
 }
