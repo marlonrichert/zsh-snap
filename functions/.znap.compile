@@ -2,46 +2,50 @@
 # compile asynchronously
 # args: [ ( <dir> | <file> ) ... ]
 zmodload -F zsh/files b:zf_rm
-autoload -Uz add-zsh-hook
+autoload -Uz add-zle-hook-widget
+
 typeset -gHa _znap_compile_queue=()
-typeset -gHi _znap_compile_fd
 
 .znap.compile() {
   _znap_compile_queue+=( ${@:-$PWD} )
-  add-zsh-hook preexec .znap.compile.next
+  add-zle-hook-widget line-pre-redraw .znap.compile.next
 }
 
 .znap.compile.next() {
   emulate -L zsh; setopt $_znap_opts
 
-  ..znap.close-fd $_znap_compile_fd
+  if [[ $1 == <-> ]]; then
+    # Always unhook & close the last fd. Don't care what happened.
+    zle -F $1 2> /dev/null
+    exec {1}<&-
+  fi
 
   if (( $#_znap_compile_queue == 0 )); then
-    add-zsh-hook preexec ${(%):-%N}
+    add-zle-hook-widget -d line-pre-redraw .znap.compile.next
     return 0
   fi
 
   (( KEYS_QUEUED_COUNT + PENDING > 0 )) &&
-    return 0
+      return 0
 
-  local src=$_znap_compile_queue[1]
+  local fd src=$_znap_compile_queue[1]
   shift _znap_compile_queue
-  exec {_znap_compile_fd}< <(
+  exec {fd}< <(
     local -a sources=( $src ); [[ -d $src ]] &&
-      sources=( $src/**~**.zwc~**/.git(|hub)(|/**)(-.)~**/.DS_Store~**.md(-.) )
+        sources=( $src/**~**.zwc~**/.git(|hub)(|/**)(-.)~**/.DS_Store~**.md(-.) )
     for src in $sources[@]; do
       [[ -w $src:h ]] ||
-        return
+          return
 
       local bin=$src.zwc
 
       if [[ $bin -ot $src ]]; then
         zf_rm -f $bin 2>/dev/null ||
-          return
+            return
       fi
 
       [[ -r $src ]] ||
-        return
+          return
 
       local line
       IFS='' read -r line < $src
@@ -51,10 +55,10 @@ typeset -gHi _znap_compile_fd
       fi
 
       [[ -e $bin ]] ||
-        zcompile -Uz $src 2>/dev/null
+          zcompile -Uz $src 2>/dev/null
     done
   )
-  zle -F $_znap_compile_fd .znap.compile.next
+  zle -F $fd .znap.compile.next
 
   return 0
 }
