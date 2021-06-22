@@ -50,10 +50,8 @@ path=( ~/.local/bin $path[@] )
     return $(( sysexits[(i)NOINPUT] + 63 ))
   fi
 
-  if ! [[ -d $gitdir ]]; then
-    zmodload -F zsh/files b:zf_mkdir
-    zf_mkdir -pm 0700 $gitdir
-  fi
+  [[ -d $gitdir ]] ||
+      zf_mkdir -pm 0700 $gitdir
   hash -d znap=$gitdir
 
   ..znap.init "$@"
