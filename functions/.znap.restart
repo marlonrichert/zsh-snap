@@ -1,7 +1,6 @@
 #!/bin/zsh
 # validate dotfiles & safely restart Zsh
 # args: --
-emulate -LR zsh
 
 print 'Validating dotfiles...'
 
