@@ -6,8 +6,8 @@ zmodload -Fa zsh/files b:zf_rm
 .znap.pull() {
   emulate -L zsh; setopt $_znap_opts
 
-  local -a repos=( ~znap/$^@(#q/) ); (( $#repos > 0 )) ||
-    repos=( ~znap/*(/) )
+  local -a repos=( ~znap/$^@(D-/) ); (( $#repos > 0 )) ||
+    repos=( ~znap/*(D-/) )
 
   {
     local pwd=$PWD
