@@ -43,8 +43,8 @@
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'
 
-  print -r ${$(eval "ls -d $1:t")%/} $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} \
-    $ahead_behind $changes
+  print -r ${$(eval "ls -d $1:t")%[/@]} $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} \
+      $ahead_behind $changes
 }
 
 .znap.status "$@"
