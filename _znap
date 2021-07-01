@@ -18,69 +18,85 @@ ret=$?
     return ret
 
 case $words[1] in
-  clean)
-    _arguments : '*:: :->dirs' ;;
-  clone)
-    _arguments : ':remote repository:_urls' ;;
-  compdef)
-    _arguments : ':default:_default' ;;
-  compile)
-    _arguments : '*:: :->files-functions' ;;
-  eval)
-    _arguments : ': :->repos-caches' ':default:_default' ;;
-  function)
-    _arguments : ':default:_default' '*::function:_functions' ;;
-  help)
-    _arguments : ":command:(( $subcommands ))" ;;
-  ignore)
-    _arguments : ': :->repos' ':default:_default' ;;
-  install)
-    _arguments : ':remote repository:_urls' ;;
-  multi)
-    _arguments : ':default:_default' ;;
-  prompt)
-    _arguments : ': :->repos' '*:: :->themes' ;;
-  pull)
-    _arguments : "*:: :->repos" ;;
-  restart)
-    false ;;
-  source)
-    _arguments : ": :->repos" '*:: :->files' ;;
-  status)
-    _arguments : "*:: :->repos" ;;
-  uninstall)
-    _arguments : "*:: :->repos" ;;
+  ( clean )
+    _arguments : '*:: :->dirs'
+  ;;
+  ( clone )
+    _arguments : ':remote repository:_urls'
+  ;;
+  ( compdef )
+    _arguments : ':default:_default'
+  ;;
+  ( compile )
+    _arguments : '*:: :->files-functions'
+  ;;
+  ( eval )
+    _arguments : ': :->repos-caches' ':default:_default'
+  ;;
+  ( function )
+    _arguments : ':default:_default' '*::function:_functions'
+  ;;
+  ( help )
+    _arguments : ":command:(( $subcommands ))"
+  ;;
+  ( ignore )
+    _arguments : ': :->repos' ':default:_default'
+  ;;
+  ( install )
+    _arguments : ':remote repository:_urls'
+  ;;
+  ( multi )
+    _arguments : ':default:_default'
+  ;;
+  ( prompt )
+    _arguments : ': :->repos' '*:: :->themes'
+  ;;
+  ( pull )
+    _arguments : "*:: :->repos"
+  ;;
+  ( restart )
+    false
+  ;;
+  ( source )
+    _arguments : ": :->repos" '*:: :->files'
+  ;;
+  ( status )
+    _arguments : "*:: :->repos"
+  ;;
+  ( uninstall )
+    _arguments : "*:: :->repos"
+  ;;
 esac
 ret=$(( ret && ? ))
 
-local -aU repos=( ~znap/*(-/:t) )
+local -aU repos=( ~znap/*(D-/:t) )
 case $state in
-  dirs)
+  ( dirs )
     _alternative 'directories:directory:_files -/'
-    ;;
-  files)
+  ;;
+  ( files )
     local repo=~[$words[1]]
     [[ -d $repo ]] &&
       _arguments : "*::file:_files -W $repo -F '*.zwc'"
-    ;;
-  repos-caches)
-    local -aU caches=( ~znap/*.zsh(#q.) )
+  ;;
+  ( repos-caches )
+    local -aU caches=( ${XDG_CACHE_HOME:-$HOME/.cache}/zsh-snap/eval/*.zsh(D-.) )
     _alternative "repositories:repo:($repos)" "cache-files:cache:(${caches[@]:t:r})"
-    ;;
-  files-functions)
+  ;;
+  ( files-functions )
     _alternative "files:file:_files" "functions:function:_functions"
-    ;;
-  repos)
+  ;;
+  ( repos )
     _alternative "repositories:repo:($repos)"
-    ;;
-  themes)
+  ;;
+  ( themes )
     local repo=~[$words[1]]
     if [[ -d $repo ]]; then
       local -aU themes=( $repo/**.zsh-theme(-.) )
       themes=( ${themes[@]:t:r} )
       _arguments : "::prompt theme:($themes)"
     fi
-    ;;
+  ;;
 esac
 
 return $(( ret && ? ))
