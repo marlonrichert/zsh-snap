@@ -26,6 +26,7 @@ zf_mkdir -pm 0700 $bindir
     for exe in $repo/{,bin/}*(-*); do
       link=~/.local/bin/$exe:t
       if zf_ln -fns $exe $link; then
+        hash $exe:t=$link
         print -Pr -- "%F{14}$link%f -> %F{10}${exe}%f"
       else
         (( ret = sysexits[(i)CANTCREAT] + 63 ))
