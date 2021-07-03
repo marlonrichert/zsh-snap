@@ -23,11 +23,12 @@
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  git -C $1 fetch -j$(ulimit -n) --recurse-submodules --tags &>/dev/null ||
-      return  # Bail out if this is not a Git repo.
+  cd -q $1
 
-  local log="$(git -C $1 log -n1 --decorate --oneline)"
-  local rev
+  git fetch -t -j$(ulimit -n) --recurse-submodules &>/dev/null ||
+      return
+
+  local rev log="$( git log -n1 --decorate --oneline )"
   if [[ $log ==  *'tag: '* ]]; then
     local -a chunks=( ${(s.tag: .)log} )
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
@@ -35,15 +36,16 @@
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
-  local -aU lines=( "${(f)$(git -C $1 status -sb)}" )
   local MATCH MBEGIN MEND
+  local -aU lines=( "${(f)$( git status -sb )}" )
   local -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
   changes=( ${(@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
   local ahead_behind=${${(M)lines[1]% \[*\]}# }
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'
 
-  print -r ${$(eval "ls -d $1:t")%[/@]} $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} \
+  cd -q ..
+  print -r ${$( eval "ls -d $1:t" )%[/@]} $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} \
       $ahead_behind $changes
 }
 
