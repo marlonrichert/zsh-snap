@@ -1,4 +1,6 @@
 #!/bin/zsh
+autoload -Uz add-zsh-hook
+
 local 0=${(%):-%N}
 add-zsh-hook -d precmd $0
 unfunction $0
