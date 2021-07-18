@@ -2,6 +2,8 @@
 **Znap** is the light-weight Git repo manager & Zsh plugin manager that's easy to grok. While
 tailored to Zsh plugins specifically, Znap can help you manage Git repos of any kind.
 
+> Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert).
+
 ## Installation
 Just copy-paste the following into your command line and press <kbd>Enter</kbd>:
 ```zsh
