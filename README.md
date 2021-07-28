@@ -2,7 +2,7 @@
 **Znap** is the light-weight Git repo manager & Zsh plugin manager that's easy to grok. While
 tailored to Zsh plugins specifically, Znap can help you manage Git repos of any kind.
 
-> Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert).
+> Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert)
 
 ## Installation
 Just copy-paste the following into your command line and press <kbd>Enter</kbd>:
@@ -12,12 +12,8 @@ source zsh-snap/install.zsh
 ```
 
 ### Requirements
-Recommended:
-* Tested to work with **Zsh 5.7** or newer.
-
-Minimum:
-* Should theoretically work with Zsh 5.3, but I'm unable to test that. Definitely won't work with
-  anything older.
+* Recommended: **Zsh 5.7.1 or newer**
+* Minimum: Zsh 5.4.2
 
 ## Features & Usage
 Please see [the included `.zshrc` file](.zshrc) for examples of how to use Znap in your dotfiles.
@@ -40,14 +36,12 @@ You no longer need to call
 your `.zshrc` file. Znap will run these for you as needed.
 
 ### Named dirs
-Znap makes your Git repos dir and all its subdirs of available as [named
+Znap makes your repos dir and all of its subdirs available as [named
 directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
-```
-% ls ~znap  # `ls` your repos dir
-% cd ~znap  # `cd` to your repos dir
+```zsh
+% cd ~znap                  # `cd` to your repos dir
 % cd ~[github-markdown-toc] # `cd` to a repo
 % ls ~[asdf]/completions    # `ls` a subdir in a repo
-% rm ~[git-fuzzy]           # remove a repo
 ```
 
 ### Automatic cache invalidation
@@ -58,9 +52,9 @@ install or update a repo or change your `.zshrc` file.
 Znap also automatically regenerates its internal cache for each command when…
 * …a cache file is older than the Git index of its associated repo.
 * …the last argument of the `znap eval` statements that produced it has changed. So, if the last
-  argument `znap eval` contains a variable, then its cached output will be regenerated whenever the
-  variable changes. See the [example `.zshrc` file](.zshrc) for a practical use of this.
-* …the cache file is missing. You can delete them manually from `$XDG_CACHE_HOME/zsh-snap`.
+  argument to `znap eval` contains a variable, then its cached output will be regenerated whenever
+  the variable changes. See the [example `.zshrc` file](.zshrc) for a practical use of this.
+* …the cache file is missing. You can delete them manually from `$XDG_CACHE_HOME/zsh-snap/eval`.
 
 ### Asynchronous compilation
 While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
@@ -102,8 +96,7 @@ For more info on a command, type `znap help <command>`.
 ```
 
 ## Author
-© 2020 [Marlon Richert](https://github.com/marlonrichert)
+© 2020-2021 [Marlon Richert](https://github.com/marlonrichert)
 
 ## License
-This project is licensed under the MIT License. See the
-[LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

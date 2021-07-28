@@ -2,25 +2,28 @@ name: test
 
 on:
   push:
-    branches:
-      - main
   pull_request:
   workflow_dispatch:
 
 jobs:
-  run-tests:
+  test-macos:
     runs-on: macos-latest
-
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Check out clitest
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           repository: 'aureliojargas/clitest'
           path: bin
-
-      - name: Run tests
-        run: PATH=$GITHUB_WORKSPACE/bin/:$PATH ./run-tests.zsh
+      - run: PATH=$GITHUB_WORKSPACE/bin/:$PATH ./run-tests.zsh
+        shell: zsh {0}
+  test-ubuntu:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: 'aureliojargas/clitest'
+          path: bin
+      - run: sudo apt install zsh
+      - run: PATH=$GITHUB_WORKSPACE/bin/:$PATH ./run-tests.zsh
         shell: zsh {0}
