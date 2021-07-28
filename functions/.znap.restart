@@ -6,9 +6,10 @@ print 'Validating dotfiles...'
 
 # These need to be two separate statements or we won't get the right `$?`.
 local msg
-msg="$( exec -c zsh -fc "HOME=$HOME TERM=$TERM SHELL==zsh exec zsh -ilc exit" 2>&1 > /dev/null )"
+msg="$( exec zsh -ilc exit 2>&1 > /dev/null )"
 
 local err=$?
+
 if [[ err -ne 0 || -n $msg ]]; then
   print -nu2 'Validation failed with '
   if [[ -z $msg ]]; then
@@ -22,5 +23,5 @@ if [[ err -ne 0 || -n $msg ]]; then
   return err
 else
   print 'Restarting Zsh...'
-  exec -c zsh -fc "HOME=$HOME TERM=$TERM SHELL==zsh exec zsh -l"
+  exec zsh -l
 fi
