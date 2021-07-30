@@ -1,6 +1,7 @@
 #!/bin/zsh
 # show one-line git status for each repo
 # args: [ <repo> ... ]
+autoload +X -Uz is-at-least
 
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts
@@ -25,7 +26,9 @@
 
   cd -q $1
 
-  git fetch -t -j$(ulimit -n) --recurse-submodules &>/dev/null ||
+  is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
+      local jopt=-j$( ulimit -n )
+  git fetch -t $jopt --recurse-submodules &>/dev/null ||
       return
 
   local rev log="$( git log -n1 --decorate --oneline )"

@@ -1,7 +1,7 @@
 Setup:
 ```zsh
 % autoload -Uz .znap.clone.task
-% git() { print $@[-1] }
+% git() { if [[ $1 == --version ]]; then print 2.8.0; else print $@[-1]; fi }
 % .znap.compile() { print ${(D)1} }
 % .znap.ignore() { : }
 % hash -d znap=$(mktemp -d)

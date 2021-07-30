@@ -1,7 +1,8 @@
 #!/bin/zsh
 # update repos in parallel
 # args: [ <repo> ... ]
-zmodload -Fa zsh/files b:zf_rm
+zmodload -F zsh/files b:zf_rm
+autoload +X -Uz is-at-least
 
 .znap.pull() {
   emulate -L zsh; setopt $_znap_opts
@@ -31,7 +32,9 @@ zmodload -Fa zsh/files b:zf_rm
 
   local behind msg
   if behind=$( git rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
-    msg="$( git pull -q -r -j$( ulimit -n ) --autostash --recurse-submodules 2>&1 > /dev/null )"
+    is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
+        local jopt=-j$( ulimit -n )
+    msg="$( git pull -q -r $jopt --autostash --recurse-submodules 2>&1 > /dev/null )"
     local err=$?
     .znap.status $1:t
     (( err )) &&

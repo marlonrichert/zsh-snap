@@ -1,5 +1,6 @@
 #!/bin/zsh
 emulate -L zsh; setopt $_znap_opts
+autoload -Uz is-at-least
 
 local server=$1
 local url=$2; [[ $url != (*/*/*|*:*|*.git(|/)) ]] &&
@@ -9,7 +10,9 @@ local repo=~znap/$url:t:r
 [[ -d $repo ]] &&
     return 1
 
-git -C ~znap clone --depth 1 -j$(ulimit -n) --recurse-submodules --shallow-submodules -- $url &&
+is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
+    local jopt=-j$( ulimit -n )
+git -C ~znap clone --depth 1 $jopt --recurse-submodules --shallow-submodules -- $url &&
     {
       .znap.ignore $repo:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
       .znap.compile $repo
