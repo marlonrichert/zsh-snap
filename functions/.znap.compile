@@ -1,66 +1,41 @@
 #!/bin/zsh
-# compile zsh source code asynchronously
+# compile zsh scripts and functions
 # args: [ ( <dir> | <file> ) ... ]
 zmodload -F zsh/files b:zf_rm
-autoload -Uz add-zle-hook-widget
 
-typeset -gHa _znap_compile_queue=()
+local src bin line
+local -aU files dirs
+if (( $# )); then
+  files=( $^@(N-.) ) dirs=( $^@(N-/) )
+  files=( $^dirs/*~**.(md|zwc)~**/.git(|hub)(|/**)~**/.DS_Store(-.) )
+else
+  files=( ${(@vu)functions_source} )
+fi
 
-.znap.compile() {
-  _znap_compile_queue+=( ${@:-$PWD} )
-  add-zle-hook-widget line-pre-redraw .znap.compile.next
-}
+while (( ${#files} )); do
+  src=$files[1]
+  shift files
 
-.znap.compile.next() {
-  emulate -L zsh; setopt $_znap_opts
-
-  if [[ $1 == <-> ]]; then
-    # Always unhook & close the last fd. Don't care what happened.
-    zle -F $1 2> /dev/null
-    exec {1}<&-
+  if ! [[ -w $src:h ]]; then
+    print -Pru2 -- "$src:h %F{red}not writable%f"
+    files=( ${files:#${src:h}/[^/]##} )
+    continue
   fi
 
-  if (( $#_znap_compile_queue == 0 )); then
-    add-zle-hook-widget -d line-pre-redraw .znap.compile.next
-    return 0
+  bin=$src.zwc
+
+  if [[ $bin -ot $src ]]; then
+    zf_rm -f -- $bin ||
+        continue
   fi
 
-  (( KEYS_QUEUED_COUNT + PENDING > 0 )) &&
-      return 0
+  if ! [[ -r $src ]]; then
+    print -Pru2 -- "$src %F{red}not readable%f"
+    continue
+  fi
 
-  local fd src=$_znap_compile_queue[1]
-  shift _znap_compile_queue
-  exec {fd}< <(
-    local -a sources=( $src ); [[ -d $src ]] &&
-        sources=( $src/**~**.zwc~**/.git(|hub)(|/**)(-.)~**/.DS_Store~**.md(-.) )
-    for src in $sources[@]; do
-      [[ -w $src:h ]] ||
-          return
-
-      local bin=$src.zwc
-
-      if [[ $bin -ot $src ]]; then
-        zf_rm -f $bin 2>/dev/null ||
-            return
-      fi
-
-      [[ -r $src ]] ||
-          return
-
-      local line
-      IFS='' read -r line < $src
-      if [[ $line != \#* ]]; then
-        zf_rm -f $bin 2>/dev/null
-        return
-      fi
-
-      [[ -e $bin ]] ||
-          zcompile -Uz $src 2>/dev/null
-    done
-  )
-  zle -F $fd .znap.compile.next
-
-  return 0
-}
-
-.znap.compile "$@"
+  if ! [[ -e $bin ]]; then
+    zcompile -Uz -- $src &&
+        print -Pr -- "$src -> %F{green}$bin:t%f"
+  fi
+done

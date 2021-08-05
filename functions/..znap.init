@@ -1,22 +1,20 @@
 #!/bin/zsh
 zmodload -Fa zsh/files b:zf_mkdir b:zf_rm
-zmodload -Fa zsh/zutil b:zparseopts
 autoload -Uz add-zsh-hook
 
 if zstyle -T :znap: auto-compile; then
   () {
     setopt localoptions NO_warncreateglobal
-    zmodload -Fa zsh/parameter p:funcstack
-  }
+    zmodload -F zsh/parameter p:funcstack
+    zmodload -F zsh/zselect b:zselect
 
-  source . () {
-    builtin ${(%):-%N} "$@"
-    local -i ret=$?
-    .znap.compile "$1:a" ${(M@)funcstack[@]:#*/*}
-    return ret
+    local fd
+    exec {fd}< <(
+      zselect -t 100
+      print
+    )
+    zle -F "$fd" ..znap.auto-compile
   }
-
-  add-zsh-hook preexec ..znap.auto-compile
 fi
 
 add-zsh-hook zsh_directory_name ..znap.dirname

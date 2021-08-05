@@ -1,16 +1,15 @@
 #!/bin/zsh
-emulate -L zsh; setopt $_znap_opts
+emulate -L zsh
+zmodload -F zsh/parameter p:functions_source
+setopt $_znap_opts
 autoload -Uz add-zsh-hook
 
-local 0=${(%):-%N}
-add-zsh-hook -d preexec $0
-unfunction $0
+local fd=$1
+zle -F $fd 2> /dev/null
+exec {fd}<&-
 
-local -a exclude=()
-zstyle -a :znap: auto-compile-ignore exclude
-local -a include=(
-  $_comp_dumpfile
-  $fpath[@]
-  ${ZDOTDIR:-$HOME}/.z(log(in|out)|profile|sh(env|rc))(-^/)
-)
-.znap.compile ${include:#(${(~j:|:)~exclude})}
+(
+  local -aU exclude include=( ${(@vu)functions_source} )
+  zstyle -a :znap: auto-compile-ignore exclude
+  .znap.compile ${include:#(${(~j:|:)~exclude})} &> /dev/null
+) &|
