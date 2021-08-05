@@ -1,25 +1,63 @@
 # ⚡️Znap!
-**Znap** is the light-weight Git repo manager & Zsh plugin manager that's easy to grok. While
-tailored to Zsh plugins specifically, Znap can help you manage Git repos of any kind.
+**Znap** is the light-weight Git repo manager for Zsh that's easy to grok. While tailored to
+managing Zsh plugins and dotfiles specifically, Znap also makes it easier to work with multiple Git
+repos in general.
 
 > Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert)
 
+## Quick Start
+Using Znap to manage your plugins can be as simple as putting this in your `.zshrc` file:
+```zsh
+# Download Znap, if it's not there yet.
+[[ -f ~/Git/zsh-snap/znap.zsh ]] ||
+    git clone https://github.com/marlonrichert/zsh-snap.git ~/Git/zsh-snap
+
+source ~/Git/zsh-snap/znap.zsh  # Start Znap
+
+# `znap prompt` reduces your shell's startup time to just 15-40 ms!
+znap prompt sindresorhus/pure
+
+# `znap source` automatically downloads and installs your plugins.
+znap source marlonrichert/zsh-autocomplete
+znap source zsh-users/zsh-autosuggestions
+znap source zsh-users/zsh-syntax-highlighting
+
+# `znap eval` caches any kind of command output for you.
+znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
+```
+
+To check for updates in all your (plugin) repos simultaneously, type
+```zsh
+znap status
+```
+
+To install updates (again, in parallel), type
+```zsh
+znap pull
+```
+
+## Requirements
+Recommended:
+* Zsh 5.7.1 or newer
+* Git 2.8.0 or newer
+Minimum:
+* Zsh 5.4.2
+
 ## Installation
-Just copy-paste the following into your command line and press <kbd>Enter</kbd>:
+To use Znap to manage your existing (plugin) repos, just copy-paste the following into your command
+line and press <kbd>Enter</kbd>:
 ```zsh
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
 source zsh-snap/install.zsh
 ```
 
-### Requirements
-* Recommended: **Zsh 5.7.1 or newer**
-* Minimum: Zsh 5.4.2
-
 ## Features & Usage
-Please see [the included `.zshrc` file](.zshrc) for examples of how to use Znap in your dotfiles.
+For more examples of how to use Znap in your dotfiles, please see [the included `.zshrc`
+file](.zshrc). For more info on command-line usage, see the [section below](#znap-command-syntax).
 
-### Install executables
-Download repos simultaneously & symlink their executables to `~/.local/bin`:
+### Easily install new executables
+Znap can download multiple repos in parallel, then automatically find and install their
+executables, with just one command:
 ```zsh
 znap install aureliojargas/clitest bigH/git-fuzzy ekalinin/github-markdown-toc
 ```
@@ -35,13 +73,15 @@ You no longer need to call
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
 your `.zshrc` file. Znap will run these for you as needed.
 
-### Named dirs
-Znap makes your repos dir and all of its subdirs available as [named
-directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
+### Asynchronous compilation
+While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+Line Editor is idle. This way, your shell will start up even faster next time!
+
+Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
+you want to exclude specific files only, you can do so by passing them as absolute-path patterns to
+the `auto-compile-ignore` setting. For example:
 ```zsh
-% cd ~znap                  # `cd` to your repos dir
-% cd ~[github-markdown-toc] # `cd` to a repo
-% ls ~[asdf]/completions    # `ls` a subdir in a repo
+zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'
 ```
 
 ### Automatic cache invalidation
@@ -56,20 +96,20 @@ Znap also automatically regenerates its internal cache for each command when…
   the variable changes. See the [example `.zshrc` file](.zshrc) for a practical use of this.
 * …the cache file is missing. You can delete them manually from `$XDG_CACHE_HOME/zsh-snap/eval`.
 
-### Asynchronous compilation
-While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
-Line Editor is idle. This way, your shell will start up even faster next time!
-
-Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
-you want to exclude specific files only, you can do so by passing them as absolute-path patterns to
-the `auto-compile-ignore` setting. For example:
-```zsh
-zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'
-```
-
 In any case, you can compile sources manually at any time with `znap compile`.
 
-### `znap` command
+### Named dirs
+Znap makes your repos dir and all of its subdirs available as [named
+directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
+```zsh
+% cd ~znap                  # `cd` to your repos dir
+% cd ~[github-markdown-toc] # `cd` to a repo
+% ls ~[asdf]/completions    # `ls` a subdir in a repo
+```
+
+## `znap` Command Syntax
+The following is a summary of all `znap` commands available. For more info on a command, type
+`znap help <command>`. Tab-completion on the command is available, too.
 ```
 Usage: znap <command> [ <argument> ... ]
 
