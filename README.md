@@ -26,12 +26,7 @@ znap source zsh-users/zsh-syntax-highlighting
 znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
 ```
 
-To check for updates in all your (plugin) repos simultaneously, type
-```zsh
-znap status
-```
-
-To install updates (again, in parallel), type
+To update all of your plugins/repos simultaneously, type
 ```zsh
 znap pull
 ```
@@ -108,8 +103,7 @@ directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expa
 ```
 
 ## `znap` Command Syntax
-The following is a summary of all `znap` commands available. For more info on a command, type
-`znap help <command>`. Tab-completion on the command is available, too.
+The following is a summary of all `znap` commands available, which you can get on the command line by typing just `znap`. Tab completion is available, too.
 ```
 Usage: znap <command> [ <argument> ... ]
 
