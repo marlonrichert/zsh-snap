@@ -20,7 +20,6 @@ autoload +X -Uz is-at-least
         cd -q -- $pwd
     [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
         zf_rm -f $_comp_dumpfile
-    .znap.compile "$repos[@]"
   }
 }
 

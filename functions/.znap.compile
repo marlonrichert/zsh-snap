@@ -7,7 +7,7 @@ local src bin line
 local -aU files dirs
 if (( $# )); then
   files=( $^@(N-.) ) dirs=( $^@(N-/) )
-  files=( $^dirs/*~**.(md|zwc)~**/.git(|hub)(|/**)~**/.DS_Store(-.) )
+  files+=( $^dirs/*~~*/.*/*~*.zwc(D-.) )
 else
   files=( ${(@vu)functions_source} )
 fi
@@ -35,7 +35,10 @@ while (( ${#files} )); do
   fi
 
   if ! [[ -e $bin ]]; then
-    zcompile -Uz -- $src &&
-        print -Pr -- "$src -> %F{green}$bin:t%f"
+    if zcompile -Uz -- $src; then
+      print -Pr -- "$src -> %F{green}$bin:t%f"
+    else
+      zf_rm -f -- $bin
+    fi
   fi
 done
