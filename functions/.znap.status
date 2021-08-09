@@ -24,6 +24,8 @@ autoload +X -Uz is-at-least
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
 
+  print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
+
   cd -q $1
 
   is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
@@ -48,8 +50,7 @@ autoload +X -Uz is-at-least
       ahead_behind=$'\e[32m✓\e[39m'
 
   cd -q ..
-  print -r ${$( eval "ls -d $1:t" )%[/@]} $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} \
-      $ahead_behind $changes
+  print -r -- $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} $ahead_behind $changes
 }
 
 .znap.status "$@"

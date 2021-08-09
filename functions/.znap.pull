@@ -14,6 +14,7 @@ autoload +X -Uz is-at-least
     local pwd=$PWD
     cd -q -- ~znap
     .znap.multi '.znap.pull.task '${(i)^repos}
+    print '\r'${(r:COLUMNS:):-Done.}
     return
   } always {
     [[ -x $pwd ]] &&
@@ -34,10 +35,13 @@ autoload +X -Uz is-at-least
   git fetch -t $jopt --recurse-submodules &>/dev/null ||
       return
 
+  print -n .
+
   local behind msg
   if behind=$( git rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
     msg="$( git pull -q -r $jopt --autostash --recurse-submodules 2>&1 > /dev/null )"
     local err=$?
+    print '\r'
     .znap.status $1:t
     (( err )) &&
         print $msg
