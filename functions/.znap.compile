@@ -25,8 +25,10 @@ while (( ${#files} )); do
   bin=$src.zwc
 
   if [[ $bin -ot $src ]]; then
-    zf_rm -f -- $bin ||
-        continue
+    if ! zf_rm -f -- $bin; then
+      print -Pru2 -- "$bin %F{red}not writable%f"
+      continue
+    fi
   fi
 
   if ! [[ -r $src ]]; then

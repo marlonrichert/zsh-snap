@@ -7,46 +7,40 @@ autoload +X -Uz is-at-least
 .znap.pull() {
   emulate -L zsh; setopt $_znap_opts
 
-  local -a repos=( ~znap/$^@(D-/) ); (( $#repos > 0 )) ||
-    repos=( ~znap/*(D-/) )
+  local -a repos=( ~znap/$^@(D-/) )
+  (( ${#repos} )) ||
+      repos=( ~znap/*(D-/) )
 
-  {
-    local pwd=$PWD
-    cd -q -- ~znap
-    .znap.multi '.znap.pull.task '${(i)^repos}
-    print '\r'${(r:COLUMNS:):-Done.}
-    return
-  } always {
-    [[ -x $pwd ]] &&
-        cd -q -- $pwd
-    [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
-        zf_rm -f $_comp_dumpfile
-  }
+  .znap.multi '.znap.pull.task '${(i)^repos}
+  print -n '\r'
 }
 
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  cd -q $1
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
       local jopt=-j$( ulimit -n )
-  git fetch -t $jopt --recurse-submodules &>/dev/null ||
+  git -C $1 fetch -t $jopt --recurse-submodules &>/dev/null ||
       return
 
   print -n .
 
   local behind msg
-  if behind=$( git rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
-    msg="$( git pull -q -r $jopt --autostash --recurse-submodules 2>&1 > /dev/null )"
+  if behind=$( git -C $1 rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
+    cd -q ~znap
+    print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
+    msg="$( git -C $1 pull -q -r $jopt --autostash --recurse-submodules 2>&1 > /dev/null )"
     local err=$?
-    print '\r'
+    print -n '\r'
     .znap.status $1:t
-    (( err )) &&
-        print $msg
-    local cache_dir=$XDG_CACHE_HOME/zsh-snap
-    zf_rm -f $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh $_comp_dumpfile
+    if (( err )); then
+      print $msg
+    else
+      local cache_dir=$XDG_CACHE_HOME/zsh-snap
+      zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
+    fi
   fi
 }
 
