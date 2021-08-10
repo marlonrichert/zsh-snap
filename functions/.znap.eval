@@ -1,41 +1,42 @@
 #!/bin/zsh
 # eval (cached) output of command
-# args: ( <repo> | <name> ) <command>
+# args: ( <__znap__repo> | <name> ) <command>
 zmodload -Fa zsh/files b:zf_mkdir
 
-.znap.eval() {
-  if (( $# < 2 )); then
-    print -u2 'znap eval: not enough arguments'
-    .znap.help eval
-    return $(( sysexits[(i)USAGE] + 63 ))
+if (( $# < 2 )); then
+  print -u2 'znap eval: not enough arguments'
+  .znap.help eval
+  return $(( sysexits[(i)USAGE] + 63 ))
+fi
+{
+  local __znap__pwd=$PWD
+
+  local __znap__repo=~znap/$1
+  [[ $1 == */* ]] &&
+      __znap__repo=~[$1]
+  shift
+
+  local __znap__cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
+  [[ -d $__znap__cache_dir ]] ||
+      zf_mkdir -pm 0700 $__znap__cache_dir
+
+  local __znap__line __znap__cache_file=$__znap__cache_dir/${__znap__repo:t}.zsh
+  [[ -r $__znap__cache_file ]] &&
+    IFS='' read -r __znap__line < $__znap__cache_file
+
+  local __znap__header="#${(q)@}"
+  if [[ $__znap__line != $__znap__header || (
+        -d $__znap__repo && -f $__znap__repo/${GIT_DIR:-.git}/index &&
+          $__znap__repo/${GIT_DIR:-.git}/index -nt $__znap__cache_file
+      ) ]]; then
+    print -r "$__znap__header" >! $__znap__cache_file
+    [[ -d $__znap__repo ]] &&
+        cd -q -- $__znap__repo
+    eval "$@" >>| $__znap__cache_file
   fi
 
-  local repo=~znap/$1 pwd=$PWD
-  [[ $1 == */* ]] &&
-      repo=~[$1]
-  shift
-  {
-    local line header="#${(q)@}"
-    local cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
-    [[ -d $cache_dir ]] ||
-        zf_mkdir -pm 0700 $cache_dir
-    local cache_file=$cache_dir/${repo:t}.zsh
-    [[ -r $cache_file ]] &&
-      IFS='' read -r line < $cache_file
-    if [[ $line != $header ||
-          ( -d $repo && -f $repo/${GIT_DIR:-.git}/index
-              && $repo/${GIT_DIR:-.git}/index -nt $cache_file ) ]]; then
-      print -r "$header" >! $cache_file
-      [[ -d $repo ]] &&
-          cd -q -- $repo
-      eval "$@" >>| $cache_file
-    fi
-    . $cache_file
-    return
-  } always {
-    [[ -x $pwd ]] &&
-        cd -q -- $pwd
-  }
+  . $__znap__cache_file
+} always {
+  [[ -x $__znap__pwd ]] &&
+      cd -q -- $__znap__pwd
 }
-
-.znap.eval "$@"

@@ -1,50 +1,45 @@
 #!/bin/zsh
 zmodload -F zsh/zutil b:zparseopts
 
-znap() {
-  if (( $#@ > 0 )); then
-    local -A opts1=()
-    zparseopts -D -A opts1 - h -help
-    if (( $#@ == 0 )); then
-      .znap.help
-      return
-    fi
+local -A __znap__opts_pre=() __znap__opts_post=()
+local -a reply=()
+local REPLY= __znap__cmd= __znap__func=
 
-    local cmd=$1; shift
+zparseopts -D -A __znap__opts_pre - h -help
 
-    case $cmd in
-      cd | ls )
-        print -u2 'znap: try `'"$cmd ~${${1:+[$1]}:-znap}"'` instead'
-        return $(( sysexits[(i)USAGE] + 63 ))
-        ;;
-      path )
-        print -u2 'znap: try `path+=( ~'"${${1:+[$1]}:-znap}"' )` instead'
-        return $(( sysexits[(i)USAGE] + 63 ))
-        ;;
-      rm )
-        print -u2 'znap: try `rm ~'"${${1:+[$1]}:-znap}"'` instead'
-        return $(( sysexits[(i)USAGE] + 63 ))
-        ;;
-    esac
+if ! (( $# )); then
+  .znap.help
+  return
+fi
 
-    local -A opts2=()
-    zparseopts -D -A opts2 h -help
-    local REPLY
-    local func=.znap.$cmd
-    if [[ -v functions[$func] ]]; then
-      if (( $#opts1 > 0 || $#opts2 > 0 )); then
-        .znap.help $cmd
-      else
-        $func $@
-      fi
-    else
-      print -u2 "znap: '$cmd' is not a valid command"
-      .znap.help
-      return $(( sysexits[(i)USAGE] + 63 ))
-    fi
+__znap__cmd=$1
+shift
+
+case $__znap__cmd in
+  ( cd | ls )
+    print -u2 'znap: try `'"$__znap__cmd ~${${1:+[$1]}:-znap}"'` instead'
+    return $(( sysexits[(i)USAGE] + 63 ))
+  ;;
+  ( path )
+    print -u2 'znap: try `path+=( ~'"${${1:+[$1]}:-znap}"' )` instead'
+    return $(( sysexits[(i)USAGE] + 63 ))
+  ;;
+  ( rm )
+    print -u2 'znap: try `rm ~'"${${1:+[$1]}:-znap}"'` instead'
+    return $(( sysexits[(i)USAGE] + 63 ))
+  ;;
+esac
+
+zparseopts -D -A __znap__opts_post h -help
+__znap__func=.znap.$__znap__cmd
+if [[ -v functions[$__znap__func] ]]; then
+  if (( ${#__znap__opts_pre} || ${#__znap__opts_post} )); then
+    .znap.help $__znap__cmd
   else
-    .znap.help
+    $__znap__func $@
   fi
-}
-
-znap "$@"
+else
+  print -u2 "znap: unknown command: $__znap__cmd"
+  .znap.help
+  return $(( sysexits[(i)USAGE] + 63 ))
+fi
