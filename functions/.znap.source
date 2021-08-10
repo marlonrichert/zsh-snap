@@ -8,39 +8,40 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-local -aU src=()
+local -aU __znap__src
 () {
-  emulate -L zsh; setopt $_znap_opts
-
-  local repo=~[$1]
+  local -aU tmp ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
+  local file pat repo=~[$1]
   shift
-  local -a tmp ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
-  local -aU dirs=( $repo/${^~@}(-/) ); (( # )) ||
-    dirs=( $repo )
-  local d; for d in $dirs[@]; do
-    tmp=( $d/(#i){*(${(~j:|:)${=${d:t}//[-_]/ }:#zsh})*,init,*}${^~ext}~*.zwc(-.rY1))
-    src+=( $tmp[1] )
-  done
-  local -aU names=( $repo/$^@ )
-  names=( ${names:|dirs} )
-  local name; for name in $names[@]; do
-    tmp=( $name$^~ext(-.rY1) )
-    src+=( $tmp[1] )
-  done
-  local pat e
-  for pat in $names[@]; do
-    for e in $ext[@]; do
-      tmp=( $~pat~^**$~e(-.) )
-      if (( $#tmp[@] )); then
-        src+=( $tmp[@] )
-        break
-      fi
-    done
-  done
-} "$@"
 
-local -i ret=1
-local s; for s in $src; do
-  . $s && ret=0
+  setopt localoptions extendedglob NO_nomatch NO_nullglob
+
+  if (( $# )); then
+    tmp=( $repo/$^~@ )
+  else
+    tmp=( $repo )
+  fi
+  for file in $tmp[@]; do
+    if [[ -d $file ]]; then
+      tmp=( $file/{*${(~j:?:)${=${file:t}//[-_]/ }:#zsh}*,init,*}${^~ext}(NY1-.) )
+    elif [[ -r $file ]]; then
+      tmp=( $file )
+    else
+      tmp=( ${file}${^~ext}(NY1-.) )
+    fi
+
+    if ! (( ${#tmp} )); then
+      print -ru2 -- "znap source: file not found: $file"
+      return $(( sysexits[(i)NOINPUT] + 63 ))
+    fi
+
+    __znap__src+=( $tmp[1] )
+  done
+} "$@" ||
+    return
+
+local __znap__file
+for __znap__file in $__znap__src[@]; do
+  . $__znap__file ||
+      return
 done
-return ret
