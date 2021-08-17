@@ -1,39 +1,51 @@
 #!/bin/zsh
 # symlink executables from repos to ~/.local/bin
 # args: <repo> ...
-zmodload -F zsh/files b:zf_mkdir
-local bindir=~/.local/bin
-zf_mkdir -pm 0700 $bindir
+emulate -L zsh; setopt $_znap_opts
+zmodload -Fa zsh/files b:zf_ln b:zf_mkdir
 
-.znap.install() {
-  emulate -L zsh; setopt $_znap_opts
-  zmodload -Fa zsh/files b:zf_ln
+if (( $# < 1 )); then
+  print -u2 'znap install: not enough arguments'
+  .znap.help install
+  return $(( sysexits[(i)USAGE] + 63 ))
+fi
 
-  if (( $# < 1 )); then
-    print -u2 'znap install: not enough arguments'
-    .znap.help install
-    return $(( sysexits[(i)USAGE] + 63 ))
-  fi
+local -i ret=0
 
-  local -i ret=0
+.znap.clone $@ ||
+    ret=$?
 
-  .znap.clone $@ ||
-      ret=$?
-
-  local exe link repo
-  for repo in $@; do
-    repo=~[$repo]
-    for exe in $repo/{,bin/}*(-*); do
-      link=~/.local/bin/$exe:t
-      if zf_ln -fns $exe $link; then
-        hash $exe:t=$link
-        print -Pr -- "%F{14}$link%f -> %F{10}${exe}%f"
-      else
-        (( ret = sysexits[(i)CANTCREAT] + 63 ))
-      fi
-    done
+local REPLY orig link repo
+local bindir=~/.local/bin datadir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+mkdir -p $bindir $datadir
+for repo in $@; do
+  repo=~[$repo]
+  for orig in $repo/{,bin/}*(-*); do
+    link=$bindir/$orig:t
+    hash $orig:t=$link
+    if zf_ln -fns $orig $link; then
+      print -Pr -- "%F{14}$link%f -> %F{10}${orig}%f"
+    else
+      (( ret = sysexits[(i)CANTCREAT] + 63 ))
+    fi
   done
-  return ret
-}
-
-.znap.install "$@"
+  for orig in $repo/**/_*~*.zwc(-.); do
+    IFS='' read -r < $orig
+    [[ $REPLY != \#(autoload|compdef)\ * ]] &&
+        continue
+    link=$datadir/$orig:t
+    if zf_ln -fns $orig $link; then
+      print -Pr -- "%F{14}$link%f -> %F{10}${orig}%f"
+    else
+      (( ret = sysexits[(i)CANTCREAT] + 63 ))
+    fi
+  done
+done
+hash -f
+unfunction compdef compinit 2>/dev/null
+autoload -Uz compinit
+[[ -f $_comp_dumpfile ]] &&
+    zf_rm -f $_comp_dumpfile
+compinit -C -d $_comp_dumpfile
+compinit() {:}
+return ret

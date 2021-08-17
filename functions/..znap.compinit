@@ -16,4 +16,4 @@ local args; for args in "$_znap_compdef[@]"; do
 done
 unset _znap_compdef
 
-compinit() { : }
+compinit() {:}

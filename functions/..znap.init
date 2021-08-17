@@ -43,13 +43,13 @@ typeset -gHa _znap_compdef=()
 compdef() {
   _znap_compdef+=( "${(j: :)${(@q+)@}}" )
 }
-compinit() { : }
+compinit() {:}
 add-zsh-hook precmd ..znap.compinit
 [[ -v functions[_bash_complete] ]] ||
     .znap.function _bash_complete compgen complete '
       autoload -Uz bashcompinit
       bashcompinit
-      bashcompinit() { : }
+      bashcompinit() {:}
     '
 
 unfunction ${(%):-%N}

@@ -31,17 +31,6 @@ znap prompt
 
 
 ##
-# Use ~[dynamically-named dirs] to add repos to your $path or $fpath.
-# Znap will download them automatically.
-#
-fpath+=(
-    ~[asdf-vm/asdf]/completions
-    ~[asdf-community/asdf-direnv]/completions
-    ~[zsh-users/zsh-completions]/src
-)
-
-
-##
 # Use `znap compdef` to install generated completion functions:
 #
 znap compdef _kubectl 'kubectl completion  zsh'

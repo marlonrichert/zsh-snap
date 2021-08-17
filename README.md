@@ -5,7 +5,22 @@ repos in general.
 
 > Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert)
 
-## Quick Start
+## Installation
+To use Znap to manage your existing (plugin) repos, just copy-paste the following into your command
+line and press <kbd>Enter</kbd>:
+```zsh
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
+source zsh-snap/install.zsh
+```
+
+### Requirements
+Recommended:
+* Zsh 5.7.1 or newer
+* Git 2.8.0 or newer
+Minimum:
+* Zsh 5.4.2
+
+## Features & Usage
 Using Znap to manage your plugins can be as simple as putting this in your `.zshrc` file:
 ```zsh
 # Download Znap, if it's not there yet.
@@ -31,35 +46,24 @@ To update all of your plugins/repos simultaneously, type
 znap pull
 ```
 
-## Requirements
-Recommended:
-* Zsh 5.7.1 or newer
-* Git 2.8.0 or newer
-Minimum:
-* Zsh 5.4.2
-
-## Installation
-To use Znap to manage your existing (plugin) repos, just copy-paste the following into your command
-line and press <kbd>Enter</kbd>:
-```zsh
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
-source zsh-snap/install.zsh
-```
-
-## Features & Usage
 For more examples of how to use Znap in your dotfiles, please see [the included `.zshrc`
-file](.zshrc). For more info on command-line usage, see the [section below](#znap-command-syntax).
+file](.zshrc).
 
-### Easily install new executables
+### Installing executables and completion functions
 Znap can download multiple repos in parallel, then automatically find and install their
-executables, with just one command:
+executables and completion functions, with just one command:
 ```zsh
-znap install aureliojargas/clitest bigH/git-fuzzy ekalinin/github-markdown-toc
+znap install asdf-vm/asdf aureliojargas/clitest bigH/git-fuzzy \
+    ekalinin/github-markdown-toc ohmyzsh/ohmyzsh zsh-users/zsh-completions
 ```
-To remove repos & symlinks, use `znap uninstall`:
+To remove these and their repos, use `znap uninstall`:
 ```zsh
-znap uninstall clitest git-fuzzy github-markdown-toc
+znap uninstall asdf clitest git-fuzzy \
+    github-markdown-toc ohmyzsh zsh-completions
 ```
+
+Executables are installed in `~/.local/bin`, while completion functions go into
+`${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
 
 ### Automatic `compinit` and `bashcompinit`
 You no longer need to call

@@ -2,6 +2,7 @@
 emulate zsh
 typeset -gU PATH path FPATH fpath MANPATH manpath
 path=( ~/.local/bin $path[@] )
+fpath=( $fpath[@] ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
 () {
   emulate -L zsh
 
