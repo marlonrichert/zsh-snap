@@ -15,30 +15,43 @@ local -i ret=0
 .znap.clone $@ ||
     ret=$?
 
-local REPLY orig link repo
-local bindir=~/.local/bin datadir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+local -a orig link
+local -a bindir=( ~/.local/bin ) datadir=( ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
+local REPLY pat repo sub
 mkdir -p $bindir $datadir
 for repo in $@; do
   repo=~[$repo]
-  for orig in $repo/{,bin/}*(-*); do
-    link=$bindir/$orig:t
-    hash $orig:t=$link
-    if zf_ln -fns $orig $link; then
-      print -Pr -- "%F{14}$link%f -> %F{10}${orig}%f"
-    else
-      (( ret = sysexits[(i)CANTCREAT] + 63 ))
+  orig=( $repo/{,bin/}*(-*) )
+  while (( $#orig )); do
+    link=( $bindir/$orig[1]:t )
+    if [[ $link[1]:A != $orig[1] ]]; then
+      hash $orig[1]:t=$link[1]
+      if zf_ln -fns $orig[1] $link[1]; then
+        print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
+      else
+        (( ret = sysexits[(i)CANTCREAT] + 63 ))
+      fi
     fi
+    shift orig
   done
-  for orig in $repo/**/_*~*.zwc(-.); do
-    IFS='' read -r < $orig
-    [[ $REPLY != \#(autoload|compdef)\ * ]] &&
-        continue
-    link=$datadir/$orig:t
-    if zf_ln -fns $orig $link; then
-      print -Pr -- "%F{14}$link%f -> %F{10}${orig}%f"
-    else
-      (( ret = sysexits[(i)CANTCREAT] + 63 ))
+  pat="$repo/**/_*~*.zwc(-.)"
+  sub="$( git -C $repo submodule foreach --quiet pwd )"
+  [[ -n $sub ]] &&
+      pat+="~(${(j:|:)${(f)sub}})/*"
+  orig=( $~pat )
+  while (( $#orig )); do
+    link=( $datadir/$orig[1]:t )
+    if [[ $link[1]:A != $orig[1] ]]; then
+      IFS='' read -r < $orig[1]
+      if [[ $REPLY == \#(autoload|compdef)\ * ]]; then
+        if zf_ln -fns $orig[1] $link[1]; then
+          print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
+        else
+          (( ret = sysexits[(i)CANTCREAT] + 63 ))
+        fi
+      fi
     fi
+    shift orig
   done
 done
 hash -f
