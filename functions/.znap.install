@@ -1,5 +1,5 @@
 #!/bin/zsh
-# symlink executables from repos to ~/.local/bin
+# install executables & completion functions
 # args: <repo> ...
 emulate -L zsh; setopt $_znap_opts
 zmodload -Fa zsh/files b:zf_ln b:zf_mkdir
@@ -18,7 +18,7 @@ local -i ret=0
 local -a orig link
 local -a bindir=( ~/.local/bin ) datadir=( ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
 local REPLY pat repo sub
-mkdir -p $bindir $datadir
+mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
   repo=~[$repo]
   orig=( $repo/{,bin/}*(-*) )
@@ -55,10 +55,5 @@ for repo in $@; do
   done
 done
 hash -f
-unfunction compdef compinit 2>/dev/null
-autoload -Uz compinit
-[[ -f $_comp_dumpfile ]] &&
-    zf_rm -f $_comp_dumpfile
-compinit -C -d $_comp_dumpfile
-compinit() {:}
+..znap.compinit
 return ret

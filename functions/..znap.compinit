@@ -1,19 +1,12 @@
 #!/bin/zsh
-autoload -Uz add-zsh-hook
-
-local 0=${(%):-%N}
-add-zsh-hook -d precmd $0
-unfunction $0
-
-zmodload zsh/complist
-if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
-  unfunction compdef compinit 2>/dev/null
-  autoload -Uz compinit
+unfunction compdef compinit 2>/dev/null
+autoload -Uz compinit
+[[ -f $_comp_dumpfile ]] &&
+    zf_rm -f $_comp_dumpfile
+bindkey() {:}
+{
   compinit -C -d $_comp_dumpfile
-fi
-local args; for args in "$_znap_compdef[@]"; do
-  eval "compdef $args"
-done
-unset _znap_compdef
-
+} always {
+  unfunction bindkey
+}
 compinit() {:}

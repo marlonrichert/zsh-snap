@@ -44,7 +44,7 @@ compdef() {
   _znap_compdef+=( "${(j: :)${(@q+)@}}" )
 }
 compinit() {:}
-add-zsh-hook precmd ..znap.compinit
+add-zsh-hook precmd ..znap.compinit-hook
 [[ -v functions[_bash_complete] ]] ||
     .znap.function _bash_complete compgen complete '
       autoload -Uz bashcompinit

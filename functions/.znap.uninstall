@@ -1,5 +1,5 @@
 #!/bin/zsh
-# remove repos & symlinked executables
+# remove executables & completion functions
 # args: <repo> ...
 emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_rm
@@ -35,10 +35,5 @@ for repo in ~znap/${^@:t}; do
   fi
 done
 hash -f
-unfunction compdef compinit 2>/dev/null
-autoload -Uz compinit
-[[ -f $_comp_dumpfile ]] &&
-    zf_rm -f $_comp_dumpfile
-compinit -C -d $_comp_dumpfile
-compinit() {:}
+..znap.compinit
 return ret
