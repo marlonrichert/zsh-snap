@@ -19,7 +19,7 @@ for repo in ~znap/${^@:t}; do
     file=( ~/.local/bin/* ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/* )
     while (( $#file ));do
       abs=( $file[1]:A )
-      if [[ $abs == $repo/* ]]; then
+      if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then
         print -r -- ${(D)file[1]}
         zf_rm -frs $file[1]
         [[ -x $abs && ! -d $abs ]] &&
