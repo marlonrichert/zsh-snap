@@ -8,6 +8,23 @@ if (( $# < 2 )); then
   .znap.help eval
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
+
+.znap.eval.generate() {
+  local __znap__line
+  [[ -r $__znap__cache_file ]] &&
+      IFS='' read -r __znap__line < $__znap__cache_file
+
+  local __znap__header="#${(q)@}"
+  if [[ $__znap__line != $__znap__header ||
+      ( -d $__znap__repo && -f $__znap__repo/${GIT_DIR:-.git}/index &&
+          $__znap__repo/${GIT_DIR:-.git}/index -nt $__znap__cache_file ) ]]; then
+    print -r "$__znap__header" >! $__znap__cache_file
+    [[ -d $__znap__repo ]] &&
+        cd -q -- $__znap__repo
+    eval "$@" >>| $__znap__cache_file
+  fi
+}
+
 {
   local __znap__pwd=$PWD
 
@@ -20,23 +37,24 @@ fi
   [[ -d $__znap__cache_dir ]] ||
       zf_mkdir -pm 0700 $__znap__cache_dir
 
-  local __znap__line __znap__cache_file=$__znap__cache_dir/${__znap__repo:t}.zsh
-  [[ -r $__znap__cache_file ]] &&
-    IFS='' read -r __znap__line < $__znap__cache_file
+  local __znap__cache_file=$__znap__cache_dir/${__znap__repo:t}.zsh
 
-  local __znap__header="#${(q)@}"
-  if [[ $__znap__line != $__znap__header ||
-      ( -d $__znap__repo && -f $__znap__repo/${GIT_DIR:-.git}/index &&
-          $__znap__repo/${GIT_DIR:-.git}/index -nt $__znap__cache_file ) ]]; then
-    print -r "$__znap__header" >! $__znap__cache_file
-    [[ -d $__znap__repo ]] &&
-        cd -q -- $__znap__repo
-    eval "$@" >>| $__znap__cache_file
+  if [[ -r $__znap__cache_file ]]; then
+    .znap.eval.generate "$@" &|
+  else
+    print -r "znap eval: generating cache for $*"
+    .znap.eval.generate "$@"
   fi
 
-  () {  # For profiling purposes
+  # Wrap in a named function for profiling purposes.
+  .znap.eval:${__znap__cache_file:t}() {
     . $__znap__cache_file
-  } "$@"
+  }
+  {
+    .znap.eval:${__znap__cache_file:t} "$@"
+  } always {
+    unfunction .znap.eval:${__znap__cache_file:t}
+  }
 } always {
   [[ -x $__znap__pwd ]] &&
       cd -q -- $__znap__pwd
