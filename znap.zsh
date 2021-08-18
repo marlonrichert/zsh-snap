@@ -5,6 +5,7 @@ path=( ~/.local/bin $path[@] )
 fpath=( $fpath[@] ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
 () {
   emulate -L zsh
+  zmodload -Fa zsh/files b:zf_mkdir
 
   [[ ${(t)sysexits} != *readonly ]] &&
       readonly -ga sysexits=(

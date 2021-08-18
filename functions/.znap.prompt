@@ -1,7 +1,6 @@
 #!/bin/zsh
 # instant prompt from repo
 # args: [ <repo> ] <theme>
-zmodload -Fa zsh/files b:zf_mkdir
 zmodload -F zsh/parameter p:functions
 zmodload -Fa zsh/zleparameter p:widgets
 autoload -Uz add-zsh-hook add-zle-hook-widget promptinit

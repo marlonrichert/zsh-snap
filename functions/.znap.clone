@@ -1,24 +1,19 @@
 #!/bin/zsh
-# make shallow git clones in parallel
+# download repos in parallel
 # args: ( <user>/<repo> | <url> ) ...
-zmodload -Fa zsh/files b:zf_mkdir
+emulate -L zsh; setopt $_znap_opts
+zmodload -Fa zsh/files b:zf_rm
 
-.znap.clone() {
-  emulate -L zsh; setopt $_znap_opts
+if (( $# < 1 )); then
+  print -u2 "znap clone: not enough arguments"
+  .znap.help clone
+  return $(( sysexits[(i)USAGE] + 63 ))
+fi
 
-  if (( $# < 1 )); then
-    print -u2 "znap clone: not enough arguments"
-    .znap.help clone
-    return $(( sysexits[(i)USAGE] + 63 ))
-  fi
+[[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
+    zf_rm -f $_comp_dumpfile
 
-  [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
-      zf_rm -f $_comp_dumpfile
-
-  local server; zstyle -s :znap:clone: default-server server ||
-    server='https://github.com/'
-  .znap.multi ".znap.clone.task $server "$^@ ||
-      return 'sysexits[(i)IOERR] + 63'
-}
-
-.znap.clone "$@"
+local server; zstyle -s :znap:clone: default-server server ||
+  server='https://github.com/'
+.znap.multi ".znap.clone.task $server "$^@ ||
+    return 'sysexits[(i)IOERR] + 63'
