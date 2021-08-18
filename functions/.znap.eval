@@ -25,17 +25,18 @@ fi
     IFS='' read -r __znap__line < $__znap__cache_file
 
   local __znap__header="#${(q)@}"
-  if [[ $__znap__line != $__znap__header || (
-        -d $__znap__repo && -f $__znap__repo/${GIT_DIR:-.git}/index &&
-          $__znap__repo/${GIT_DIR:-.git}/index -nt $__znap__cache_file
-      ) ]]; then
+  if [[ $__znap__line != $__znap__header ||
+      ( -d $__znap__repo && -f $__znap__repo/${GIT_DIR:-.git}/index &&
+          $__znap__repo/${GIT_DIR:-.git}/index -nt $__znap__cache_file ) ]]; then
     print -r "$__znap__header" >! $__znap__cache_file
     [[ -d $__znap__repo ]] &&
         cd -q -- $__znap__repo
     eval "$@" >>| $__znap__cache_file
   fi
 
-  . $__znap__cache_file
+  () {  # For profiling purposes
+    . $__znap__cache_file
+  } "$@"
 } always {
   [[ -x $__znap__pwd ]] &&
       cd -q -- $__znap__pwd

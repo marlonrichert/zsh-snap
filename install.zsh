@@ -13,7 +13,7 @@ emulate zsh
     unhash -d znap 2>/dev/null
 
     local -a conf=()
-    local dir repo=${${(%):-%x}:a:h}
+    local dir repo=${${(%):-%x}:P:h}
 
     while [[ -z $dir ]]; do
       print 'Where do you (want to) keep your repos and/or plugins?'

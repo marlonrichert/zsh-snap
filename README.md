@@ -56,7 +56,8 @@ executables and completion functions, with just one command:
 znap install asdf-vm/asdf aureliojargas/clitest bigH/git-fuzzy \
     ekalinin/github-markdown-toc ohmyzsh/ohmyzsh zsh-users/zsh-completions
 ```
-To remove these and their repos, use `znap uninstall`:
+
+To remove these (and their repos), use `znap uninstall`:
 ```zsh
 znap uninstall asdf clitest git-fuzzy \
     github-markdown-toc ohmyzsh zsh-completions
@@ -65,9 +66,9 @@ znap uninstall asdf clitest git-fuzzy \
 Executables are installed in `~/.local/bin`, while completion functions go into
 `${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
 
-### Installing generated completion functions
-Instead of providing a file, some commands create a completion function by generating output. You
-can install these as follows:
+### Installing generated functions
+Some commands generate output that should be loaded as a function. You can install these generated
+functions as follows:
 ```zsh
 znap fpath _kubectl 'kubectl completion  zsh'
 znap fpath _rustup  'rustup  completions zsh'

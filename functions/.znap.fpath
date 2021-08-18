@@ -1,5 +1,5 @@
 #!/bin/zsh
-# install command output as completion function
+# install command output as a function
 # args: <function> <command>
 zmodload -Fa zsh/files b:zf_mkdir
 

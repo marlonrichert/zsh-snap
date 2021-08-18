@@ -12,7 +12,7 @@ local repo=~znap/$url:t:r
 
 is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
     local jopt=-j$( ulimit -n )
-if git -C ~znap clone --depth 1 $jopt --recurse-submodules --shallow-submodules -- $url; then
+if git -C ~znap clone --depth 1 $jopt --recurse-submodules --shallow-submodules $url; then
   .znap.ignore $repo:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
   return 1
 fi
