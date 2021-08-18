@@ -1,5 +1,5 @@
 #!/bin/zsh
-# eval (cached) output of command
+# cache & eval output of command
 # args: ( <__znap__repo> | <name> ) <command>
 zmodload -Fa zsh/files b:zf_mkdir
 

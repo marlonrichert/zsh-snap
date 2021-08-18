@@ -31,16 +31,6 @@ znap prompt
 
 
 ##
-# Use `znap compdef` to install generated completion functions:
-#
-znap compdef _kubectl 'kubectl completion  zsh'
-znap compdef _rustup  'rustup  completions zsh'
-znap compdef _cargo   'rustup  completions zsh cargo'
-# These functions are regenerated automatically when any of the commands for
-# which they generate completions is newer than the function cache.
-
-
-##
 # Use `znap source` to load your plugins.
 #
 znap source marlonrichert/zsh-autocomplete

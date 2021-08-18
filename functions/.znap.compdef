@@ -1,5 +1,5 @@
 #!/bin/zsh
-# add output of command as completion function
+# add output of command as completion function (deprecated)
 # args: <function> <command>
 local 0=${(%):-%N}
 zmodload -Fa zsh/files b:zf_mkdir

@@ -65,6 +65,15 @@ znap uninstall asdf clitest git-fuzzy \
 Executables are installed in `~/.local/bin`, while completion functions go into
 `${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
 
+### Installing generated completion functions
+Instead of providing a file, some commands create a completion function by generating output. You
+can install these as follows:
+```zsh
+znap fpath _kubectl 'kubectl completion  zsh'
+znap fpath _rustup  'rustup  completions zsh'
+znap fpath _cargo   'rustup  completions zsh cargo'
+```
+
 ### Automatic `compinit` and `bashcompinit`
 You no longer need to call
 [`complist`](http://zsh.sourceforge.net/Doc/Release/Zsh-Modules.html#The-zsh_002fcomplist-Module),
@@ -112,22 +121,23 @@ The following is a summary of all `znap` commands available, which you can get o
 Usage: znap <command> [ <argument> ... ]
 
 Commands:
-  clean     remove outdated .zwc binaries from directories
-  clone     make shallow git clones in parallel
-  compdef   add output of command as completion function
-  compile   compile asynchronously
-  eval      eval (cached) output of command
-  function  create lazily loaded functions
+  clean     remove outdated .zwc binaries
+  clone     download repos in parallel
+  compdef   add output of command as completion function (deprecated)
+  compile   compile zsh scripts and functions
+  eval      cache & eval output of command
+  fpath     install command output as completion function
+  function  create lazy-loading functions
   help      print help text for command
   ignore    add local exclude patterns to repo
-  install   symlink executables from repos to ~/.local/bin
+  install   install executables & completion functions
   multi     run tasks in parallel
   prompt    instant prompt from repo
   pull      update repos in parallel
   restart   validate dotfiles & safely restart Zsh
   source    source plugin or repo submodules & scripts
-  status    show one-line git status for each repo
-  uninstall remove repo and symlinked executables
+  status    fetch updates & show git status
+  uninstall remove executables & completion functions
 
 For more info on a command, type `znap help <command>`.
 

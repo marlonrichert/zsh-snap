@@ -1,5 +1,5 @@
 #!/bin/zsh
-# show one-line git status for each repo
+# fetch updates & show git status
 # args: [ <repo> ... ]
 autoload +X -Uz is-at-least
 
