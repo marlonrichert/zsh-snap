@@ -51,5 +51,3 @@ add-zsh-hook precmd ..znap.compinit
       bashcompinit
       bashcompinit() {:}
     '
-
-unfunction ${(%):-%N}

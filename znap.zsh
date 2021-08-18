@@ -26,6 +26,7 @@ fpath=( $fpath[@] ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
       )
 
   local basedir=${${(%):-%x}:a:h}
+  local funcdir=$basedir/functions
 
   if [[ -z $basedir ]]; then
     print -u2 "znap: Could not find Znap's repo. Aborting."
@@ -39,7 +40,7 @@ fpath=( $fpath[@] ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
   setopt $_znap_opts
 
   fpath=( $basedir $fpath )
-  builtin autoload -Uz $basedir/functions/{znap,(|.).znap.*~*.zwc}
+  builtin autoload -Uz $funcdir/{znap,(|.).znap.*~*.zwc}
 
   local gitdir
   zstyle -s :znap: repos-dir gitdir ||
@@ -55,5 +56,5 @@ fpath=( $fpath[@] ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
       zf_mkdir -pm 0700 $gitdir
   hash -d znap=$gitdir
 
-  ..znap.init "$@"
+  source $funcdir/..znap.init "$@"
 } "$@"
