@@ -31,6 +31,7 @@ autoload +X -Uz is-at-least
   if behind=$( git -C $1 rev-list --right-only --count @..@{u} 2>&1 ) && (( behind )); then
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
+    ..znap.tput el  # Clear to end of line.
     msg="$( git -C $1 pull -q -r $jopt --autostash --recurse-submodules 2>&1 > /dev/null )"
     local err=$?
     print -n '\r'
