@@ -1,38 +1,42 @@
 #!/bin/zsh
-case $1 in
-  n)
-    () {
-      emulate -L zsh; setopt extendedglob
-      local dir=~znap/$2
-      if [[ $2 == */* ]]; then
-        dir=~znap/${${2##*/}%.git}
-        [[ -d $dir ]] ||
-          .znap.clone $2
-      fi
-      if [[ -d $dir ]]; then
-        reply=( $dir )
-        return 0
-      fi
-      return 1
-    } "$@"
-    ;;
-  d)
-    () {
-      emulate -L zsh; setopt extendedglob
-      if [[ $2 == ~znap/* ]]; then
-        # local name=${${2#~znap/}:h1}  <- Zsh 5.8+
-        local name=${${2#~znap/}%%/*}
-        reply=( "$name" ${#:-~znap/$name} )
-        return 0
-      fi
-      return 1
-    } "$@"
-    ;;
-  c)
-    local expl tag='named-directories' group='named directory'
-    _tags $tag
-    _tags && _requested $tag expl $group &&
-      compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
-    return
-    ;;
-esac
+
+..znap.dirname.n() {
+  emulate -L zsh; setopt extendedglob
+
+  local dir=~znap/$1
+  if [[ $1 == */* ]]; then
+    dir=~znap/${${1##*/}%.git}
+    [[ -d $dir ]] ||
+      .znap.clone $1
+  fi
+  if [[ -d $dir ]]; then
+    reply=( $dir )
+    return 0
+  fi
+  return 1
+}
+
+..znap.dirname.d() {
+  emulate -L zsh; setopt extendedglob
+
+  if [[ $1 == ~znap/* ]]; then
+    # local name=${${1#~znap/}:h1}  <- Zsh 5.8+
+    local name=${${1#~znap/}%%/*}
+    reply=( "$name" ${#:-~znap/$name} )
+    return 0
+  fi
+  return 1
+}
+
+..znap.dirname.c() {
+  local expl tag='named-directories' group='named directory'
+  _tags $tag
+  _tags && _requested $tag expl $group &&
+    compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
+}
+
+..znap.dirname() {
+  ..znap.dirname.$1 "$2"
+}
+
+..znap.dirname "$@"

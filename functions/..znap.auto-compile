@@ -1,15 +1,11 @@
 #!/bin/zsh
-emulate -L zsh
-zmodload -F zsh/parameter p:functions_source
-setopt $_znap_opts
-autoload -Uz add-zsh-hook
+setopt localoptions NO_warncreateglobal
+zmodload -F zsh/parameter p:funcstack
+zmodload -F zsh/zselect b:zselect
 
-local fd=$1
-zle -F $fd 2> /dev/null
-exec {fd}<&-
-
-(
-  local -aU exclude include=( ${(@vu)functions_source} )
-  zstyle -a :znap: auto-compile-ignore exclude
-  .znap.compile ${include:#(${(~j:|:)~exclude})} &> /dev/null
-) &|
+local fd
+exec {fd}< <(
+  zselect -t 100
+  print
+)
+zle -F "$fd" ..znap.auto-compile.callback

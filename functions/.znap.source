@@ -13,26 +13,7 @@ shift
 for __znap__src in ${@:-''}; do
   __znap__file=~/.local/bin/${__znap__repo:t}${__znap__src:+.}${__znap__src//\//.}
   if ! [[ -r $__znap__file:P ]]; then
-    () {
-      setopt localoptions extendedglob NO_nomatch NO_nullglob
-
-      local -aU tmp=( ~[$1]${2:+/$2} ) ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
-      shift
-
-      if [[ -d $tmp[1] ]]; then
-        tmp=( $tmp[1]/{*${(~j:?:)${=${tmp[1]:t}//[-_]/ }:#zsh}*,init,*}${^~ext}(NY1-.) )
-      elif ! [[ -r $tmp[1] ]]; then
-        tmp=( ${tmp[1]}${^~ext}(NY1-.) )
-      fi
-
-      if ! (( $#tmp )); then
-        print -ru2 -- "znap source: file not found: $2"
-        return $(( sysexits[(i)NOINPUT] + 63 ))
-      fi
-
-      zf_ln -fns "$tmp[1]" "$__znap__file"
-      .znap.compile "$tmp[1]" > /dev/null
-    } "$__znap__repo" "$__znap__src" ||
+    .znap.source.find "$__znap__repo" "$__znap__src" ||
         return
   fi
   . $__znap__file:P

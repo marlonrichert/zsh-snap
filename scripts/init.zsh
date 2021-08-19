@@ -1,5 +1,5 @@
 #!/bin/zsh
-() {
+.znap.init() {
   emulate -L zsh
   zmodload -Fa zsh/files b:zf_ln b:zf_mkdir b:zf_rm
   autoload -Uz add-zsh-hook
@@ -62,20 +62,8 @@
       zf_mkdir -pm 0700 $gitdir
   hash -d znap=$gitdir
 
-  if zstyle -T :znap: auto-compile; then
-    () {
-      setopt localoptions NO_warncreateglobal
-      zmodload -F zsh/parameter p:funcstack
-      zmodload -F zsh/zselect b:zselect
-
-      local fd
-      exec {fd}< <(
-        zselect -t 100
-        print
-      )
-      zle -F "$fd" ..znap.auto-compile
-    }
-  fi
+  zstyle -T :znap: auto-compile &&
+      ..znap.auto-compile
 
   add-zsh-hook zsh_directory_name ..znap.dirname
 
@@ -111,4 +99,10 @@
         bashcompinit
         bashcompinit() {:}
       '
-} "$@"
+}
+
+{
+  .znap.init "$@"
+} always {
+  unfunction .znap.init
+}
