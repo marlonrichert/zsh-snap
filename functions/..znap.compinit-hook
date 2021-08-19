@@ -10,7 +10,7 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   unfunction compdef compinit 2>/dev/null
   autoload -Uz compinit
   compinit -C -d $_comp_dumpfile
-  zcompile $_comp_dumpfile
+  ( zcompile $_comp_dumpfile ) &|
 fi
 local args; for args in "$_znap_compdef[@]"; do
   eval "compdef $args"

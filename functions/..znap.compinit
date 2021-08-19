@@ -12,5 +12,5 @@ bindkey() {:}
 } always {
   unfunction bindkey
 }
-zcompile $_comp_dumpfile
+( zcompile $_comp_dumpfile ) &|
 compinit() {:}
