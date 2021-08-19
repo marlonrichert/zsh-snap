@@ -1,6 +1,9 @@
 #!/bin/zsh
+zmodload -Fa zsh/files b:zf_rm
+
 unfunction compdef compinit 2>/dev/null
 autoload -Uz compinit
+
 [[ -f $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
 bindkey() {:}
@@ -9,4 +12,5 @@ bindkey() {:}
 } always {
   unfunction bindkey
 }
+zcompile $_comp_dumpfile
 compinit() {:}
