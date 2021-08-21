@@ -21,6 +21,7 @@ local REPLY pat repo sub
 mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
   repo=~[$repo]
+
   orig=( $repo/{,bin/}*(-*) )
   while (( $#orig )); do
     link=( $bindir/$orig[1]:t )
@@ -34,6 +35,7 @@ for repo in $@; do
     fi
     shift orig
   done
+
   pat="$repo/**/_*~*.zwc(-.)"
   sub="$( git -C $repo submodule foreach --quiet pwd )"
   [[ -n $sub ]] &&

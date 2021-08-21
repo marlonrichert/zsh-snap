@@ -127,7 +127,7 @@ Commands:
   compdef   add output of command as completion function (deprecated)
   compile   compile zsh scripts and functions
   eval      cache & eval output of command
-  fpath     install command output as completion function
+  fpath     install command output as a function
   function  create lazy-loading functions
   help      print help text for command
   ignore    add local exclude patterns to repo
@@ -136,7 +136,7 @@ Commands:
   prompt    instant prompt from repo
   pull      update repos in parallel
   restart   validate dotfiles & safely restart Zsh
-  source    source plugin or repo submodules & scripts
+  source    load plugins
   status    fetch updates & show git status
   uninstall remove executables & completion functions
 
