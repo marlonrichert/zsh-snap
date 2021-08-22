@@ -1,4 +1,5 @@
 #!/bin/zsh
+zmodload -F zsh/files b:zf_ln b:zf_mkdir
 setopt localoptions extendedglob NO_nomatch NO_nullglob
 
 local -aU tmp=( ~[$1]${2:+/$2} ) ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
@@ -15,4 +16,5 @@ if ! (( $#tmp )); then
 fi
 
 ( .znap.compile "$tmp[1]" > /dev/null ) &|
-zf_ln -fns "$tmp[1]" "$3"
+zf_mkdir -pm 0700 "$3:h"
+zf_ln -fhs "$tmp[1]" "$3"

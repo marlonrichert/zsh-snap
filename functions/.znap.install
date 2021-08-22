@@ -27,7 +27,7 @@ for repo in $@; do
     link=( $bindir/$orig[1]:t )
     if [[ $link[1]:A != $orig[1] ]]; then
       hash $orig[1]:t=$link[1]
-      if zf_ln -fns $orig[1] $link[1]; then
+      if zf_ln -fhs $orig[1] $link[1]; then
         print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
       else
         (( ret = sysexits[(i)CANTCREAT] + 63 ))
@@ -46,7 +46,7 @@ for repo in $@; do
     if [[ $link[1]:A != $orig[1] ]]; then
       IFS='' read -r < $orig[1]
       if [[ $REPLY == \#(autoload|compdef)\ * ]]; then
-        if zf_ln -fns $orig[1] $link[1]; then
+        if zf_ln -fhs $orig[1] $link[1]; then
           print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
         else
           (( ret = sysexits[(i)CANTCREAT] + 63 ))

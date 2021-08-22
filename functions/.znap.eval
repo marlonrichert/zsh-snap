@@ -1,7 +1,7 @@
 #!/bin/zsh
 # cache & eval output of command
 # args: ( <__znap__repo> | <name> ) <command>
-zmodload -Fa zsh/files b:zf_mkdir
+zmodload -F zsh/files b:zf_mkdir
 
 if (( $# < 2 )); then
   print -u2 'znap eval: not enough arguments'
@@ -34,8 +34,7 @@ fi
   shift
 
   local __znap__cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
-  [[ -d $__znap__cache_dir ]] ||
-      zf_mkdir -pm 0700 $__znap__cache_dir
+  zf_mkdir -pm 0700 $__znap__cache_dir
 
   local __znap__cache_file=$__znap__cache_dir/${__znap__repo:t}.zsh
 
