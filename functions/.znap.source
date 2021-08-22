@@ -13,7 +13,7 @@ shift
 for __znap__src in ${@:-''}; do
   __znap__file=~/.local/bin/${__znap__repo:t}${__znap__src:+.}${__znap__src//\//.}
   if ! [[ -r $__znap__file:P ]]; then
-    .znap.source.link "$__znap__repo" "$__znap__src" ||
+    .znap.source.link "$__znap__repo" "$__znap__src" "$__znap__file" ||
         return
   fi
   . $__znap__file:P

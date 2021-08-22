@@ -2,7 +2,6 @@
 setopt localoptions extendedglob NO_nomatch NO_nullglob
 
 local -aU tmp=( ~[$1]${2:+/$2} ) ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
-shift
 
 if [[ -d $tmp[1] ]]; then
   tmp=( $tmp[1]/{*${(~j:?:)${=${tmp[1]:t}//[-_]/ }:#zsh}*,init,*}${^~ext}(NY1-.) )
@@ -16,4 +15,4 @@ if ! (( $#tmp )); then
 fi
 
 ( .znap.compile "$tmp[1]" > /dev/null ) &|
-zf_ln -fns "$tmp[1]" "$__znap__file"
+zf_ln -fns "$tmp[1]" "$3"
