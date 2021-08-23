@@ -7,8 +7,10 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 
 .znap.prompt() {
   if (( # )); then
-    local repo=~znap/$1; [[ $1 == */* ]] && repo=~[$1]
-    local theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
+    private repo=~znap/$1
+    [[ $1 == */* ]] &&
+        repo=~[$1]
+    private theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
     if ! .znap.prompt.load $repo $theme; then
       print -u2 'znap prompt: no such theme:' $@
       return $(( sysexits[(i)NOINPUT] + 63 ))
@@ -25,7 +27,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
     prompt $theme
     ..znap.tput sc
 
-    local precmd=prompt_${theme}_precmd
+    private precmd=prompt_${theme}_precmd
     if [[ -n $functions[$precmd] ]]; then
       $precmd
 
@@ -54,7 +56,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 
   # Clean up any mess that syntax highlighting might have made, to prevent an infinite loop.
   if zstyle -L zle-hook types > /dev/null; then
-    local hook
+    private hook
     for hook in isearch-{exit,update} line-{pre-redraw,init,finish} history-line-set keymap-select
     do
       [[ $widgets[zle-$hook] == user:_zsh_highlight_widget_orig-s<->.<->-r<->-zle-$hook ]] &&

@@ -5,10 +5,10 @@
 print 'Validating dotfiles...'
 
 # These need to be two separate statements or we won't get the right `$?`.
-local msg
+private msg
 msg="$( exec zsh -ilc exit 2>&1 > /dev/null )"
 
-local err=$?
+private err=$?
 
 if [[ err -ne 0 || -n $msg ]]; then
   print -nu2 'Validation failed with '

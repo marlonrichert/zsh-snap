@@ -4,8 +4,8 @@ zmodload -F zsh/parameter p:functions
 .znap.prompt.load() {
   emulate -L zsh; setopt $_znap_opts
 
-  local dir=$1 theme=$2
-  local setup=prompt_${theme}_setup
+  private dir=$1 theme=$2
+  private setup=prompt_${theme}_setup
 
   [[ -v functions[$setup] ]] &&
       return
@@ -15,7 +15,7 @@ zmodload -F zsh/parameter p:functions
 
   unfunction $setup
 
-  local -a file=( $dir/**/$setup(-.Y1) )
+  private -a file=( $dir/**/$setup(-.Y1) )
   if [[ -n $file ]]; then
 
     if autoload +X -Uz $file &>/dev/null; then
@@ -35,7 +35,7 @@ zmodload -F zsh/parameter p:functions
     unsetopt localoptions prompt{bang,cr,percent,sp,subst}
     PS1='%# '
     source $file[1]
-    local opt; for opt in bang cr percent sp subst; do
+    private opt; for opt in bang cr percent sp subst; do
       [[ -o prompt\$opt ]] &&
           prompt_opts+=( \$opt )
     done

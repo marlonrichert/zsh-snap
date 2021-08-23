@@ -26,8 +26,8 @@
   export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
   export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
   export XDG_DATA_HOME=${XDG_DATA_HOME:-~/.local/share}
-  local basedir=$1 datadir=$XDG_DATA_HOME/zsh/site-functions
-  local funcdir=$basedir/functions
+  private basedir=$1 datadir=$XDG_DATA_HOME/zsh/site-functions
+  private funcdir=$basedir/functions
   zf_mkdir -pm 0700 $datadir $gitdir \
       $XDG_CACHE_HOME/zsh{,-snap} $XDG_CONFIG_HOME/zsh $XDG_DATA_HOME
   zf_ln -fhs $funcdir/_znap $datadir/_znap
@@ -47,7 +47,7 @@
   fpath=( $fpath[@] $datadir )
   builtin autoload -Uz $funcdir/{znap,(|.).znap.*~*.zwc}
 
-  local gitdir
+  private gitdir
   zstyle -s :znap: repos-dir gitdir ||
       zstyle -s :znap: plugins-dir gitdir ||
           gitdir=$basedir:a:h

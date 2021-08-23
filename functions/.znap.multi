@@ -2,10 +2,10 @@
 # run tasks in parallel
 # args: <command>
 
-local -a fds=()
-local fd
+private -a fds=()
+private fd cmd
 {
-  local cmd; for cmd in $@; do
+  for cmd in $@; do
     exec {fd}< <( eval "$cmd" )
     fds+=( $fd )
   done

@@ -3,8 +3,8 @@
 # args: [ ( <dir> | <file> ) ... ]
 zmodload -F zsh/files b:zf_rm
 
-local src bin line
-local -aU files dirs
+private -aU files dirs
+private src bin line
 if (( $# )); then
   files=( $^@(N-.) ) dirs=( $^@(N-/) )
   files+=( $^dirs/*~~*/.*/*~*.zwc(D-.) )

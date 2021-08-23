@@ -4,12 +4,12 @@ zmodload -F zsh/parameter p:functions_source
 setopt $_znap_opts
 autoload -Uz add-zsh-hook
 
-local fd=$1
+private fd=$1
 zle -F $fd 2> /dev/null
 exec {fd}<&-
 
 (
-  local -aU exclude include=( ${(@vu)functions_source} )
+  private -aU exclude include=( ${(@vu)functions_source} )
   zstyle -a :znap: auto-compile-ignore exclude
   .znap.compile ${include:#(${(~j:|:)~exclude})} &> /dev/null
 ) &|

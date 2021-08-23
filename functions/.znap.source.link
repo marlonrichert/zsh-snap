@@ -2,7 +2,7 @@
 zmodload -F zsh/files b:zf_ln b:zf_mkdir
 setopt localoptions extendedglob NO_nomatch NO_nullglob
 
-local -aU tmp=( ~[$1]${2:+/$2} ) ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
+private -aU tmp=( ~[$1]${2:+/$2} ) ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
 
 if [[ -d $tmp[1] ]]; then
   tmp=( $tmp[1]/{*${(~j:?:)${=${tmp[1]:t}//[-_]/ }:#zsh}*,init,*}${^~ext}(NY1-.) )

@@ -11,7 +11,7 @@ fi
 
 ..znap.compinit
 
-local server; zstyle -s :znap:clone: default-server server ||
+private server; zstyle -s :znap:clone: default-server server ||
   server='https://github.com/'
 .znap.multi ".znap.clone.task $server "$^@ ||
     return 'sysexits[(i)IOERR] + 63'

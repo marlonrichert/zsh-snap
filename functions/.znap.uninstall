@@ -10,9 +10,9 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-local -a abs comp exe file
-local -i ret=0
-local repo
+private -a abs comp exe file
+private -i ret=0
+private repo
 for repo in ~znap/${^@:t}; do
   if [[ -d $repo ]]; then
     print 'Removing:'

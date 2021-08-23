@@ -1,4 +1,5 @@
 #!/bin/zsh
 emulate zsh
-local dir=${${(%):-%x}:P:h}
+zmodload zsh/param/private
+local -P dir=${${(%):-%x}:P:h}
 source $dir/scripts/init.zsh "$dir"

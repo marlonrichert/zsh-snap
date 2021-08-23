@@ -1,23 +1,26 @@
 #!/bin/zsh
+zmodload zsh/param/private
 zmodload -F zsh/zutil b:zparseopts
 
-local -A __znap__opts_pre=() __znap__opts_post=()
-local -a reply=()
-local REPLY= __znap__cmd= __znap__func=
 
-zparseopts -D -A __znap__opts_pre - h -help
+local -a reply=()
+local REPLY=
+private -A opts_pre=() opts_post=()
+private cmd= func=
+
+zparseopts -A opts_pre -D -- h -help
 
 if ! (( $# )); then
   .znap.help
   return
 fi
 
-__znap__cmd=$1
+cmd=$1
 shift
 
-case $__znap__cmd in
+case $cmd in
   ( cd | ls )
-    print -u2 'znap: try `'"$__znap__cmd ~${${1:+[$1]}:-znap}"'` instead'
+    print -u2 'znap: try `'"$cmd ~${${1:+[$1]}:-znap}"'` instead'
     return $(( sysexits[(i)USAGE] + 63 ))
   ;;
   ( path )
@@ -30,16 +33,16 @@ case $__znap__cmd in
   ;;
 esac
 
-zparseopts -D -A __znap__opts_post h -help
-__znap__func=.znap.$__znap__cmd
-if [[ -v functions[$__znap__func] ]]; then
-  if (( ${#__znap__opts_pre} || ${#__znap__opts_post} )); then
-    .znap.help $__znap__cmd
+zparseopts -A opts_post -D -- h -help
+func=.znap.$cmd
+if [[ -v functions[$func] ]]; then
+  if (( ${#opts_pre} || ${#opts_post} )); then
+    .znap.help $cmd
   else
-    $__znap__func $@
+    $func $@
   fi
 else
-  print -u2 "znap: unknown command: $__znap__cmd"
+  print -u2 "znap: unknown command: $cmd"
   .znap.help
   return $(( sysexits[(i)USAGE] + 63 ))
 fi

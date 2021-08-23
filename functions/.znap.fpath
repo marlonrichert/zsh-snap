@@ -3,10 +3,10 @@
 # args: <function> <command>
 zmodload -F zsh/files b:zf_mkdir
 
-local REPLY name=$1 generator=$2 dir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+private REPLY name=$1 generator=$2 dir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
 zf_mkdir -pm 0700 $dir
 
-local file=$dir/$name
+private file=$dir/$name
 eval "$generator" >| $file
 print -r -- "#$generator" >>| $file
 autoload -Uz $file

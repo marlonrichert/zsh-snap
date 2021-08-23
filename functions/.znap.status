@@ -6,50 +6,42 @@ autoload +X -Uz is-at-least
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts
 
-  local -a repos=( ~znap/$^@(D-/) ); (( $#repos > 0 )) ||
-    repos=( ~znap/*(D-/) )
+  private -a repos=( ~znap/$^@(D-/) ); (( $#repos > 0 )) ||
+      repos=( ~znap/*(D-/) )
 
-  {
-    local pwd=$PWD
-    cd -q -- ~znap
-
-    .znap.multi '.znap.status.task '${(i)^repos}
-    return
-  } always {
-    [[ -x $pwd ]] &&
-      cd -q -- $pwd
-  }
+  .znap.multi '.znap.status.task '${(i)^repos}
 }
 
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
+
+  cd -q ~znap
 
   print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
 
   cd -q $1
 
   is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
-      local jopt=-j$( ulimit -n )
+      private jopt=-j$( ulimit -n )
   git fetch -t $jopt --recurse-submodules &>/dev/null ||
       return
 
-  local rev log="$( git log -n1 --decorate --oneline )"
+  private rev log="$( git log -n1 --decorate --oneline )"
   if [[ $log ==  *'tag: '* ]]; then
-    local -a chunks=( ${(s.tag: .)log} )
+    private -a chunks=( ${(s.tag: .)log} )
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
   fi
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
-  local MATCH MBEGIN MEND
-  local -aU lines=( "${(f)$( git status -sb )}" )
-  local -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
+  private MATCH MBEGIN MEND
+  private -aU lines=( "${(f)$( git status -sb )}" )
+  private -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
   changes=( ${(@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
-  local ahead_behind=${${(M)lines[1]% \[*\]}# }
+  private ahead_behind=${${(M)lines[1]% \[*\]}# }
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'
 
-  cd -q ..
   print -r -- $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} $ahead_behind $changes
 }
 

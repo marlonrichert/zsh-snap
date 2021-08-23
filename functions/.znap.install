@@ -10,14 +10,14 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-local -i ret=0
+private -i ret=0
 
 .znap.clone $@ ||
     ret=$?
 
-local -a orig link
-local -a bindir=( ~/.local/bin ) datadir=( ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
-local REPLY pat repo sub
+private -a orig link
+private -a bindir=( ~/.local/bin ) datadir=( ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
+private REPLY pat repo sub
 mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
   repo=~[$repo]

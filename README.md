@@ -29,7 +29,7 @@ Using Znap to manage your plugins can be as simple as putting this in your `.zsh
 
 source ~/Git/zsh-snap/znap.zsh  # Start Znap
 
-# `znap prompt` reduces your shell's startup time to just 15-40 ms!
+# `znap prompt` makes your prompt visible in less than 12ms!
 znap prompt sindresorhus/pure
 
 # `znap source` automatically downloads and installs your plugins.
@@ -141,7 +141,6 @@ Commands:
   uninstall remove executables & completion functions
 
 For more info on a command, type `znap help <command>`.
-
 ```
 
 ## Author

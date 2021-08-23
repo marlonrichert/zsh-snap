@@ -5,7 +5,7 @@
 .znap.function() {
   emulate -L zsh; setopt $_znap_opts
 
-  local body=$@[-1]
+  private body=$@[-1]
   shift -p 1
   eval "$* () {
     unfunction $*

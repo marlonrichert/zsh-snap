@@ -1,5 +1,5 @@
 #!/bin/zsh
-# source plugin or repo submodules & scripts
+# load plugins
 # args: <repo> [ ( <dir> | <file> ) ... ]
 
 if ! (( # )); then
@@ -8,13 +8,22 @@ if ! (( # )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-local __znap__file __znap__src __znap__repo=$1
+private file src repo=$1
 shift
-for __znap__src in ${@:-''}; do
-  __znap__file=~/.local/bin/${__znap__repo:t}${__znap__src:+.}${__znap__src//\//.}
-  if ! [[ -r $__znap__file:P ]]; then
-    .znap.source.link "$__znap__repo" "$__znap__src" "$__znap__file" ||
+for src in ${@:-''}; do
+  file=~/.local/bin/${repo:t}${src:+.}${src//\//.}
+  if ! [[ -r $file:P ]]; then
+    .znap.source.link "$repo" "$src" "$file" ||
         return
   fi
-  . $__znap__file:P
+
+  # Wrap in a named function to prevent private vars from leaking and for profiling purposes.
+  .znap.source:${file:t}() {
+    . "$1"
+  }
+  {
+    .znap.source:${file:t} "$file:P"
+  } always {
+    unfunction .znap.source:${file:t}
+  }
 done
