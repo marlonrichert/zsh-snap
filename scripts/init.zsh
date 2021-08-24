@@ -26,11 +26,22 @@
   export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
   export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
   export XDG_DATA_HOME=${XDG_DATA_HOME:-~/.local/share}
-  private basedir=$1 datadir=$XDG_DATA_HOME/zsh/site-functions
+  private datadir=$XDG_DATA_HOME/zsh/site-functions
+  private basedir=$1
   private funcdir=$basedir/functions
+
+  private gitdir
+  zstyle -s :znap: repos-dir gitdir ||
+      zstyle -s :znap: plugins-dir gitdir ||
+          gitdir=$basedir:a:h
+  if [[ -z $gitdir ]]; then
+    print -u2 "znap: Could not find repos dir. Aborting."
+    return $(( sysexits[(i)NOINPUT] + 63 ))
+  fi
+  hash -d znap=$gitdir
+
   zf_mkdir -pm 0700 $datadir $gitdir \
       $XDG_CACHE_HOME/zsh{,-snap} $XDG_CONFIG_HOME/zsh $XDG_DATA_HOME
-  zf_ln -fhs $funcdir/_znap $datadir/_znap
 
   if [[ -z $basedir ]]; then
     print -u2 "znap: Could not find Znap's repo. Aborting."
@@ -46,16 +57,7 @@
   path=( ~/.local/bin $path[@] )
   fpath=( $fpath[@] $datadir )
   builtin autoload -Uz $funcdir/{znap,(|.).znap.*~*.zwc}
-
-  private gitdir
-  zstyle -s :znap: repos-dir gitdir ||
-      zstyle -s :znap: plugins-dir gitdir ||
-          gitdir=$basedir:a:h
-  if [[ -z $gitdir ]]; then
-    print -u2 "znap: Could not find repos dir. Aborting."
-    return $(( sysexits[(i)NOINPUT] + 63 ))
-  fi
-  hash -d znap=$gitdir
+  zf_ln -fhs $funcdir/_znap $datadir/_znap
 
   zstyle -T :znap: auto-compile &&
       ..znap.auto-compile
