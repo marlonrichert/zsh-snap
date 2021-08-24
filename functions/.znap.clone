@@ -9,9 +9,10 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-..znap.compinit
-
 private server; zstyle -s :znap:clone: default-server server ||
   server='https://github.com/'
 .znap.multi ".znap.clone.task $server "$^@ ||
     return 'sysexits[(i)IOERR] + 63'
+
+[[ -f $_comp_dumpfile ]] &&
+    zf_rm -f $_comp_dumpfile

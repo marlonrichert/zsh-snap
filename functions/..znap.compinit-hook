@@ -8,7 +8,12 @@ zmodload zsh/complist
 if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   unfunction compdef compinit 2>/dev/null
   autoload -Uz compinit
-  compinit -C -d $_comp_dumpfile
+  bindkey() {:}
+  {
+    compinit -C -d $_comp_dumpfile
+  } always {
+    unfunction bindkey
+  }
   ( zcompile $_comp_dumpfile ) &|
 fi
 private args; for args in "$_znap_compdef[@]"; do

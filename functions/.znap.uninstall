@@ -35,5 +35,6 @@ for repo in ~znap/${^@:t}; do
   fi
 done
 hash -f
-..znap.compinit
+[[ -f $_comp_dumpfile ]] &&
+    zf_rm -f $_comp_dumpfile
 return ret
