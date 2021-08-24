@@ -16,7 +16,7 @@ autoload +X -Uz is-at-least
 }
 
 .znap.pull.task() {
-  emulate -L zsh; setopt $_znap_opts verbose xtrace
+  emulate -L zsh; setopt $_znap_opts
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
