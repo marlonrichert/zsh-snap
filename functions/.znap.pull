@@ -27,8 +27,10 @@ autoload +X -Uz is-at-least
 
   print -n .
 
-  private behind msg
-  if behind=$( git -C $1 rev-list --right-only --count @...@{u} 2>&1 ) && (( behind )); then
+  private -a count=( ${="$( git -C $1 rev-list --count --left-right @...@{u} 2>&1 )"} )
+  private -i ahead=$count[1] behind=$count[2]
+  private msg
+  if (( behind && ! ahead )); then
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
     ..znap.tput el  # Clear to end of line.
