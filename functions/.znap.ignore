@@ -3,10 +3,14 @@
 # args: <repo> <pattern> ...
 emulate -L zsh; setopt $_znap_opts
 
-private -aU lines
-private repo=~znap/$1; [[ $1 == */* ]] && repo=~[$1]
+private repo=~znap/$1
+[[ $1 == */* ]] &&
+    repo=~[$1]
 shift
-private file; for file in $repo/${GIT_DIR:-.git}/**/info/exclude(.); do
+
+private -aU lines=()
+private file=
+for file in $repo/${GIT_DIR:-.git}/**/info/exclude(.); do
   [[ -r $file ]] &&
       lines=( ${(f)"$(< $file)"} )
   lines+=( $@ )

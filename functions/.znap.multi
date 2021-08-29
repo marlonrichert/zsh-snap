@@ -2,15 +2,16 @@
 # run tasks in parallel
 # args: <command>
 
+local fd=
 private -a fds=()
-private fd cmd
+private cmd=
 {
   for cmd in $@; do
     exec {fd}< <( eval "$cmd" )
     fds+=( $fd )
   done
 } always {
-  for fd in $fds; do
+  for fd in $fds[@]; do
     <&$fd
     exec {fd}<&-
   done

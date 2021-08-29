@@ -1,6 +1,6 @@
 #!/bin/zsh
 # load plugins
-# args: <repo> [ ( <dir> | <file> ) ... ]
+# args: <repo> [ <dir> | <file> ] ...
 
 if ! (( # )); then
   print -u2 'znap source: not enough arguments'
@@ -8,8 +8,9 @@ if ! (( # )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-private file src repo=$1
+private file= src= repo=~[$1]
 shift
+
 for src in ${@:-''}; do
   file=~/.local/bin/${repo:t}${src:+.}${src//\//.}
   if ! [[ -r $file:P ]]; then
@@ -17,7 +18,7 @@ for src in ${@:-''}; do
         return
   fi
 
-  # Wrap in a named function to prevent private vars from leaking and for profiling purposes.
+  # Wrap in a named function for profiling purposes.
   .znap.source:${file:t}() {
     . "$1"
   }

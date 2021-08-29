@@ -3,7 +3,7 @@ setopt localoptions NO_warncreateglobal
 zmodload -F zsh/parameter p:funcstack
 zmodload -F zsh/zselect b:zselect
 
-private fd
+local fd
 exec {fd}< <(
   zselect -t 100
   print

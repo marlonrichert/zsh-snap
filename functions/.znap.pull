@@ -29,13 +29,15 @@ autoload +X -Uz is-at-least
 
   private -a count=( ${="$( git -C $1 rev-list --count --left-right @...@{u} 2>&1 )"} )
   private -i ahead=$count[1] behind=$count[2]
-  private msg
   if (( behind && ! ahead )); then
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
     ..znap.tput el  # Clear to end of line.
+
+    private msg=
     msg="$( git -C $1 pull -q -r $jopt --autostash --recurse-submodules 2>&1 > /dev/null )"
     private err=$?
+
     print -n '\r'
     .znap.status $1:t
     if (( err )); then

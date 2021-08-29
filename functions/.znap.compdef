@@ -4,6 +4,7 @@
 zmodload -F zsh/files b:zf_mkdir
 
 private name=$1 generator=$2
+shift 2
 
 private cache_dir=$XDG_CACHE_HOME/zsh-snap/fpath
 zf_mkdir -pm 0700 $cache_dir
@@ -11,14 +12,14 @@ fpath=( $cache_dir $fpath[@] )
 
 private cache_file=$cache_dir/$name
 if [[ -r $cache_file ]]; then
-  private line
+  local line=
   IFS='' read -r line < $cache_file
 
   [[ $line != '#compdef '* ]] &&
       return $(( sysexits[(i)DATAERR] + 63 ))
 
   private -a cmds=( ${=line#'#compdef '} )
-  private c
+  private c=
   for c in $cmds[@]; do
     if [[ ${${:-=$c}:a} -nt $cache_file ]]; then
       eval "$generator" >| $cache_file

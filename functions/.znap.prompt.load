@@ -35,7 +35,8 @@ zmodload -F zsh/parameter p:functions
     unsetopt localoptions prompt{bang,cr,percent,sp,subst}
     PS1='%# '
     source $file[1]
-    private opt; for opt in bang cr percent sp subst; do
+    private opt=
+    for opt in bang cr percent sp subst; do
       [[ -o prompt\$opt ]] &&
           prompt_opts+=( \$opt )
     done

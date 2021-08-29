@@ -7,6 +7,7 @@
 
   private body=$@[-1]
   shift -p 1
+
   eval "$* () {
     unfunction $*
     $body

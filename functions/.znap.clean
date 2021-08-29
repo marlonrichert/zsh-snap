@@ -10,7 +10,7 @@ zmodload -Fa zsh/files b:zf_rm
   (( $# > 0 )) ||
       files=( $PWD/**.zwc(-.) $^fpath/*.zwc(-.) )
   private -i ret=0
-  private bin src
+  private bin= src=
   for bin in $files; do
     src=${bin%.zwc}
     if [[ -w $bin:h && ( ! -e $src || $bin -ot $src ) ]]; then

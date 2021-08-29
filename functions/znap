@@ -2,12 +2,10 @@
 zmodload zsh/param/private
 zmodload -F zsh/zutil b:zparseopts
 
-
 local -a reply=()
 local REPLY=
-private -A opts_pre=() opts_post=()
-private cmd= func=
 
+local -A opts_pre=()
 zparseopts -A opts_pre -D -- h -help
 
 if ! (( $# )); then
@@ -15,7 +13,7 @@ if ! (( $# )); then
   return
 fi
 
-cmd=$1
+private cmd=$1
 shift
 
 case $cmd in
@@ -33,8 +31,10 @@ case $cmd in
   ;;
 esac
 
+local -A opts_pre=() opts_post=()
 zparseopts -A opts_post -D -- h -help
-func=.znap.$cmd
+
+private func=.znap.$cmd
 if [[ -v functions[$func] ]]; then
   if (( ${#opts_pre} || ${#opts_post} )); then
     .znap.help $cmd

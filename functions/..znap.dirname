@@ -7,7 +7,7 @@
   if [[ $1 == */* ]]; then
     dir=~znap/${${1##*/}%.git}
     [[ -d $dir ]] ||
-      .znap.clone $1
+        .znap.clone $1
   fi
   if [[ -d $dir ]]; then
     reply=( $dir )
@@ -29,10 +29,13 @@
 }
 
 ..znap.dirname.c() {
-  private expl tag='named-directories' group='named directory'
+  private tag=named-directories
   _tags $tag
-  _tags && _requested $tag expl $group &&
-      compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
+
+  local -a expl=()
+  _tags &&
+      _requested $tag expl 'named directory' &&
+          compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
 }
 
 ..znap.dirname() {

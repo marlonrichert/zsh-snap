@@ -8,7 +8,7 @@ zmodload -Fa zsh/parameter p:functions
   emulate -LR zsh; setopt $_znap_opts
 
   typeset -gHA _ZNAP_ARGS=()
-  private f
+  private f=
   for f in ${${(%):-%x}:a:h}/.znap.[^.]##; do
     _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
   done
@@ -18,6 +18,7 @@ zmodload -Fa zsh/parameter p:functions
     if [[ -v functions[.znap.$1] ]]; then
       private -a funcfile=( ${(f)mapfile[${${(%):-%x}:a:h}/.znap.$1]} )
       print -lP -- "Usage: %F{10}znap%f $1 ${funcfile[3]#'# args: '}"
+
       private help="${funcfile[2]#'# '}"
       private first=${${=help}[1]}
       print -l "${(C)first} ${help#$first }."
@@ -30,7 +31,8 @@ zmodload -Fa zsh/parameter p:functions
 'Usage: %F{10}znap%f <command> [ <argument> ... ]
 
 Commands:'
-  private MATCH MBEGIN MEND
+  private -i MBEGIN= MEND=
+  private MATCH=
   print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:9:)MATCH} $_ZNAP_ARGS[$MATCH]}"
   print -Pu$fd -- '
 For more info on a command, type `%F{10}znap%f help <command>`.

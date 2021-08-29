@@ -16,9 +16,12 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   }
   ( zcompile $_comp_dumpfile ) &|
 fi
-private args; for args in "$_znap_compdef[@]"; do
+
+private args=
+for args in "$_znap_compdef[@]"; do
   eval "compdef $args"
 done
+
 unset _znap_compdef
 
 compinit() {:}

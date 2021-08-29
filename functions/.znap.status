@@ -6,7 +6,8 @@ autoload +X -Uz is-at-least
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts
 
-  private -a repos=( ~znap/$^@(D-/) ); (( $#repos > 0 )) ||
+  private -a repos=( ~znap/$^@(D-/) )
+  (( $#repos > 0 )) ||
       repos=( ~znap/*(D-/) )
 
   .znap.multi '.znap.status.task '${(i)^repos}
@@ -26,7 +27,7 @@ autoload +X -Uz is-at-least
   git fetch -t $jopt --recurse-submodules &>/dev/null ||
       return
 
-  private rev log="$( git log -n1 --decorate --oneline )"
+  private rev= log="$( git log -n1 --decorate --oneline )"
   if [[ $log ==  *'tag: '* ]]; then
     private -a chunks=( ${(s.tag: .)log} )
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
@@ -34,10 +35,13 @@ autoload +X -Uz is-at-least
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
-  private MATCH MBEGIN MEND
   private -aU lines=( "${(f)$( git status -sb )}" )
+
+  private -i MBEGIN MEND
+  private MATCH
   private -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
   changes=( ${(@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
+
   private ahead_behind=${${(M)lines[1]% \[*\]}# }
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'

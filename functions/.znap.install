@@ -10,14 +10,12 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-private -i ret=0
-
 .znap.clone $@ ||
-    ret=$?
+    return
 
-private -a orig link
 private -a bindir=( ~/.local/bin ) datadir=( ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
-private REPLY pat repo sub
+private -a link=() orig=()
+private pat= repo= sub=
 mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
   repo=~[$repo]
@@ -27,10 +25,10 @@ for repo in $@; do
     link=( $bindir/$orig[1]:t )
     if [[ $link[1]:A != $orig[1] ]]; then
       hash $orig[1]:t=$link[1]
-      if zf_ln -fhs $orig[1] $link[1]; then
+      if zf_ln -fhs "$orig[1]" "$link[1]"; then
         print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
       else
-        (( ret = sysexits[(i)CANTCREAT] + 63 ))
+        return $(( sysexits[(i)CANTCREAT] + 63 ))
       fi
     fi
     shift orig
@@ -46,17 +44,19 @@ for repo in $@; do
     if [[ $link[1]:A != $orig[1] ]]; then
       IFS='' read -r < $orig[1]
       if [[ $REPLY == \#(autoload|compdef)\ * ]]; then
-        if zf_ln -fhs $orig[1] $link[1]; then
+        if zf_ln -fhs "$orig[1]" "$link[1]"; then
           print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
         else
-          (( ret = sysexits[(i)CANTCREAT] + 63 ))
+          return $(( sysexits[(i)CANTCREAT] + 63 ))
         fi
       fi
     fi
     shift orig
   done
 done
+
 hash -f
 [[ -f $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
-return ret
+
+true

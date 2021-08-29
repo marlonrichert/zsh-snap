@@ -56,7 +56,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 
   # Clean up any mess that syntax highlighting might have made, to prevent an infinite loop.
   if zstyle -L zle-hook types > /dev/null; then
-    private hook
+    private hook=
     for hook in isearch-{exit,update} line-{pre-redraw,init,finish} history-line-set keymap-select
     do
       [[ $widgets[zle-$hook] == user:_zsh_highlight_widget_orig-s<->.<->-r<->-zle-$hook ]] &&

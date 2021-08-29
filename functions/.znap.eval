@@ -11,11 +11,13 @@ fi
 
 .znap.eval.generate() {
   (
-    private line repo=$1 cache_file=$2
-    [[ -r $cache_file ]] &&
-        IFS='' read -r line < $cache_file
+    private repo=$1 cache_file=$2
     shift 2
     private header="#${(q)@}"
+
+    local line
+    [[ -r $cache_file ]] &&
+        IFS='' read -r line < $cache_file
 
     if [[ $line != $header ||
         ( -d $repo && -f $repo/${GIT_DIR:-.git}/index &&
@@ -31,8 +33,9 @@ fi
 private repo=~znap/$1 cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
 [[ $1 == */* ]] &&
     repo=~[$1]
-zf_mkdir -pm 0700 $cache_dir
 shift
+
+zf_mkdir -pm 0700 $cache_dir
 private cache_file=$cache_dir/${repo:t}.zsh
 
 if [[ -r $cache_file ]]; then
@@ -42,7 +45,7 @@ else
   .znap.eval.generate "$repo" "$cache_file" "$@"
 fi
 
-# Wrap in a named function to prevent private vars from leaking and for profiling purposes.
+# Wrap in a named function for profiling purposes.
 .znap.eval:${cache_file:t}() {
   . "$1"
 }
