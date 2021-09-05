@@ -14,7 +14,8 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   } always {
     unfunction bindkey
   }
-  ( zcompile $_comp_dumpfile ) &|
+  [[ -r $_comp_dumpfile ]] &&
+      ( zcompile $_comp_dumpfile ) &|
 fi
 
 private args=
