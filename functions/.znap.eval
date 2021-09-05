@@ -11,46 +11,47 @@ fi
 
 .znap.eval.generate() {
   (
-    private repo=$1 cache_file=$2
+    private __repo=$1 __cache_file=$2
     shift 2
-    private header="#${(q)@}"
+    private __header="#${(q)@}"
 
-    local line
-    [[ -r $cache_file ]] &&
-        IFS='' read -r line < $cache_file
+    local __line
+    [[ -r $__cache_file ]] &&
+        IFS='' read -r __line < $__cache_file
 
-    if [[ $line != $header ||
-        ( -d $repo && -f $repo/${GIT_DIR:-.git}/index &&
-            $repo/${GIT_DIR:-.git}/index -nt $cache_file ) ]]; then
-      print -r "$header" >| $cache_file
-      [[ -d $repo ]] &&
-          cd -q -- $repo
-      eval "$@" >>| $cache_file
+    if [[ $__line != $__header ||
+        ( -d $__repo && -f $__repo/${GIT_DIR:-.git}/index &&
+            $__repo/${GIT_DIR:-.git}/index -nt $__cache_file ) ]]; then
+      print -r "$__header" >| $__cache_file
+      [[ -d $__repo ]] &&
+          cd -q -- $__repo
+      eval "$@" >>| $__cache_file
     fi
   )
 }
 
-private repo=~znap/$1 cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
+private __repo=~znap/$1 __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
 [[ $1 == */* ]] &&
-    repo=~[$1]
+    __repo=~[$1]
 shift
 
-zf_mkdir -pm 0700 $cache_dir
-private cache_file=$cache_dir/${repo:t}.zsh
+zf_mkdir -pm 0700 $__cache_dir
+private __cache_file=$__cache_dir/${__repo:t}.zsh
 
-if [[ -r $cache_file ]]; then
-  .znap.eval.generate "$repo" "$cache_file" "$@" &|
+if [[ -r $__cache_file ]]; then
+  .znap.eval.generate "$__repo" "$__cache_file" "$@" &|
 else
   print -r "znap eval: generating cache for $*"
-  .znap.eval.generate "$repo" "$cache_file" "$@"
+  .znap.eval.generate "$__repo" "$__cache_file" "$@"
 fi
 
 # Wrap in a named function for profiling purposes.
-.znap.eval:${cache_file:t}() {
+.znap.eval:${__cache_file:t}() {
   . "$1"
 }
 {
-  .znap.eval:${cache_file:t} "$cache_file"
+  .znap.eval:${__cache_file:t} "$__cache_file"
 } always {
-  unfunction .znap.eval:${cache_file:t}
+  TRY_BLOCK_ERROR=
+  unfunction .znap.eval:${__cache_file:t}
 }

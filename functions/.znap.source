@@ -8,23 +8,24 @@ if ! (( # )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-private file= src= repo=~[$1]
+private __file= __src= __repo=~[$1]
 shift
 
-for src in ${@:-''}; do
-  file=~/.local/bin/${repo:t}${src:+.}${src//\//.}
-  if ! [[ -r $file:P ]]; then
-    .znap.source.link "$repo" "$src" "$file" ||
+for __src in ${@:-''}; do
+  __file=~/.local/bin/${__repo:t}${__src:+.}${__src//\//.}
+  if ! [[ -r $__file:P ]]; then
+    .znap.source.link "$__repo" "$__src" "$__file" ||
         return
   fi
 
   # Wrap in a named function for profiling purposes.
-  .znap.source:${file:t}() {
+  .znap.source:${__file:t}() {
     . "$1"
   }
   {
-    .znap.source:${file:t} "$file:P"
+    .znap.source:${__file:t} "$__file:P"
   } always {
-    unfunction .znap.source:${file:t}
+    TRY_BLOCK_ERROR=
+    unfunction .znap.source:${__file:t}
   }
 done
