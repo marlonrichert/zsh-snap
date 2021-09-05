@@ -1,11 +1,19 @@
 #!/bin/zsh
-setopt localoptions NO_warncreateglobal
-zmodload -F zsh/parameter p:funcstack
 zmodload -F zsh/zselect b:zselect
 
-local fd
-exec {fd}< <(
-  zselect -t 100
-  print
-)
-zle -F "$fd" ..znap.auto-compile.callback
+add-zsh-hook -d preexec ..znap.auto-compile
+
+(
+  local exclude=
+  zstyle -s :znap: auto-compile-ignore exclude '|' &&
+      exclude="($exclude)"
+
+  private -aU include=()
+  private k v
+  for k v in "${(@kv)functions_source}"; do
+    [[ $v == */$k && $v != $~exclude ]] &&
+        include+=( $v )
+  done
+
+  .znap.compile $include[@]
+) &> /dev/null &|

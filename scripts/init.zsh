@@ -61,7 +61,7 @@ builtin autoload -Uz $funcdir/{znap,(|.).znap.*~*.zwc}
 zf_ln -fhs $funcdir/_znap $datadir/_znap
 
 zstyle -T :znap: auto-compile &&
-    ..znap.auto-compile
+    add-zsh-hook preexec ..znap.auto-compile
 add-zsh-hook zsh_directory_name ..znap.dirname
 
 typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
