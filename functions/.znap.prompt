@@ -17,15 +17,15 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
     fi
   fi
 
-  ..znap.tput civis
-  ..znap.tput sc
+  ..znap.tput civis # Make cursor invisible.
+  ..znap.tput sc    # Save cursor position.
   add-zsh-hook precmd .znap.prompt.precmd
 
   promptinit
   if [[ -n $theme ]]; then
     prompt_themes+=( $theme )
     prompt $theme
-    ..znap.tput sc
+    ..znap.tput sc  # Save cursor position (overwriting the previous save).
 
     private precmd=prompt_${theme}_precmd
     if [[ -n $functions[$precmd] ]]; then
@@ -45,16 +45,29 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
       print -n $'\r'
   :
   print -nPr -- "$PS1"
-  ..znap.tput cnorm
+  ..znap.tput cnorm # Make cursor normal (visible).
+
+  # Temporarily redirect standard error to file.
+  mkdir -pm 0700 ~XDG_DATA_HOME/zsh-snap/err
+  typeset -gH _znap_prompt_fd= _znap_prompt_tmp==( <<< '' )
+  exec {_znap_prompt_fd}>&2  # Save a copy of std err.
+  exec 2> $_znap_prompt_tmp  # Redirect std err to tmp file.
 }
 
 .znap.prompt.precmd() {
   add-zsh-hook -d precmd ${(%):-%N}
 
-  ..znap.tput civis
-  ..znap.tput rc
+  ..znap.tput civis # Make cursor invisible.
+  ..znap.tput rc    # Restore saved cursor position.
 
-  # Clean up any mess that syntax highlighting might have made, to prevent an infinite loop.
+  # If there are error messages, print them above the new prompt.
+  exec 2>&$_znap_prompt_fd   # Restore std error.
+  private err="$( < $_znap_prompt_tmp )"
+  [[ -n $err ]] &&
+      print -u2 -- "$err"
+  unset _znap_prompt_fd _znap_prompt_tmp
+
+  # To prevent an infinite loop, clean up any mess that syntax highlighting might have made.
   if zstyle -L zle-hook types > /dev/null; then
     private hook=
     for hook in isearch-{exit,update} line-{pre-redraw,init,finish} history-line-set keymap-select
@@ -72,7 +85,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 .znap.prompt.line-init() {
   add-zle-hook-widget -d line-init ${(%):-%N}
 
-  ..znap.tput cnorm
+  ..znap.tput cnorm # Make cursor normal (visible).
 
   [[ -v prompt_opts ]] ||
       setopt promptsp
