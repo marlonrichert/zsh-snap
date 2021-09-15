@@ -1,4 +1,3 @@
-#!/bin/zsh
 emulate zsh
 () {
   {

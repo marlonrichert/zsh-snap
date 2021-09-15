@@ -91,15 +91,16 @@ zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' 
 In any case, you can compile sources manually at any time with `znap compile`.
 
 ## Command-Line Usage
-Znap also makes life on the command line easier. For a full list of available commands, run
+Znap also makes life on the command line easier. For a full list of available commands, just run
 ```zsh
 % znap
 ```
 Exhaustive tab-completion is available, too.
 
-> Note 1: The examples in this section you should run on the command line, not add to your `.zshrc`
-file!
-> Note 2: `%` represents the prompt. You shouldn't type that part. 🙂
+> Note:
+> * The examples in this section you should run on the command line, not add to your `.zshrc`
+>   file!
+> * `%` represents the prompt. You shouldn't type that part. 🙂
 
 Below are examples of the most important command-line features that Znap makes available.
 

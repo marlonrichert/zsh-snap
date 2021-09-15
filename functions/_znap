@@ -8,11 +8,10 @@ local k; for k in ${(ko)_ZNAP_ARGS}; do
   subcommands+=( "$k\:'$_ZNAP_ARGS[$k]'" )
 done
 
-local ret=1
-local -a context line state state_descr
 local -A opt_args
-_arguments -A '' ":command:(( $subcommands ))" '*:: :->next'
-ret=$?
+local -a opts=( -qS ' ' ) context line state state_descr
+_arguments -A '' -O opts : ":command:(( $subcommands ))" '*:: :->next'
+local ret=$?
 
 [[ $state == next ]] ||
     return ret
