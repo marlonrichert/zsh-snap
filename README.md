@@ -22,7 +22,13 @@ Recommended:
 Minimum:
 * Zsh 5.4.2
 
-## Features & Usage
+### Updating
+To update Znap and all of your plugins/repos simultaneously, run
+```zsh
+% znap pull
+```
+
+## Dotfiles Usage
 Using Znap to manage your plugins can be as simple as putting this in your `.zshrc` file:
 ```zsh
 # Download Znap, if it's not there yet.
@@ -43,57 +49,18 @@ znap source zsh-users/zsh-syntax-highlighting
 znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
 ```
 
-To update all of your plugins/repos simultaneously, type
-```zsh
-znap pull
-```
-
-For more examples of how to use Znap in your dotfiles, please see [the included `.zshrc`
+For more examples of what Znap can do for your dotfiles, please see [the included `.zshrc`
 file](.zshrc).
 
-### Installing executables and completion functions
-Znap can download multiple repos in parallel, then automatically find and install their
-executables and completion functions, with just one command:
-```zsh
-znap install asdf-vm/asdf aureliojargas/clitest bigH/git-fuzzy \
-    ekalinin/github-markdown-toc ohmyzsh/ohmyzsh zsh-users/zsh-completions
-```
-
-To remove these (and their repos), use `znap uninstall`:
-```zsh
-znap uninstall asdf clitest git-fuzzy \
-    github-markdown-toc ohmyzsh zsh-completions
-```
-
-Executables are installed in `~/.local/bin`, while completion functions go into
-`${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
-
-### Installing generated functions
-Some commands generate output that should be loaded as a function. You can install these generated
-functions as follows:
-```zsh
-znap fpath _kubectl 'kubectl completion  zsh'
-znap fpath _rustup  'rustup  completions zsh'
-znap fpath _cargo   'rustup  completions zsh cargo'
-```
+Additionaly, Znap makes it so that you actually need to have _less_ in your `.zshrc` file, by
+automating several tasks for you.
 
 ### Automatic `compinit` and `bashcompinit`
-You no longer need to call
+Note that the above example does not include any call to
 [`complist`](http://zsh.sourceforge.net/Doc/Release/Zsh-Modules.html#The-zsh_002fcomplist-Module),
-[`compinit` or
+[`compinit`, or
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
-your `.zshrc` file. Znap will run these for you as needed.
-
-### Asynchronous compilation
-While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
-Line Editor is idle. This way, your shell will start up even faster next time!
-
-Should you not want this feature, you can disable it with `zstyle ':znap:*' auto-compile no`. Or if
-you want to exclude specific files only, you can do so by passing them as absolute-path patterns to
-the `auto-compile-ignore` setting. For example:
-```zsh
-zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'
-```
+your `.zshrc` file. That is because Znap will run these for you as needed.
 
 ### Automatic cache invalidation
 Znap automatically regenerates your [comp dump
@@ -107,7 +74,34 @@ Znap also automatically regenerates its internal cache for each command when…
   the variable changes. See the [example `.zshrc` file](.zshrc) for a practical use of this.
 * …the cache file is missing. You can delete them manually from `$XDG_CACHE_HOME/zsh-snap/eval`.
 
+### Asynchronous compilation
+While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
+Line Editor is idle. This way, your shell will start up even faster next time!
+
+Should you not want this feature, you can disable it with
+```zsh
+zstyle ':znap:*' auto-compile no
+```
+Alternatively, if you want to exclude specific files only, you can do so by passing them as
+absolute-path patterns to the `auto-compile-ignore` setting. For example:
+```zsh
+zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'
+```
+
 In any case, you can compile sources manually at any time with `znap compile`.
+
+## Command-Line Usage
+Znap also makes life on the command line easier. For a full list of available commands, run
+```zsh
+% znap
+```
+Exhaustive tab-completion is available, too.
+
+> Note 1: The examples in this section you should run on the command line, not add to your `.zshrc`
+file!
+> Note 2: `%` represents the prompt. You shouldn't type that part. 🙂
+
+Below are examples of the most important command-line features that Znap makes available.
 
 ### Named dirs
 Znap makes your repos dir and all of its subdirs available as [named
@@ -118,31 +112,30 @@ directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expa
 % ls ~[asdf]/completions    # `ls` a subdir in a repo
 ```
 
-## `znap` Command Syntax
-The following is a summary of all `znap` commands available, which you can get on the command line by typing just `znap`. Tab completion is available, too.
+### Installing executables and completion functions
+Znap can download multiple repos in parallel, then automatically find and install their
+executables and completion functions, with just one command:
+```zsh
+% znap install asdf-vm/asdf aureliojargas/clitest bigH/git-fuzzy \
+    ekalinin/github-markdown-toc ohmyzsh/ohmyzsh zsh-users/zsh-completions
 ```
-Usage: znap <command> [ <argument> ... ]
 
-Commands:
-  clean     remove outdated .zwc binaries
-  clone     download repos in parallel
-  compdef   add output of command as completion function (deprecated)
-  compile   compile zsh scripts and functions
-  eval      cache & eval output of command
-  fpath     install command output as a function
-  function  create lazy-loading functions
-  help      print help text for command
-  ignore    add local exclude patterns to repo
-  install   install executables & completion functions
-  multi     run tasks in parallel
-  prompt    instant prompt from repo
-  pull      update repos in parallel
-  restart   validate dotfiles & safely restart Zsh
-  source    load plugins
-  status    fetch updates & show git status
-  uninstall remove executables & completion functions
+To remove these (and their repos), use `znap uninstall`:
+```zsh
+% znap uninstall asdf clitest git-fuzzy \
+    github-markdown-toc ohmyzsh zsh-completions
+```
 
-For more info on a command, type `znap help <command>`.
+Executables are installed in `~/.local/bin`, while completion functions go into
+`${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
+
+### Installing generated functions
+Some commands generate output that should be loaded as a function. You can install these generated
+functions as follows:
+```zsh
+% znap fpath _kubectl 'kubectl completion  zsh'
+% znap fpath _rustup  'rustup  completions zsh'
+% znap fpath _cargo   'rustup  completions zsh cargo'
 ```
 
 ## Author

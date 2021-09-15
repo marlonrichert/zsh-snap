@@ -1,5 +1,5 @@
 ##
-# ⚠️ WARNING: Never manually `source` your .zshrc file! It can have unexpected
+# ⚠️ WARNING: Don't manually `source` your .zshrc file! It can have unexpected
 # side effects. Instead, to safely apply changes, use `znap restart`.
 #
 
