@@ -24,28 +24,28 @@ case $words[1] in
     _arguments : ':remote repository:_urls'
   ;;
   ( compdef )
-    _arguments : ':default:_default'
+    _arguments : ': :_default'
   ;;
   ( compile )
-    _arguments : '*:: :->files-functions'
+    _arguments : ': :_default'
   ;;
   ( eval )
-    _arguments : ': :->repos-caches' ':default:_default'
+    _arguments : ': :->repos-caches' ': :_default'
   ;;
   ( function )
-    _arguments : ':default:_default' '*::function:_functions'
+    _arguments : '*:: :_normal'
   ;;
   ( help )
     _arguments : ":command:(( $subcommands ))"
   ;;
   ( ignore )
-    _arguments : ': :->repos' ':default:_default'
+    _arguments : ': :->repos' ':pattern:'
   ;;
   ( install )
     _arguments : ':remote repository:_urls'
   ;;
   ( multi )
-    _arguments : ':default:_default'
+    _arguments : ': :_default'
   ;;
   ( prompt )
     _arguments : ': :->repos' '*:: :->themes'
@@ -57,7 +57,7 @@ case $words[1] in
     false
   ;;
   ( source )
-    _arguments : ": :->repos" '*:: :->files'
+    _arguments : ": :->repos" '*:: :->repo-files'
   ;;
   ( status )
     _arguments : "*:: :->repos"
@@ -73,7 +73,7 @@ case $state in
   ( dirs )
     _alternative 'directories:directory:_files -/'
   ;;
-  ( files )
+  ( repo-files )
     local repo=~[$words[1]]
     [[ -d $repo ]] &&
       _arguments : "*::file:_files -W $repo -F '*.zwc'"
@@ -81,9 +81,6 @@ case $state in
   ( repos-caches )
     local -aU caches=( ${XDG_CACHE_HOME:-$HOME/.cache}/zsh-snap/eval/*.zsh(D-.) )
     _alternative -O opts "repositories:repo:($repos)" "cache-files:cache:(${caches[@]:t:r})"
-  ;;
-  ( files-functions )
-    _alternative "files:file:_files" "functions:function:_functions"
   ;;
   ( repos )
     _alternative -O opts "repositories:repo:($repos)"
