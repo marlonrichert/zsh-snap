@@ -16,4 +16,5 @@ if git -C ~znap clone --depth 1 $jopt --recurse-submodules --shallow-submodules 
     [[ -f $_comp_dumpfile ]] &&
         zf_rm -f $_comp_dumpfile
   .znap.ignore $repo:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  .znap.compile $repo
 fi

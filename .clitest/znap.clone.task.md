@@ -2,7 +2,7 @@ Setup:
 ```zsh
 % autoload -Uz .znap.clone.task
 % git() { if [[ $1 == --version ]]; then print 2.8.0; else print $@[-1]; fi }
-% .znap.ignore() { : }
+% .znap.compile .znap.ignore () { : }
 % hash -d znap=$(mktemp -d)
 %
 ```

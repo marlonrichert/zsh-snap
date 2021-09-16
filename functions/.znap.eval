@@ -26,6 +26,7 @@ fi
       [[ -d $__repo ]] &&
           cd -q -- $__repo
       eval "$@" >>| $__cache_file
+      zcompile -UzR $__cache_file
     fi
   )
 }

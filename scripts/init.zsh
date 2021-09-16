@@ -28,8 +28,8 @@ shift
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_DATA_HOME=${XDG_DATA_HOME:-~/.local/share}
-private datadir=$XDG_DATA_HOME/zsh/site-functions
 private funcdir=$basedir/functions
+private sitefuncdir=$XDG_DATA_HOME/zsh/site-functions
 
 private gitdir=
 zstyle -s :znap: repos-dir gitdir ||
@@ -41,7 +41,7 @@ if [[ -z $gitdir ]]; then
 fi
 hash -d znap=$gitdir
 
-zf_mkdir -pm 0700 $datadir $gitdir \
+zf_mkdir -pm 0700 $sitefuncdir $gitdir \
     $XDG_CACHE_HOME/zsh{,-snap} $XDG_CONFIG_HOME/zsh $XDG_DATA_HOME
 
 if [[ -z $basedir ]]; then
@@ -56,9 +56,9 @@ setopt $_znap_opts
 
 typeset -gU PATH path FPATH fpath MANPATH manpath
 path=( ~/.local/bin $path[@] )
-fpath=( $fpath[@] $datadir )
+fpath=( $fpath[@] $sitefuncdir )
 builtin autoload -Uz $funcdir/{znap,(|.).znap.*~*.zwc}
-zf_ln -fhs $funcdir/_znap $datadir/_znap
+zf_ln -fhs $funcdir/_znap $sitefuncdir/_znap
 
 zstyle -T :znap: auto-compile &&
     add-zsh-hook preexec ..znap.auto-compile

@@ -1,7 +1,7 @@
 #!/bin/zsh
 # update repos in parallel
 # args: [ <repo> ... ]
-zmodload -F zsh/files b:zf_rm
+zmodload -F zsh/files b:zf_ln b:zf_rm
 autoload +X -Uz is-at-least
 
 .znap.pull() {
@@ -45,6 +45,18 @@ autoload +X -Uz is-at-least
     else
       private cache_dir=$XDG_CACHE_HOME/zsh-snap
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
+      .znap.compile $1
+      private link= orig= R=
+      for link in ~/.local/bin/*(@) ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*(@); do
+        orig=$link:P
+        if [[ $orig == $1/* ]]; then
+          R=
+          [[ $orig == ~/.local/bin/* ]] &&
+              R=r
+          zcompile -Uz$R $orig &&
+              zf_ln -fhs $orig.zwc $link.zwc
+        fi
+      done
     fi
   fi
 }

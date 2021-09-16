@@ -46,6 +46,8 @@ for repo in $@; do
       if [[ $REPLY == \#(autoload|compdef)\ * ]]; then
         if zf_ln -fhs "$orig[1]" "$link[1]"; then
           print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
+          zcompile -Uz $orig[1] &&
+              zf_ln -fhs $orig[1].zwc $link[1].zwc
         else
           return $(( sysexits[(i)CANTCREAT] + 63 ))
         fi

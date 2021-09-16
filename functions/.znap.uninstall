@@ -28,6 +28,7 @@ for repo in ~znap/${^@:t}; do
       shift file
     done
     zf_rm -frs $repo
+    print -r -- $repo
     print -P "%F{12}${repo:t}%f uninstalled."
   else
     print -Pu2 "%F{12}${repo:t} %F{1}not found.%f"

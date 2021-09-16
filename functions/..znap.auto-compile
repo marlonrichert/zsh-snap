@@ -8,12 +8,5 @@ add-zsh-hook -d preexec ..znap.auto-compile
   zstyle -s :znap: auto-compile-ignore exclude '|' &&
       exclude="($exclude)"
 
-  private -aU include=()
-  private k v
-  for k v in "${(@kv)functions_source}"; do
-    [[ $v == */$k && $v != $~exclude ]] &&
-        include+=( $v )
-  done
-
-  .znap.compile $include[@]
+  .znap.compile "${${(@vu)functions_source}[@]:#$~exclude}"
 ) &> /dev/null &|

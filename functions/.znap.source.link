@@ -15,6 +15,7 @@ if ! (( $#tmp )); then
   return $(( sysexits[(i)NOINPUT] + 63 ))
 fi
 
-( .znap.compile "$tmp[1]" > /dev/null ) &|
 zf_mkdir -pm 0700 "$3:h"
 zf_ln -fhs "$tmp[1]" "$3"
+zcompile -UzR $tmp[1] &&
+    zf_ln -fhs $tmp[1].zwc $3.zwc
