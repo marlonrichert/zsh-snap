@@ -13,6 +13,7 @@ fi
 .znap.clone $@ ||
     return
 
+local REPLY=
 private -a bindir=( ~/.local/bin ) datadir=( ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions )
 private -a link=() orig=()
 private pat= repo= sub=

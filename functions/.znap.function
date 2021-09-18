@@ -1,5 +1,5 @@
 #!/bin/zsh
-# create lazy-loading functions
+# create a set of lazy-loading functions
 # args: <func name> ... <init code>
 
 .znap.function() {

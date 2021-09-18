@@ -67,7 +67,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
       print -u2 -- "$err"
   unset _znap_prompt_fd _znap_prompt_tmp
 
-  # To prevent an infinite loop, clean up any mess that syntax highlighting might have made.
+  # Workaround for https://www.zsh.org/mla/workers/2021/msg01310.html
   if zstyle -L zle-hook types > /dev/null; then
     private hook=
     for hook in isearch-{exit,update} line-{pre-redraw,init,finish} history-line-set keymap-select
@@ -86,7 +86,6 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
   add-zle-hook-widget -d line-init ${(%):-%N}
 
   ..znap.tput cnorm # Make cursor normal (visible).
-
   [[ -v prompt_opts ]] ||
       setopt promptsp
 
