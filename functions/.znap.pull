@@ -28,7 +28,8 @@ autoload +X -Uz is-at-least
   print -n .
 
   private -a count=()
-  if count=( ${="$( git -C $1 rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
+  if git diff --quiet &&
+      count=( ${="$( git -C $1 rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
       (( count[1] && ! count[2] )); then
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
