@@ -1,6 +1,4 @@
 #!/bin/zsh
-zmodload -F zsh/zselect b:zselect
-
 add-zsh-hook -d preexec ..znap.auto-compile
 
 (

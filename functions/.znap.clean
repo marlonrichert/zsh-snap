@@ -1,23 +1,18 @@
 #!/bin/zsh
 # remove outdated .zwc binaries
 # args: <dir> ...
+emulate -L zsh; setopt $_znap_opts
 zmodload -Fa zsh/files b:zf_rm
 
-.znap.clean() {
-  emulate -L zsh; setopt $_znap_opts
-
-  private -a files=( $^@/**.zwc(-.) )
-  (( $# > 0 )) ||
-      files=( $PWD/**.zwc(-.) $^fpath/*.zwc(-.) )
-  private -i ret=0
-  private bin= src=
-  for bin in $files; do
-    src=${bin%.zwc}
-    if [[ -w $bin:h && ( ! -e $src || $bin -ot $src ) ]]; then
-      zf_rm -f $bin 2>/dev/null; (( ret = (ret || ?) ))
-    fi
-  done
-  return ret
-}
-
-.znap.clean "$@"
+private -a files=( $^@/**.zwc(-.) )
+(( $# > 0 )) ||
+    files=( $PWD/**.zwc(-.) $^fpath/*.zwc(-.) )
+private -i ret=0
+private bin= src=
+for bin in $files; do
+  src=${bin%.zwc}
+  if [[ -w $bin:h && ( ! -e $src || $bin -ot $src ) ]]; then
+    zf_rm -f $bin 2>/dev/null; (( ret = (ret || ?) ))
+  fi
+done
+return ret

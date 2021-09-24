@@ -1,6 +1,7 @@
 #!/bin/zsh
-zmodload -F zsh/files b:zf_ln b:zf_mkdir
+emulate -L zsh
 setopt localoptions extendedglob NO_nomatch NO_nullglob
+zmodload -F zsh/files b:zf_ln b:zf_mkdir
 
 private -aU tmp=( $1${2:+/$2} ) ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
 

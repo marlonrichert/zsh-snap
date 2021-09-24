@@ -1,18 +1,13 @@
 #!/bin/zsh
 # create a set of lazy-loading functions
 # args: <func name> ... <init code>
+emulate -L zsh; setopt $_znap_opts
 
-.znap.function() {
-  emulate -L zsh; setopt $_znap_opts
+private body=$@[-1]
+shift -p 1
 
-  private body=$@[-1]
-  shift -p 1
-
-  eval "$* () {
-    unfunction $*
-    $body
-    \${(%):-%N} "\$@"
-  }"
-}
-
-.znap.function "$@"
+eval "$* () {
+  unfunction $*
+  $body
+  \${(%):-%N} "\$@"
+}"

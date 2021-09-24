@@ -22,9 +22,9 @@ fi
     if [[ $__line != $__header ||
         ( -d $__repo && -f $__repo/${GIT_DIR:-.git}/index &&
             $__repo/${GIT_DIR:-.git}/index -nt $__cache_file ) ]]; then
-      print -r "$__header" >| $__cache_file
       [[ -d $__repo ]] &&
           cd -q -- $__repo
+      print -r -- "$__header" >| $__cache_file
       eval "$@" >>| $__cache_file
       zcompile -UzR $__cache_file
     fi
