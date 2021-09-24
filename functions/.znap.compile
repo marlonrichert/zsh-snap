@@ -1,13 +1,14 @@
 #!/bin/zsh
 # compile zsh scripts and functions
 # args: [ ( <dir> | <file> ) ... ]
+emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_chmod b:zf_rm
 
 private -aU dirs=() files=()
 private func= R=
 if (( $# )); then
   files=( $^@(N-.) ) dirs=( $^@(N-/) )
-  files+=( $^dirs/**?.(|z)sh*~*/.*/*~*.zwc(D-.) )
+  files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*(D-.) )
 else
   files=( ${(@vu)functions_source} )
 fi
