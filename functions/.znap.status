@@ -24,7 +24,8 @@ autoload +X -Uz is-at-least
 
   is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
       private jopt=-j$( ulimit -n )
-  git fetch -t $jopt --recurse-submodules &>/dev/null ||
+  git fetch -t $jopt --recurse-submodules \
+        ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} &> /dev/null ||
       return
 
   private rev= log="$( git log -n1 --decorate --oneline )"
