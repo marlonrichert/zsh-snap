@@ -25,27 +25,32 @@ autoload +X -Uz is-at-least
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
+  cd -q $1
+
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -a upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
   is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
       private jopt=-j$( ulimit -n )
-  git -C $1 fetch -t $jopt --recurse-submodules $upstream[@] &> /dev/null ||
+  git fetch -t $jopt --recurse-submodules $upstream[@] &> /dev/null ||
       return
 
   print -n .
 
   private -a count=()
   if git diff --quiet &&
-      count=( ${="$( git -C $1 rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
+      count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
       (( count[1] && ! count[2] )); then
+
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
+    cd -q $1
+
     ..znap.tput el  # Clear to end of line.
 
     private msg=
     msg="$(
-        git -C $1 pull -q -r $jopt --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
+        git pull -q -r $jopt --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
     )"
     private err=$?
 
@@ -57,8 +62,16 @@ autoload +X -Uz is-at-least
       private cache_dir=$XDG_CACHE_HOME/zsh-snap
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
       .znap.compile $1
+
+      private -a bugs=(
+        ~/.local/bin/*.zwc.zwc ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*.zwc.zwc
+      )
+      (( $#bugs[@] )) &&
+          zf_rm $bugs[@]
+
       private link= orig= R=
-      for link in ~/.local/bin/*(@) ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*(@); do
+      for link in ~/.local/bin/*~*.zwc(@) \
+          ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*~*.zwc(@); do
         orig=$link:P
         if [[ $orig == $1/* ]]; then
           R=
