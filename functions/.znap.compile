@@ -8,7 +8,10 @@ private -aU dirs=() files=()
 private func= R=
 if (( $# )); then
   files=( $^@(N-.) ) dirs=( $^@(N-/) )
-  files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*(D-.) )
+  files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*~*/test*/*(D-.) )
+  local -a bugs=( $^dirs/**?.zwc.zwc )
+  (( $#bugs[@] )) &&
+      zf_rm $bugs[@]
 else
   files=( ${(@vu)functions_source} )
 fi
@@ -34,9 +37,7 @@ while (( $#files[@] )); do
       continue
     fi
 
-    if [[ -e $files[1].zwc ]]; then
-      print -Pr -- "${(D)files[1]} %F{green}✓%f"
-    else
+    if ! [[ -e $files[1].zwc ]]; then
       func=${(k)functions_source[(r)$files[1]:a]}
       if [[ -n $func && $func == $files[1]:t ]]; then
         R=
