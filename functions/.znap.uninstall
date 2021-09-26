@@ -15,6 +15,8 @@ private -i ret=0
 private repo=
 for repo in ~znap/$^@:t; do
   if [[ -d $repo ]]; then
+    is-at-least 2.31.0 ${${=$( git --version )}[3]} &&
+        git -C $repo maintenance unregister --quiet
     print 'Removing:'
     file=( ~/.local/bin/* ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/* )
     while (( $#file ));do

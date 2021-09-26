@@ -11,6 +11,13 @@ autoload +X -Uz is-at-least
   (( ${#repos} )) ||
       repos=( ~znap/*(D-/) )
 
+  if is-at-least 2.31.0 ${${=$( git --version )}[3]}; then
+    local r
+    for r in $repos; do
+      git -C $r maintenance start --quiet
+    done
+  fi
+
   .znap.multi '.znap.pull.task '${(i)^repos}
   print -n '\r'
 }
