@@ -44,7 +44,12 @@ while (( $#files[@] )); do
       else
         R=R
       fi
-      if zcompile -Uz$R -- $files[1]; then
+
+
+      if () {
+        emulate -L zsh
+        zcompile -Uz$1 -- $2
+      } "$R" "$files[1]"; then
         print -Pr -- "${(D)files[1]} -> %F{green}$files[1]:t.zwc%f"
       else
         zf_rm -f -- $files[1].zwc
