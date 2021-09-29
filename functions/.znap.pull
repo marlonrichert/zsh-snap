@@ -14,10 +14,16 @@ autoload +X -Uz is-at-least
   if is-at-least 2.31.0 ${${=$( git --version )}[3]}; then
     local r
     for r in $repos; do
-      git -C $r maintenance start --quiet
+      if zstyle -T :znap:pull:${r:t} git-maintenance; then
+        git -C $r maintenance start --quiet
+      else
+        git -C $r maintenance unregister --quiet
+      fi
     done
   fi
 
+  is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
+      local jopt=-j0
   .znap.multi '.znap.pull.task '${(i)^repos}
   print -n '\r'
 }
@@ -30,8 +36,6 @@ autoload +X -Uz is-at-least
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -a upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
-  is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
-      private jopt=-j$( ulimit -n )
   git fetch -t $jopt --recurse-submodules $upstream[@] &> /dev/null ||
       return
 

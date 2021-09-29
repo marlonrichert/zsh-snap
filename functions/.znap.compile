@@ -11,7 +11,7 @@ if (( $# )); then
   files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*~*/test*/*(D-.) )
   local -a bugs=( $^dirs/**?.zwc.zwc )
   (( $#bugs[@] )) &&
-      zf_rm $bugs[@]
+      zf_rm -- $bugs[@]
 else
   files=( ${(@vu)functions_source} )
 fi

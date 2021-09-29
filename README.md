@@ -6,8 +6,7 @@ repos in general.
 > Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert)
 
 ## Installation
-To use Znap to manage your existing (plugin) repos, just copy-paste the following into your command
-line and press <kbd>Enter</kbd>:
+Just copy-paste the following into your command line and press <kbd>Enter</kbd>:
 ```zsh
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
 source zsh-snap/install.zsh
@@ -40,12 +39,12 @@ source ~/Git/zsh-snap/znap.zsh  # Start Znap
 # `znap prompt` makes your prompt visible in less than 12ms!
 znap prompt sindresorhus/pure
 
-# `znap source` automatically downloads and installs your plugins.
+# `znap source` automatically downloads and activates your plugins.
 znap source marlonrichert/zsh-autocomplete
 znap source zsh-users/zsh-autosuggestions
 znap source zsh-users/zsh-syntax-highlighting
 
-# `znap eval` caches any kind of command output for you.
+# `znap eval` caches and runs any kind of command output for you.
 znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
 ```
 
@@ -62,6 +61,18 @@ Note that the above example does not include any call to
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
 your `.zshrc` file. That is because Znap will run these for you as needed.
 
+### Asynchronous compilation
+Znap compiles your scripts and functions in the background. This way, your shell will start up even
+faster next time!
+
+Should you not want this feature, you can disable it with
+```zsh
+zstyle ':znap:*' auto-compile no
+```
+
+In any case, you can compile sources manually at any time with
+`znap compile [ <dir> | <file> ] ...`.
+
 ### Automatic cache invalidation
 Znap automatically regenerates your [comp dump
 file](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Use-of-compinit) whenever you
@@ -74,21 +85,19 @@ Znap also automatically regenerates its internal cache for each command when…
   the variable changes. See the [example `.zshrc` file](.zshrc) for a practical use of this.
 * …the cache file is missing. You can delete them manually from `$XDG_CACHE_HOME/zsh-snap/eval`.
 
-### Asynchronous compilation
-While you are using Zsh, Znap compiles your scripts and functions in the background, when the Zsh
-Line Editor is idle. This way, your shell will start up even faster next time!
+### Automatic `git maintenance`
+When using `git` 2.31.0 or newer, Znap automatically enables `git maintenance` in each repo that it
+manages. This automatically optimizes your repos in the background, so that your `git` and `znap`
+commands will run faster.
 
-Should you not want this feature, you can disable it with
+To selectively disable this feature, add
 ```zsh
-zstyle ':znap:*' auto-compile no
+zstyle 'znap:*:<glob pattern>' git-maintenance off
 ```
-Alternatively, if you want to exclude specific files only, you can do so by passing them as
-absolute-path patterns to the `auto-compile-ignore` setting. For example:
-```zsh
-zstyle ':znap:*' auto-compile-ignore "${ZDOTDIR:-$HOME}/.z*" '**/.editorconfig' '**.md'
-```
-
-In any case, you can compile sources manually at any time with `znap compile`.
+to your `.zshrc` file. Next time you run `znap pull`, `git maintenance` will then be disabled for
+each repo whose name matches `<glob pattern>`. Use `*` as your [glob
+pattern](https://zsh.sourceforge.io/Doc/Release/Expansion.html#Filename-Generation) to opt out of
+this feature completely.
 
 ## Command-Line Usage
 Znap also makes life on the command line easier. For a full list of available commands, just run
