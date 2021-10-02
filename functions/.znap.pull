@@ -81,7 +81,7 @@ autoload +X -Uz is-at-least
           R=
           [[ $orig == ~/.local/bin/* ]] &&
               R=r
-          if zcompile -Uz$R $orig; then
+          if emulate zsh -c "zcompile -Uz$R ${(q)orig}"; then
             zf_ln -fhs $orig.zwc $link.zwc
             $_znap_chmod 600 $orig.zwc $link.zwc
           fi

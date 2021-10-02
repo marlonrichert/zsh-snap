@@ -46,11 +46,7 @@ while (( $#files[@] )); do
         R=R
       fi
 
-
-      if () {
-        emulate -L zsh
-        zcompile -Uz$1 -- $2
-      } "$R" "$files[1]"; then
+      if emulate zsh -c "zcompile -Uz$R -- ${(q)files[1]}"; then
         print -Pr -- "${(D)files[1]} -> %F{green}$files[1]:t.zwc%f"
       else
         ret=1
