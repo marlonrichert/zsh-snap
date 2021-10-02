@@ -3,6 +3,12 @@ emulate -L zsh
 zmodload -Fa zsh/files b:zf_ln b:zf_mkdir b:zf_rm
 autoload -Uz add-zsh-hook
 
+typeset -gH _znap_chmod=chmod
+if zmodload -Fl zsh/files b:zf_chmod &> /dev/null; then
+  chmod=zf_chmod
+  zmodload -F zsh/files b:zf_chmod
+fi
+
 private basedir=$1
 shift
 
@@ -65,7 +71,7 @@ zstyle -T :znap: auto-compile &&
 add-zsh-hook zsh_directory_name ..znap.dirname
 
 typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
-[[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:a} -nt $_comp_dumpfile ]] &&
+[[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:P} -nt $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
 zstyle -s :completion: cache-path _ ||
     zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/compcache"

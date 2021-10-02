@@ -10,7 +10,7 @@ private repo=~znap/$url:t:r
 [[ -d $repo ]] &&
     return 1
 
-is-at-least 2.8.0 ${${=$( git --version )}[3]} &&
+is-at-least 2.8 ${${=$( git --version )}[3]} &&
     private jopt=-j$( ulimit -n )
 if git -C ~znap clone --depth 1 $jopt --recurse-submodules --shallow-submodules $url; then
     [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&

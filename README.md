@@ -16,7 +16,7 @@ source zsh-snap/install.zsh
 
 Recommended:
 * Zsh 5.7.1 or newer
-* Git 2.8.0 or newer
+* Git 2.8 or newer
 
 Minimum:
 * Zsh 5.4.2

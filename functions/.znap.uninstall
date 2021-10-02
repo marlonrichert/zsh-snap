@@ -3,6 +3,7 @@
 # args: <repo> ...
 emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_rm
+autoload -Uz is-at-least
 
 if (( $# < 1 )); then
   print -u2 'znap uninstall: not enough arguments'
@@ -15,7 +16,7 @@ private -i ret=0
 private repo=
 for repo in ~znap/$^@:t; do
   if [[ -d $repo ]]; then
-    is-at-least 2.31.0 ${${=$( git --version )}[3]} &&
+    is-at-least 2.31 ${${=$( git --version )}[3]} &&
         git -C $repo maintenance unregister --quiet
     print 'Removing:'
     file=( ~/.local/bin/* ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/* )

@@ -2,7 +2,7 @@
 # compile zsh scripts and functions
 # args: [ ( <dir> | <file> ) ... ]
 emulate -L zsh; setopt $_znap_opts
-zmodload -F zsh/files b:zf_chmod b:zf_rm
+zmodload -F zsh/files b:zf_rm
 
 private -aU dirs=() files=()
 private func= R=
@@ -17,6 +17,7 @@ else
 fi
 files=( ${(@n)files} )
 
+local -i ret=0
 while (( $#files[@] )); do
   {
     if ! [[ -w $files[1]:h ]]; then
@@ -52,12 +53,14 @@ while (( $#files[@] )); do
       } "$R" "$files[1]"; then
         print -Pr -- "${(D)files[1]} -> %F{green}$files[1]:t.zwc%f"
       else
+        ret=1
         zf_rm -f -- $files[1].zwc
       fi
     fi
   } always {
     [[ -f $files[1].zwc ]] &&
-        zf_chmod 600 $files[1].zwc
+        $_znap_chmod 600 $files[1].zwc
     shift files
   }
 done
+return ret

@@ -15,7 +15,10 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
     unfunction bindkey
   }
   [[ -r $_comp_dumpfile ]] &&
-      ( zcompile -UzR $_comp_dumpfile ) &|
+      (
+        zcompile -UzR $_comp_dumpfile &&
+            $_znap_chmod 600 $_comp_dumpfile.zwc
+      ) &|
 fi
 
 private args=
