@@ -92,7 +92,7 @@ commands will run faster.
 
 To selectively disable this feature, add
 ```zsh
-zstyle 'znap:*:<glob pattern>' git-maintenance off
+zstyle ':znap:<glob pattern>' git-maintenance off
 ```
 to your `.zshrc` file. Next time you run `znap pull`, `git maintenance` will then be disabled for
 each repo whose name matches `<glob pattern>`. Use `*` as your [glob
