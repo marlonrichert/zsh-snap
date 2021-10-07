@@ -5,7 +5,7 @@ emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_rm
 
 private -aU dirs=() files=()
-private func= R=
+private func= opt=
 if (( $# )); then
   files=( $^@(N-.) ) dirs=( $^@(N-/) )
   files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*~*/test*/*(D-.) )
@@ -41,12 +41,12 @@ while (( $#files[@] )); do
     if ! [[ -e $files[1].zwc ]]; then
       func=${(k)functions_source[(r)$files[1]:a]}
       if [[ -n $func && $func == $files[1]:t ]]; then
-        R=
+        opt=zM
       else
-        R=R
+        opt=R
       fi
 
-      if emulate zsh -c "zcompile -Uz$R -- ${(q)files[1]}"; then
+      if emulate zsh -c "zcompile -U$opt -- ${(q)files[1]}"; then
         print -Pr -- "${(D)files[1]} -> %F{green}$files[1]:t.zwc%f"
       else
         ret=1

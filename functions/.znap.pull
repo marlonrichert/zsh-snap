@@ -73,15 +73,17 @@ autoload +X -Uz is-at-least
       (( $#bugs[@] )) &&
           zf_rm $bugs[@]
 
-      private link= orig= R=
+      private link= orig= opt=
       for link in ~/.local/bin/*~*.zwc(@) \
           ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*~*.zwc(@); do
         orig=$link:P
         if [[ $orig == $1/* ]]; then
-          R=
-          [[ $orig == ~/.local/bin/* ]] &&
-              R=r
-          if emulate zsh -c "zcompile -Uz$R ${(q)orig}"; then
+          if [[ $orig == ~/.local/bin/* ]]; then
+            opt=R
+          else
+            opt=zM
+          fi
+          if emulate zsh -c "zcompile -U$opt ${(q)orig}"; then
             zf_ln -fhs $orig.zwc $link.zwc
             $_znap_chmod 600 $orig.zwc $link.zwc
           fi

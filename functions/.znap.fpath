@@ -12,7 +12,7 @@ zf_mkdir -pm 0700 $dir
 private file=$dir/$name
 eval "$generator" >| $file
 print -r -- "#$generator" >>| $file
-emulate zsh -c "zcompile -Uz ${(q)file}" &&
+emulate zsh -c "zcompile -UzM ${(q)file}" &&
     $_znap_chmod 600 $file.zwc
 
 [[ -f $_comp_dumpfile ]] &&

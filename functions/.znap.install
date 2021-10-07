@@ -47,7 +47,7 @@ for repo in $@; do
       if [[ $REPLY == \#(autoload|compdef)\ * ]]; then
         if zf_ln -fhs "$orig[1]" "$link[1]"; then
           print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
-          if emulate zsh -c "zcompile -Uz ${(q)orig[1]}"; then
+          if emulate zsh -c "zcompile -UzM ${(q)orig[1]}"; then
             zf_ln -fhs $orig[1].zwc $link[1].zwc
             $_znap_chmod 600 $orig[1].zwc $link[1].zwc
           fi
