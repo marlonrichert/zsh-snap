@@ -32,20 +32,25 @@ Using Znap to manage your plugins can be as simple as putting this in your `.zsh
 ```zsh
 # Download Znap, if it's not there yet.
 [[ -f ~/Git/zsh-snap/znap.zsh ]] ||
-    git clone https://github.com/marlonrichert/zsh-snap.git ~/Git/zsh-snap
+    git clone --depth 1 -- \
+        https://github.com/marlonrichert/zsh-snap.git ~/Git/zsh-snap
 
 source ~/Git/zsh-snap/znap.zsh  # Start Znap
 
-# `znap prompt` makes your prompt visible in less than 12ms!
+# `znap prompt` makes your prompt visible in just 15-40ms!
 znap prompt sindresorhus/pure
 
-# `znap source` automatically downloads and activates your plugins.
+# `znap source` automatically downloads and starts your plugins.
 znap source marlonrichert/zsh-autocomplete
 znap source zsh-users/zsh-autosuggestions
 znap source zsh-users/zsh-syntax-highlighting
 
 # `znap eval` caches and runs any kind of command output for you.
 znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
+
+# `znap function` lets you lazy-load features you don't always need.
+znap function _pyenv pyenvn 'eval "$( pyenv init - --no-rehash )"'
+compctl -K    _pyenv pyenv
 ```
 
 For more examples of what Znap can do for your dotfiles, please see [the included `.zshrc`
@@ -59,7 +64,7 @@ Note that the above example does not include any call to
 [`complist`](http://zsh.sourceforge.net/Doc/Release/Zsh-Modules.html#The-zsh_002fcomplist-Module),
 [`compinit`, or
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
-your `.zshrc` file. That is because Znap will run these for you as needed.
+the `.zshrc` file. That is because Znap will run these for you as needed.
 
 ### Asynchronous compilation
 Znap compiles your scripts and functions in the background. This way, your shell will start up even
@@ -95,7 +100,9 @@ To selectively disable this feature, add
 zstyle ':znap:*:<glob pattern>' git-maintenance off
 ```
 to your `.zshrc` file. Next time you run `znap pull`, `git maintenance` will then be disabled for
-each repo whose name matches `<glob pattern>`. Use `*` as your [glob
+each repo whose name matches `<glob pattern>`.
+
+Use `*` as your [glob
 pattern](https://zsh.sourceforge.io/Doc/Release/Expansion.html#Filename-Generation) to opt out of
 this feature completely.
 
@@ -104,25 +111,15 @@ Znap also makes life on the command line easier. For a full list of available co
 ```zsh
 % znap
 ```
-Exhaustive tab-completion is available, too.
+Exhaustive tab-completion is available, too. For examples of the most important command-line
+features, see below.
 
 > Note:
 > * The examples in this section you should run on the command line, not add to your `.zshrc`
 >   file!
 > * `%` represents the prompt. You shouldn't type that part. 🙂
 
-Below are examples of the most important command-line features that Znap makes available.
-
-### Named dirs
-Znap makes your repos dir and all of its subdirs available as [named
-directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
-```zsh
-% cd ~znap                  # `cd` to your repos dir
-% cd ~[github-markdown-toc] # `cd` to a repo
-% ls ~[asdf]/completions    # `ls` a subdir in a repo
-```
-
-### Installing executables and completion functions
+### Install executables and completion functions
 Znap can download multiple repos in parallel, then automatically find and install their
 executables and completion functions, with just one command:
 ```zsh
@@ -136,16 +133,27 @@ To remove these (and their repos), use `znap uninstall`:
     github-markdown-toc ohmyzsh zsh-completions
 ```
 
-Executables are installed in `~/.local/bin`, while completion functions go into
+Executables are installed in `~/.local/bin`, while completion functions go to
 `${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
 
-### Installing generated functions
+### Install generated functions
 Some commands generate output that should be loaded as a function. You can install these generated
 functions as follows:
 ```zsh
 % znap fpath _kubectl 'kubectl completion  zsh'
 % znap fpath _rustup  'rustup  completions zsh'
 % znap fpath _cargo   'rustup  completions zsh cargo'
+```
+
+These functions, too, are saved to `${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
+
+### Named dirs
+Znap makes your repos dir and all of its subdirs available as [named
+directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
+```zsh
+% cd ~znap                  # `cd` to your repos dir
+% cd ~[github-markdown-toc] # `cd` to a repo
+% ls ~[asdf]/completions    # `ls` a subdir in a repo
 ```
 
 ## Author

@@ -11,8 +11,9 @@ source ~/git/zsh-snap/znap.zsh
 
 
 ##
-# Use `znap prompt` to makes you prompt appear in ~40ms. You can start typing
-# right away!
+# Does your shell feels slow to start? `znap prompt` reduces the time between
+# opening your terminal and seeing your prompt to just 15 - 40 ms!
+#
 znap prompt agnoster/agnoster-zsh-theme
 
 # `znap prompt` also supports Oh-My-Zsh themes. Just make sure you load the
@@ -31,7 +32,7 @@ znap prompt
 
 
 ##
-# Use `znap source` to load your plugins.
+# Load your plugins with `znap source`.
 #
 znap source marlonrichert/zsh-autocomplete
 znap source marlonrichert/zsh-edit
@@ -60,17 +61,13 @@ znap source zsh-users/zsh-syntax-highlighting
 
 
 ##
-# Use `znap eval` to cache the output of slow commands.
+# Cache the output of slow commands with `znap eval`.
 #
 
 # If the first arg is a repo, then the command will run inside it. Plus,
 # whenever you update a repo with `znap pull`, its eval cache gets regenerated
 # automatically.
 znap eval trapd00r/LS_COLORS "$( whence -a dircolors gdircolors ) -b LS_COLORS"
-
-# Here, the first arg does not refer to a repo, but is simply used as an
-# identifier for the cache file.
-znap eval pyenv-init ${${:-=pyenv}:A}' init -'
 
 # The cache gets regenerated, too, when the eval command has changed. For
 # example, here we include a variable. So, the cache gets invalidated whenever
@@ -82,14 +79,30 @@ znap eval   marlonrichert/zcolors "zcolors ${(q)LS_COLORS}"
 # version number, the cache will be invalidated when that changes.
 znap eval asdf-community/asdf-direnv "asdf exec $( asdf which direnv ) hook zsh"
 
-# Another way to automatically invalidate a cache is to simply include a
-# variable as a comment. Here, the caches below will get invalidated whenever
-# the Python version changes.
-znap eval pip-completion    "pip completion --zsh             # $PYENV_VERSION"
-znap eval pipx-completion   "register-python-argcomplete pipx # $PYENV_VERSION"
-znap eval pipenv-completion "pipenv --completion              # $PYENV_VERSION"
-
 # Combine `znap eval` with `curl` or `wget` to download, cache and source
 # individual files:
 znap eval omz-git 'curl -fsSL \
     https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/git/git.plugin.zsh'
+
+
+##
+# Defer initilization code with lazily loaded functions created by
+# `znap function`.
+#
+
+# For each of the examples below, the `eval` statement on the right is not
+# executed until you try to execute the associated command or try to use
+# completion on it.
+
+znap function _pyenv pyenv              'eval "$( pyenv init - --no-rehash )"'
+compctl -K    _pyenv pyenv
+
+znap function _pip_completion pip       'eval "$( pip completion --zsh )"'
+compctl -K    _pip_completion pip
+
+znap function _python_argcomplete pipx  'eval "$( register-python-argcomplete pipx  )"'
+complete -o nospace -o default -o bashdefault \
+           -F _python_argcomplete pipx
+
+znap function _pipenv pipenv            'eval "$( pipenv --completion )"'
+compdef       _pipenv pipenv
