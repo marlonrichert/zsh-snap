@@ -27,7 +27,7 @@ fi
       print -r -- "$__header" >| $__cache_file
       eval "$@" >>| $__cache_file
       emulate zsh -c "zcompile -UR ${(q)__cache_file}" &&
-          $_znap_chmod 600 $__cache_file.zwc
+          ..znap.chmod 640 $__cache_file.zwc
     fi
   )
 }

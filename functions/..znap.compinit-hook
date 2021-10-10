@@ -18,7 +18,7 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
       (
         emulate -L zsh
         zcompile -UR $_comp_dumpfile &&
-            $_znap_chmod 600 $_comp_dumpfile.zwc
+            ..znap.chmod 640 $_comp_dumpfile.zwc
       ) &|
 fi
 

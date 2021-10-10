@@ -55,7 +55,7 @@ while (( $#files[@] )); do
     fi
   } always {
     [[ -f $files[1].zwc ]] &&
-        $_znap_chmod 600 $files[1].zwc
+        ..znap.chmod 640 $files[1].zwc
     shift files
   }
 done

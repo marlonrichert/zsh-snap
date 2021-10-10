@@ -49,7 +49,7 @@ for repo in $@; do
           print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
           if emulate zsh -c "zcompile -UzM ${(q)orig[1]}"; then
             zf_ln -fhs $orig[1].zwc $link[1].zwc
-            $_znap_chmod 600 $orig[1].zwc $link[1].zwc
+            ..znap.chmod 640 $orig[1].zwc $link[1].zwc
           fi
         else
           return $(( sysexits[(i)CANTCREAT] + 63 ))

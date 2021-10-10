@@ -3,10 +3,11 @@ emulate -L zsh
 zmodload -Fa zsh/files b:zf_ln b:zf_mkdir b:zf_rm
 autoload -Uz add-zsh-hook
 
-typeset -gH _znap_chmod=chmod
 if zmodload -Fl zsh/files b:zf_chmod &> /dev/null; then
-  chmod=zf_chmod
   zmodload -F zsh/files b:zf_chmod
+  ..znap.chmod() { builtin zf_chmod "$@" }
+else
+  ..znap.chmod() { command chmod "$@" }
 fi
 
 private basedir=$1

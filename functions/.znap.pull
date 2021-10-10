@@ -85,7 +85,7 @@ autoload +X -Uz is-at-least
           fi
           if emulate zsh -c "zcompile -U$opt ${(q)orig}"; then
             zf_ln -fhs $orig.zwc $link.zwc
-            $_znap_chmod 600 $orig.zwc $link.zwc
+            ..znap.chmod 640 $orig.zwc $link.zwc
           fi
         fi
       done
