@@ -42,7 +42,7 @@ autoload +X -Uz is-at-least
   print -n .
 
   private -a count=()
-  if git diff --quiet &&
+  if git diff --quiet @ &&
       count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
       (( count[1] && ! count[2] )); then
 
