@@ -31,7 +31,7 @@ autoload +X -Uz is-at-least
   private rev= log="$( git log -n1 --decorate --oneline )"
   if [[ $log ==  *'tag: '* ]]; then
     private -a chunks=( ${(s.tag: .)log} )
-    rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"
+    rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"$'\e[m'
   fi
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
