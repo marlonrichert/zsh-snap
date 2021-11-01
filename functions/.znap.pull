@@ -42,13 +42,17 @@ autoload +X -Uz is-at-least
   print -n .
 
   private -a count=()
-  if git diff --quiet @ &&
-      count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
+  if count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
       (( count[1] && ! count[2] )); then
 
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
     cd -q $1
+
+    if ! git diff --quiet @; then
+      print -P '%F{red}dirty%f'
+      return 1
+    fi
 
     ..znap.tput el  # Clear to end of line.
 
