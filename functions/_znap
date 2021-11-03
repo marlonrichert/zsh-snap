@@ -1,7 +1,7 @@
 #compdef znap
 
 [[ -v _ZNAP_ARGS ]] ||
-    znap &> /dev/null
+    .znap.help &> /dev/null
 
 local -a subcommands=()
 local k; for k in ${(ko)_ZNAP_ARGS}; do

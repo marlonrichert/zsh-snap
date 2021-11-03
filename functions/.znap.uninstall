@@ -25,7 +25,7 @@ for repo in ~znap/$^@:t; do
       if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then
         print -r -- ${(D)file[1]}
         zf_rm -frs $file[1]
-        [[ -x $abs && ! -d $abs ]] &&
+        [[ $file == ~/.local/bin/* && ! -d $abs ]] &&
             unhash $file[1]:t
       fi
       shift file

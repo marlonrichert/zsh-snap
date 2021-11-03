@@ -27,7 +27,9 @@ for repo in $@; do
     if [[ $link[1]:A != $orig[1] ]]; then
       hash $orig[1]:t=$link[1]
       if zf_ln -fhs "$orig[1]" "$link[1]"; then
-        print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
+        link[1]="%F{12}${${(D)link[1]}:h}%f/%F{14}${${(D)link[1]}:t}%f@"
+        orig[1]="%F{12}${${(D)orig[1]}:h}%f/%F{10}${${(D)orig[1]}:t}%f*"
+        print -Pr -- "$orig[1] <- $link[1]"
       else
         return $(( sysexits[(i)CANTCREAT] + 63 ))
       fi
@@ -46,11 +48,13 @@ for repo in $@; do
       IFS='' read -r < $orig[1]
       if [[ $REPLY == \#(autoload|compdef)\ * ]]; then
         if zf_ln -fhs "$orig[1]" "$link[1]"; then
-          print -Pr -- "%F{14}${(D)link[1]}%f -> %F{10}${(D)orig[1]}%f"
           if emulate zsh -c "zcompile -UzM ${(q)orig[1]}"; then
             zf_ln -fhs $orig[1].zwc $link[1].zwc
             ..znap.chmod 640 $orig[1].zwc $link[1].zwc
           fi
+          link[1]="%F{12}${${(D)link[1]}:h}%f/%F{14}${${(D)link[1]}:t}%f@"
+          orig[1]="%F{12}${${(D)orig[1]}:h}%f/${${(D)orig[1]}:t}"
+          print -Pr -- "$orig[1] <- $link[1]"
         else
           return $(( sysexits[(i)CANTCREAT] + 63 ))
         fi
