@@ -69,7 +69,7 @@ autoload +X -Uz is-at-least
     else
       private cache_dir=$XDG_CACHE_HOME/zsh-snap
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
-      .znap.compile $1
+      .znap.compile $1 &> /dev/null &|
 
       private -a bugs=(
         ~/.local/bin/*.zwc.zwc ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*.zwc.zwc
