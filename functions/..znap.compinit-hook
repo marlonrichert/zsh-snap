@@ -10,7 +10,7 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   autoload -Uz compinit
   bindkey() {:}
   {
-    compinit -C -d $_comp_dumpfile
+    compinit -d $_comp_dumpfile
   } always {
     unfunction bindkey
   }
