@@ -15,7 +15,7 @@ autoload +X -Uz is-at-least
     local r
     for r in $repos; do
       if zstyle -T :znap:pull:${r:t} git-maintenance; then
-        git -C $r maintenance start --quiet
+        git -C $r maintenance start &> /dev/null
       else
         git -C $r maintenance unregister --quiet
       fi
