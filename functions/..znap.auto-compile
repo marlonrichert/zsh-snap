@@ -2,6 +2,7 @@
 add-zsh-hook -d preexec ..znap.auto-compile
 
 (
+  local -a match=() mbegin=() mend=()
   local exclude=
   zstyle -s :znap: auto-compile-ignore exclude '|' &&
       exclude="($exclude)"

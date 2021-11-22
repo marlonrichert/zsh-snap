@@ -12,6 +12,7 @@ autoload +X -Uz is-at-least
       repos=( ~znap/*(D-/) )
 
   if is-at-least 2.31 ${${=$( git --version )}[3]}; then
+    local -a match=() mbegin=() mend=()
     local r
     for r in $repos; do
       if zstyle -T :znap:pull:${r:t} git-maintenance; then

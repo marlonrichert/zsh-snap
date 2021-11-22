@@ -68,6 +68,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
   unset _znap_prompt_fd _znap_prompt_tmp
 
   # Workaround for https://www.zsh.org/mla/workers/2021/msg01310.html
+  local -a match=() mbegin=() mend=()
   if zstyle -L zle-hook types > /dev/null; then
     private hook=
     for hook in isearch-{exit,update} line-{pre-redraw,init,finish} history-line-set keymap-select

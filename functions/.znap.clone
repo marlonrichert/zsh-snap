@@ -9,6 +9,7 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
+local -a match=() mbegin=() mend=()
 local server
 zstyle -s :znap:clone: default-server server ||
     server='https://github.com/'
