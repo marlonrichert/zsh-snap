@@ -12,15 +12,24 @@ emulate zsh
     unhash -d znap 2>/dev/null
 
     local -a conf=()
-    local dir repo=${${(%):-%x}:P:h}
+    local dir= err= repo=${${(%):-%x}:P:h}
 
     while [[ -z $dir ]]; do
       print 'Where do you (want to) keep your repos and/or plugins?'
       dir=${(D)repo:h}
-      vared -p "> %F{12}" dir
+      {
+        vared -p '> %12F' dir
+      } always {
+        print -nP -- '%f'
+      }
 
-      dir=${${(e)~dir}:a}
-      if [[ ! -e $dir ]]; then
+      [[ -z $dir ]] &&
+          continue
+
+      if ! err=$( dir=${${(e)~dir}:a} 2>&1 ); then
+        print -ru2 -- "${(%):-%9F}${err#'(anon):'<->\: }%f"
+        dir=
+      elif [[ ! -e $dir ]]; then
         if read -q ${(%):-"?%fNo such dir %F{12}${(D)dir}%f. Create? [yn] "}; then
           zf_mkdir -pm 0700 - $dir ||
               dir=
@@ -29,7 +38,7 @@ emulate zsh
         fi
         print
       elif [[ ! -d $dir ]]; then
-        print -u2 - "%f${(D)dir}is not a dir."
+        print -u2 - "${(%):-%9F}${(D)dir}is not a directory.%f"
         dir=
       fi
     done
