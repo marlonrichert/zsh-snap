@@ -48,7 +48,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
   ..znap.tput cnorm # Make cursor normal (visible).
 
   # Temporarily redirect standard error to file.
-  mkdir -pm 0700 ~XDG_DATA_HOME/zsh-snap/err
+  mkdir -pm 0700 ${XDG_DATA_HOME:-~/.local/share}/zsh-snap/err
   typeset -gH _znap_prompt_fd= _znap_prompt_tmp==( <<< '' )
   exec {_znap_prompt_fd}>&2  # Save a copy of std err.
   exec 2> $_znap_prompt_tmp  # Redirect std err to tmp file.
