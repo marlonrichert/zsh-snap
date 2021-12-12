@@ -78,15 +78,23 @@ autoload +X -Uz is-at-least
       (( $#bugs[@] )) &&
           zf_rm $bugs[@]
 
+      private -i installed=0
       private link= orig= opt=
       for link in ~/.local/bin/*~*.zwc(@) \
           ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*~*.zwc(@); do
         orig=$link:P
         if [[ $orig == $1/* ]]; then
+          if ! [[ -e $orig ]]; then
+            zf_rm -f -- $link
+            continue
+          fi
           if [[ $orig == ~/.local/bin/* ]]; then
             opt=R
+            [[ -x $orig ]] &&
+                installed=1
           else
             opt=zM
+            installed=1
           fi
           if emulate zsh -c "zcompile -U$opt ${(q)orig}"; then
             zf_ln -fhs $orig.zwc $link.zwc
@@ -94,6 +102,9 @@ autoload +X -Uz is-at-least
           fi
         fi
       done
+
+      (( installed )) &&
+          .znap.install $1:t
     fi
   fi
 }
