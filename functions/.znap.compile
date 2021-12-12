@@ -4,12 +4,11 @@
 emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_rm
 
-private -aU dirs=() files=()
-private func= opt=
+private -aU dirs=() files=() bugs=()
 if (( $# )); then
   files=( $^@(N-.) ) dirs=( $^@(N-/) )
   files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*~*/test*/*(D-.) )
-  local -a bugs=( $^dirs/**?.zwc.zwc )
+  bugs=( $^dirs/**?.zwc.zwc )
   (( $#bugs[@] )) &&
       zf_rm -- $bugs[@]
 else
@@ -17,46 +16,48 @@ else
 fi
 files=( ${(@n)files} )
 
-local -i ret=0
+private -i ret=0
+private f= func= opt=
 while (( $#files[@] )); do
   {
-    if ! [[ -w $files[1]:h ]]; then
-      print -Pru2 -- "${(D)files[1]:h} %F{red}not writable%f"
-      files=( ${files:#${files[1]:h}/[^/]##} )
+    f=$files[1]
+    shift files
+    if ! [[ -w $f:h ]]; then
+      print -Pru2 -- "${(D)f:h} %F{red}not writable%f"
+      files=( ${files:#${f:h}/[^/]##} )
       continue
     fi
 
-    if [[ $files[1].zwc -ot $files[1] ]]; then
-      if ! zf_rm -f -- $files[1].zwc; then
-        print -Pru2 -- "${(D)files[1]}.zwc %F{red}not writable%f"
+    if [[ $f.zwc -ot $f ]]; then
+      if ! zf_rm -f -- $f.zwc; then
+        print -Pru2 -- "${(D)f}.zwc %F{red}not writable%f"
         continue
       fi
     fi
 
-    if ! [[ -r $files[1] ]]; then
-      print -Pru2 -- "${(D)files[1]} %F{red}not readable%f"
+    if ! [[ -r $f ]]; then
+      print -Pru2 -- "${(D)f} %F{red}not readable%f"
       continue
     fi
 
-    if ! [[ -e $files[1].zwc ]]; then
-      func=${(k)functions_source[(r)$files[1]:a]}
-      if [[ -n $func && $func == $files[1]:t ]]; then
+    if ! [[ -e $f.zwc ]]; then
+      func=${(k)functions_source[(r)$f:a]}
+      if [[ -n $func && $func == $f:t ]]; then
         opt=zM
       else
         opt=R
       fi
 
-      if emulate zsh -c "zcompile -U$opt -- ${(q)files[1]}"; then
-        print -Pr -- "${(D)files[1]} -> %F{green}$files[1]:t.zwc%f"
+      if emulate zsh -c "zcompile -U$opt -- ${(q)f}"; then
+        print -Pr -- "${(D)f:h}/%F{green}$f:t.zwc%f"
       else
         ret=1
-        zf_rm -f -- $files[1].zwc
+        zf_rm -f -- $f.zwc
       fi
     fi
   } always {
-    [[ -f $files[1].zwc ]] &&
-        ..znap.chmod 640 $files[1].zwc
-    shift files
+    [[ -f $f.zwc ]] &&
+        ..znap.chmod 640 $f.zwc
   }
 done
 return ret
