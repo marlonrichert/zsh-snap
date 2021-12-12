@@ -1,8 +1,8 @@
 #!/bin/zsh
 # print help text for command
 # args: [ <subcommand> ]
-zmodload -Fa zsh/mapfile p:mapfile
-zmodload -Fa zsh/parameter p:functions
+zmodload -F zsh/mapfile p:mapfile
+zmodload -F zsh/parameter p:functions
 
 .znap.help() {
   emulate -LR zsh; setopt $_znap_opts
@@ -16,7 +16,7 @@ zmodload -Fa zsh/parameter p:functions
   private -i fd=1
   if (( $# > 0 )); then
     if [[ -v functions[.znap.$1] ]]; then
-      private -a funcfile=( ${(f)mapfile[${${(%):-%x}:a:h}/.znap.$1]} )
+      private -a funcfile=( ${(f)"$( < ${${(%):-%x}:a:h}/.znap.$1 )"} )
       print -lP -- "Usage: %F{10}znap%f $1 ${funcfile[3]#'# args: '}"
 
       private help="${funcfile[2]#'# '}"
