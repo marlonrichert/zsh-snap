@@ -21,10 +21,10 @@ case $words[1] in
     _arguments : '*:: :->dirs'
   ;;
   ( clone )
-    _arguments : ':remote repository:_urls'
+    _arguments : '*:remote repository:_urls'
   ;;
   ( compdef )
-    _arguments : ': :_default'
+    _arguments : ':function name:' ': :_default'
   ;;
   ( compile )
     _arguments : ': :_default'
@@ -42,7 +42,7 @@ case $words[1] in
     _arguments : ': :->repos' ':pattern:'
   ;;
   ( install )
-    _arguments : ':remote repository:_urls'
+    _arguments : '*:remote repository:_urls'
   ;;
   ( multi )
     _arguments : ': :_default'
