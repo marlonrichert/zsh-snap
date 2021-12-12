@@ -11,8 +11,7 @@ else
   ..znap.chmod() { command chmod "$@" }
 fi
 
-private basedir=$1
-shift
+private basedir=${${(%):-%x}:P:h:h}
 
 [[ ${(t)sysexits} != *readonly ]] &&
     readonly -ga sysexits=(

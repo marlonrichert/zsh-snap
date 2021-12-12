@@ -2,10 +2,9 @@
 emulate zsh
 zmodload zsh/param/private
 
-local -P dir=${${(%):-%x}:P:h}
-autoload -Uz $dir/scripts/init.zsh
+autoload -Uz ${${(%):-%x}:P:h}/scripts/init.zsh
 {
-	init.zsh "$dir"
+  init.zsh
 } always {
   unfunction init.zsh
 }
