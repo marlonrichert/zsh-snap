@@ -26,10 +26,10 @@ emulate zsh
       [[ -z $dir ]] &&
           continue
 
-      if ! err=$( dir=${${(e)~dir}:a} 2>&1 ); then
-        print -ru2 -- "${(%):-%9F}${err#'(anon):'<->\: }%f"
+      if ! err=$( ( : ${${(e)~dir}:a} ) 2>&1 ); then
+        print -Pru2 -- "%F{9}${err#'(anon):'<->\: }%f"
         dir=
-      elif [[ ! -e $dir ]]; then
+      elif dir=${${(e)~dir}:a} && [[ ! -e $dir ]]; then
         if read -q ${(%):-"?%fNo such dir %F{12}${(D)dir}%f. Create? [yn] "}; then
           zf_mkdir -pm 0700 - $dir ||
               dir=
@@ -38,7 +38,7 @@ emulate zsh
         fi
         print
       elif [[ ! -d $dir ]]; then
-        print -u2 - "${(%):-%9F}${(D)dir}is not a directory.%f"
+        print -Pru2 - "%F{9}${(D)dir}is not a directory.%f"
         dir=
       fi
     done
