@@ -6,11 +6,11 @@ zmodload -F zsh/files b:zf_rm
 
 private -aU dirs=() files=() bugs=()
 if (( $# )); then
-  files=( $^@(N-.) ) dirs=( $^@(N-/) )
-  files+=( $^dirs/**?.zsh[^.]#~(|*/).*/*~*/test*/*(D-.) )
   bugs=( $^dirs/**?.zwc.zwc )
   (( $#bugs[@] )) &&
       zf_rm -- $bugs[@]
+  dirs=( $^@(N-/:a) $^@/**(N-/:a) )
+  files=( $^@(N-.:a) $^dirs/*~*.zwc~*(#i)test*(ND-.) )
 else
   files=( ${(@vu)functions_source} )
 fi
@@ -42,7 +42,7 @@ while (( $#files[@] )); do
 
     if ! [[ -e $f.zwc ]]; then
       func=${(k)functions_source[(r)$f:a]}
-      if [[ -n $func && $func == $f:t ]]; then
+      if [[ -n $func && $func == $f:t ]] || (( fpath[(i)$f:a:h] )); then
         opt=zM
       else
         opt=R
@@ -56,8 +56,13 @@ while (( $#files[@] )); do
       fi
     fi
   } always {
-    [[ -f $f.zwc ]] &&
-        ..znap.chmod 640 $f.zwc
+    if [[ -f $f.zwc ]]; then
+      if zmodload -F zsh/files b:zf_chmod &> /dev/null; then
+        builtin zf_chmod 640 $f.zwc
+      else
+        command chmod 640 $f.zwc
+      fi
+    fi
   }
 done
 return ret

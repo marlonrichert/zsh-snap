@@ -54,10 +54,7 @@ for repo in $@; do
       if  [[ $orig == */$~func && $REPLY == (\#|autoload |emulate )* ]] ||
           [[ $orig == */$~comp && $REPLY == \#(autoload|compdef)\ * ]]; then
         if zf_ln -fhs "$orig" "$link"; then
-          if emulate zsh -c "zcompile -UzM ${(q)orig}"; then
-            zf_ln -fhs $orig.zwc $link.zwc
-            ..znap.chmod 640 $orig.zwc $link.zwc
-          fi
+          .znap.compile $orig
           case $orig in
             ( */$~comp ) compfuncs+=( $link ) ;;
             ( */$~func ) autofuncs+=( $link ) ;;

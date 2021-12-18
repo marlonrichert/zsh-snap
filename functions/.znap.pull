@@ -27,6 +27,7 @@ autoload +X -Uz is-at-least
       local jopt=-j0
   .znap.multi '.znap.pull.task '${(i)^repos}
   print -n '\r'
+  .znap.compile ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
 }
 
 .znap.pull.task() {
@@ -72,34 +73,31 @@ autoload +X -Uz is-at-least
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
       .znap.compile $1 &> /dev/null &|
 
+      private bindir=~/.local/bin
+      private fdir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
       private -a bugs=(
-        ~/.local/bin/*.zwc.zwc ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*.zwc.zwc
+        $bindir/*.zwc $fdir/*.zwc.zwc
+        $bindir/*(-@) $fdir/*(-@)
       )
-      (( $#bugs[@] )) &&
+      (( $#bugs )) &&
           zf_rm $bugs[@]
 
       private -i installed=0
       private link= orig= opt=
-      for link in ~/.local/bin/*~*.zwc(@) \
-          ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/*~*.zwc(@); do
+      for link in $bindir/*~*.zwc(@) $fdir/*~*.zwc(@); do
         orig=$link:P
         if [[ $orig == $1/* ]]; then
           if ! [[ -e $orig ]]; then
             zf_rm -f -- $link
             continue
           fi
-          if [[ $orig == ~/.local/bin/* ]]; then
-            opt=R
+          if [[ $orig == $bindir/* ]]; then
             [[ -x $orig ]] &&
                 installed=1
           else
-            opt=zM
             installed=1
           fi
-          if emulate zsh -c "zcompile -U$opt ${(q)orig}"; then
-            zf_ln -fhs $orig.zwc $link.zwc
-            ..znap.chmod 640 $orig.zwc $link.zwc
-          fi
+          .znap.compile $orig
         fi
       done
 

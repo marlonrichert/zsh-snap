@@ -18,7 +18,4 @@ fi
 
 zf_mkdir -pm 0700 "$3:h"
 zf_ln -fhs "$tmp[1]" "$3"
-if emulate zsh -c "zcompile -UR ${tmp[1]}"; then
-  zf_ln -fhs $tmp[1].zwc $3.zwc
-  ..znap.chmod 640 $tmp[1].zwc $3.zwc
-fi
+.znap.compile $tmp[1]

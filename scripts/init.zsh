@@ -4,13 +4,6 @@ zmodload -Fa zsh/files b:zf_ln b:zf_mkdir b:zf_rm
 autoload -Uz add-zsh-hook
 local -a match=() mbegin=() mend=() # These are otherwise leaked by zstyle.
 
-if zmodload -Fl zsh/files b:zf_chmod &> /dev/null; then
-  zmodload -F zsh/files b:zf_chmod
-  ..znap.chmod() { builtin zf_chmod "$@" }
-else
-  ..znap.chmod() { command chmod "$@" }
-fi
-
 private basedir=${${(%):-%x}:P:h:h}
 
 [[ ${(t)sysexits} != *readonly ]] &&
