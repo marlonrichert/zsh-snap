@@ -48,7 +48,7 @@ while (( $#files[@] )); do
         opt=R
       fi
 
-      if emulate zsh -c "zcompile -U$opt -- ${(q)f}"; then
+      if emulate zsh -c "zcompile -U$opt -- ${(q)f}" && [[ $funcstack[2] == znap ]]; then
         print -Pr -- "${(D)f:h}/%F{green}$f:t.zwc%f"
       else
         ret=1
