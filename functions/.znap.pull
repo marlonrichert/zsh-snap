@@ -91,11 +91,17 @@ autoload +X -Uz is-at-least
             zf_rm -f -- $link
             continue
           fi
-          if [[ $orig == $bindir/* ]]; then
-            [[ -x $orig ]] &&
-                installed=1
-          else
+          if [[ $orig == $bindir/* && -x $orig ]]; then
             installed=1
+          elif [[ $orig == $fdir/* ]]; then
+            local REPLY
+            IFS='' read -r < $orig
+            if  [[ $orig == $fdir/_* &&
+                   $REPLY == (\#|autoload |emulate )* ]] ||
+                [[ $orig == $fdir/[^[:punct:][:upper:]][^.]## &&
+                   $REPLY == \#(autoload|compdef)\ * ]]; then
+              installed=1
+            fi
           fi
           .znap.compile $orig
         fi
