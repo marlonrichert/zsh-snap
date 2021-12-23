@@ -7,6 +7,15 @@ autoload +X -Uz is-at-least
 .znap.pull() {
   emulate -L zsh; setopt $_znap_opts
 
+  local bindir=~/.local/bin
+  local fdir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+  private -a bugs=(
+    $bindir/*.*(@-*)  $fdir/*.zwc.zwc
+    $bindir/*(-@)     $fdir/*(-@)
+  )
+  (( $#bugs )) &&
+      zf_rm $bugs[@]
+
   private -a repos=( ~znap/$^@(D-/) )
   (( ${#repos} )) ||
       repos=( ~znap/*(D-/) )
@@ -72,15 +81,6 @@ autoload +X -Uz is-at-least
       private cache_dir=$XDG_CACHE_HOME/zsh-snap
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
       .znap.compile $1 &> /dev/null &|
-
-      private bindir=~/.local/bin
-      private fdir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
-      private -a bugs=(
-        $bindir/*.zwc $fdir/*.zwc.zwc
-        $bindir/*(-@) $fdir/*(-@)
-      )
-      (( $#bugs )) &&
-          zf_rm $bugs[@]
 
       private -i installed=0
       private link= orig= opt=

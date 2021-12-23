@@ -20,7 +20,7 @@ mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
   repo=~[$repo]
 
-  files=( $repo/{,bin/}*~(#i)*test*(-*) )
+  files=( $repo/{,bin/}*~*.*(-*:A) )
   for orig in $files[@]; do
     link=$bindir/$orig:t
     if [[ $link:A != $orig ]]; then
@@ -32,12 +32,6 @@ for repo in $@; do
       fi
     fi
   done
-  if (( $#executables )); then
-    print -P "\nExecutables installed into %F{12}${(D)bindir}%f:"
-    cd -q $bindir
-    print -cP -- '%F{10}'${^executables[@]:t}'%f*'
-    cd -q -
-  fi
 
   comp='_*~*.zwc'
   func='[^[:punct:][:upper:]][^.]##'
@@ -51,7 +45,7 @@ for repo in $@; do
     link=$datadir/$orig:t
     if [[ $link:A != $orig ]]; then
       IFS='' read -r < $orig
-      if  [[ $orig == */$~func && $REPLY == (\#|autoload |emulate )* ]] ||
+      if  [[ $orig == */$~func && $REPLY == (\#\!*zsh|autoload |emulate )* ]] ||
           [[ $orig == */$~comp && $REPLY == \#(autoload|compdef)\ * ]]; then
         if zf_ln -fhs "$orig" "$link"; then
           .znap.compile $orig
@@ -65,21 +59,28 @@ for repo in $@; do
       fi
     fi
   done
-  if (( $#autofuncs )); then
-    print -P "\nAutoloadable functions installed into %F{12}${(D)datadir}%f:"
-    cd -q $datadir
-    print -nP '%F{10}'
-    print -c -- ${autofuncs[@]:t}
-    print -nP %f
-    cd -q -
-  fi
-  if (( $#compfuncs )); then
-    print -P "\nCompletion functions installed into %F{12}${(D)datadir}%f:"
-    cd -q $datadir
-    print -c -- ${compfuncs[@]:t}
-    cd -q -
-  fi
 done
+
+if (( $#executables )); then
+  print -P "\nExecutables installed into %F{12}${(D)bindir}%f:"
+  cd -q $bindir
+  print -cP -- '%F{10}'${^executables[@]:t}'%f*'
+  cd -q -
+fi
+if (( $#autofuncs )); then
+  print -P "\nAutoloadable functions installed into %F{12}${(D)datadir}%f:"
+  cd -q $datadir
+  print -nP '%F{10}'
+  print -c -- ${autofuncs[@]:t}
+  print -nP %f
+  cd -q -
+fi
+if (( $#compfuncs )); then
+  print -P "\nCompletion functions installed into %F{12}${(D)datadir}%f:"
+  cd -q $datadir
+  print -c -- ${compfuncs[@]:t}
+  cd -q -
+fi
 
 hash -f
 [[ -f $_comp_dumpfile ]] &&
