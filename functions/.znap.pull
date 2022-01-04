@@ -35,8 +35,12 @@ autoload +X -Uz is-at-least
   is-at-least 2.8 ${${=$( git --version )}[3]} &&
       local jopt=-j0
   .znap.multi '.znap.pull.task '${(i)^repos}
+  local -i ret=$?
+
   print -n '\r'
   .znap.compile ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+
+  return $ret
 }
 
 .znap.pull.task() {
