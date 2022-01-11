@@ -53,6 +53,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
   :
   print -nPr -- "$PS1"
   ..znap.tput cnorm # Make cursor normal (visible).
+  true
 }
 
 .znap.prompt.precmd() {

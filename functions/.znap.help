@@ -37,6 +37,7 @@ Commands:'
   print -Pu$fd -- '
 For more info on a command, type `%F{10}znap%f help <command>`.
 '
+  true
 }
 
 .znap.help "$@"

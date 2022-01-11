@@ -9,3 +9,5 @@ include=( "${${(@vu)functions_source}[@]:#$~exclude}" )
 
 (( $#include )) &&
     ( .znap.compile &> /dev/null ) &|
+
+true

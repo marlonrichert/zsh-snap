@@ -12,7 +12,8 @@ private bin= src=
 for bin in $files; do
   src=${bin%.zwc}
   if [[ -w $bin:h && ( ! -e $src || $bin -ot $src ) ]]; then
-    zf_rm -f $bin 2>/dev/null; (( ret = (ret || ?) ))
+    zf_rm -f $bin 2>/dev/null ||
+        ret=1
   fi
 done
 return ret

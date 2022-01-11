@@ -29,3 +29,5 @@ done
 unset _znap_compdef
 
 compinit() {:}
+
+true

@@ -22,14 +22,18 @@ if [[ -r $cache_file ]]; then
   private c=
   for c in $cmds[@]; do
     if [[ ${${:-=$c}:a} -nt $cache_file ]]; then
-      eval "$generator" >| $cache_file
+      eval "$generator" >| $cache_file ||
+          return
       break
     fi
   done
 else
-  eval "$generator" > $cache_file
+  eval "$generator" > $cache_file ||
+      return
 fi
 autoload -Uz $cache_file
 
 [[ -v _comp_setup ]] &&
     compdef $name $cmds[@]
+
+true

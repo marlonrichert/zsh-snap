@@ -1,0 +1,17 @@
+#!/bin/zsh
+setopt localoptions extendedglob NO_nomatch NO_nullglob
+
+reply=( $1 )
+local -a ext=( '.plugin.zsh' '(|.*).zsh[^.]#' '.sh' )
+
+if [[ -d $reply[1] ]]; then
+  reply=( $reply[1]/{*${(~j:?:)${=${reply[1]:t}//[-_]/ }:#zsh}*,init,*}${^~ext}(NY1-.) )
+elif ! [[ -r $reply[1] ]]; then
+  reply=( ${reply[1]}${^~ext}(NY1-.) )
+fi
+
+if ! (( $#reply )); then
+  print -ru2 -- "znap source: file not found: $1"
+  return $(( sysexits[(i)NOINPUT] + 63 ))
+fi
+true

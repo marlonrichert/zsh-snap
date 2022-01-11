@@ -17,5 +17,7 @@ if ! (( $#tmp )); then
 fi
 
 zf_mkdir -pm 0700 "$3:h"
-zf_ln -fhs "$tmp[1]" "$3"
+zf_ln -fhs "$tmp[1]" "$3" ||
+    return
+
 .znap.compile $tmp[1]

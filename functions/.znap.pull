@@ -34,13 +34,12 @@ autoload +X -Uz is-at-least
 
   is-at-least 2.8 ${${=$( git --version )}[3]} &&
       local jopt=-j0
-  .znap.multi '.znap.pull.task '${(i)^repos}
-  local -i ret=$?
-
-  print -n '\r'
-  .znap.compile ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
-
-  return $ret
+  {
+    .znap.multi '.znap.pull.task '${(i)^repos}
+  } always {
+    print -n '\r'
+    .znap.compile ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+  }
 }
 
 .znap.pull.task() {
@@ -64,12 +63,12 @@ autoload +X -Uz is-at-least
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
     cd -q $1
 
+    ..znap.tput el  # Clear to end of line.
+
     if ! git diff --quiet @; then
       print -P '%F{red}dirty%f'
       return 1
     fi
-
-    ..znap.tput el  # Clear to end of line.
 
     private msg=
     msg="$(

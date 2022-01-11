@@ -10,9 +10,13 @@ shift 2
 zf_mkdir -pm 0700 $dir
 
 private file=$dir/$name
-eval "$generator" >| $file
+eval "$generator" >| $file ||
+    return
+
 print -r -- "#$generator" >>| $file
 .znap.compile $file
 
 [[ -f $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
+
+true

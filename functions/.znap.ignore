@@ -3,16 +3,22 @@
 # args: <repo> <pattern> ...
 emulate -L zsh; setopt $_znap_opts
 
+if ! [[ -v 1 ]]; then
+  .znap.help ignore
+  return 1
+fi
+
 private repo=~znap/$1
 [[ $1 == */* ]] &&
     repo=~[$1]
 shift
 
-private -aU lines=()
+private -aU lines=() files=( $repo/${GIT_DIR:-.git}/**/info/exclude(.) )
 private file=
-for file in $repo/${GIT_DIR:-.git}/**/info/exclude(.); do
+for file in $files[@]; do
   [[ -r $file ]] &&
       lines=( ${(f)"$(< $file)"} )
   lines+=( $@ )
   print -r "${(F)lines}" >! $file 2>/dev/null
 done
+(( $#files ))
