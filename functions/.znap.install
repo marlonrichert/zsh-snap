@@ -39,9 +39,9 @@ for repo in $@; do
   sub="$( git -C $repo submodule foreach --quiet pwd )"
   [[ -n $sub ]] &&
       pat+="~(${(j:|:)${(f)sub}})/*"
-  pat+='(-.^D*)'
+  pat+='(-.^D)'
   files=( $~pat )
-  for orig in $files[@]; do
+  for orig in ${files[@]:|executables}; do
     link=$datadir/$orig:t
     if [[ $link:A != $orig ]]; then
       IFS='' read -r < $orig
