@@ -3,6 +3,7 @@
 # args: [ ( <dir> | <file> ) ... ]
 emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_rm
+zmodload -F zsh/parameter p:functions_source
 
 private -aU dirs=() files=() bugs=()
 if (( $# )); then
