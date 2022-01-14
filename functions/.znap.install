@@ -86,4 +86,4 @@ hash -f
 [[ -f $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
 
-(( $#executables || $#autofuncs || $#compfuncs ))
+true
