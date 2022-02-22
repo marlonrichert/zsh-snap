@@ -11,10 +11,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
     [[ $1 == */* ]] &&
         repo=~[$1]
     private theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
-    if ! .znap.prompt.load $repo $theme; then
-      print -u2 'znap prompt: no such theme:' $@
-      return $(( sysexits[(i)NOINPUT] + 63 ))
-    fi
+    .znap.prompt.load $repo $theme
   fi
 
   ..znap.tput civis # Make cursor invisible.
