@@ -1,7 +1,11 @@
 #!/bin/zsh
 
+# Resolve ~[$1]
 ..znap.dirname.n() {
   emulate -L zsh; setopt extendedglob
+
+  [[ -z $1 ]] &&
+      return 1
 
   private dir=~znap/$1
   if [[ $1 == */* ]]; then
@@ -9,13 +13,15 @@
     [[ -d $dir ]] ||
         .znap.clone $1
   fi
-  if [[ -d $dir ]]; then
-    reply=( $dir )
-    return 0
-  fi
-  return 1
+
+  [[ -d $dir ]] ||
+      return 1
+
+  reply=( $dir )
+  return 0
 }
 
+# ~Abbreviate $1
 ..znap.dirname.d() {
   emulate -L zsh; setopt extendedglob
 
@@ -28,6 +34,7 @@
   return 1
 }
 
+# Complete ~[$PREFIX$SUFFIX
 ..znap.dirname.c() {
   private tag=named-directories
   _tags $tag
