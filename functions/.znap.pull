@@ -57,7 +57,7 @@ autoload +X -Uz is-at-least
 
   private -a count=()
   if count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
-      (( count[1] && ! count[2] )); then
+      (( count[1] )); then
 
     cd -q ~znap
     print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
