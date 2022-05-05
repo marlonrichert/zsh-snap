@@ -50,8 +50,16 @@ autoload +X -Uz is-at-least
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -a upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
-  git fetch -t $jopt --recurse-submodules $upstream[@] &> /dev/null ||
-      return
+  private msg=
+
+  if ! msg="$( git fetch $jopt -t --recurse-submodules $upstream[@] 2>&1 )"; then
+    print -n '\r'
+    .znap.status $1:t
+    print -nP '\r%F{red}'
+    print -r -- "$msg"
+    print -nP '%f'
+    return
+  fi
 
   print -n .
 
@@ -70,16 +78,17 @@ autoload +X -Uz is-at-least
       return 1
     fi
 
-    private msg=
     msg="$(
-        git pull -q -r $jopt --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
+        git pull -q $jopt -r --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
     )"
     private err=$?
 
     print -n '\r'
     .znap.status $1:t
     if (( err )); then
-      print $msg
+      print -nP '\r%F{red}'
+      print -r -- "$msg"
+      print -nP '%f'
     else
       private cache_dir=$XDG_CACHE_HOME/zsh-snap
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
