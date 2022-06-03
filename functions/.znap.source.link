@@ -21,3 +21,4 @@ zf_ln -fhs "$tmp[1]" "$3" ||
     return
 
 .znap.compile $tmp[1]
+return 0  # It doesn't matter if the compilation fails.
