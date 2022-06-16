@@ -12,6 +12,14 @@ git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
 source zsh-snap/install.zsh
 ```
 
+### Fig
+
+[Fig](https://fig.io) adds apps, shortcuts, and autocomplete to your existing terminal.
+
+Install `zsh-snap` in just one click.
+
+<a href="https://fig.io/plugins/other/zsh-snap_marlonrichert" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
+
 ### Requirements
 
 Recommended:
