@@ -36,12 +36,12 @@
 
 # Complete ~[$PREFIX$SUFFIX
 ..znap.dirname.c() {
-  private tag=named-directories
-  _tags $tag
+  private _P__tag=named-directories
+  _tags $_P__tag
 
   local -a expl=()
   _tags &&
-      _requested $tag expl 'named directory' &&
+      _requested $_P__tag expl 'named directory' &&
           compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
 }
 

@@ -7,11 +7,11 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 
 .znap.prompt() {
   if (( # )); then
-    private repo=~znap/$1
+    private _P__repo=~znap/$1
     [[ $1 == */* ]] &&
-        repo=~[$1]
-    private theme=${2:-${${repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
-    .znap.prompt.load $repo $theme
+        _P__repo=~[$1]
+    private _P__theme=${2:-${${_P__repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
+    .znap.prompt.load $_P__repo $_P__theme
   fi
 
   ..znap.tput civis # Make cursor invisible.
@@ -26,20 +26,20 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
   exec 2> $_znap_prompt_tmp  # Redirect std err to tmp file.
 
   promptinit
-  if [[ -n $theme ]]; then
-    prompt_themes+=( $theme )
-    prompt $theme
+  if [[ -n $_P__theme ]]; then
+    prompt_themes+=( $_P__theme )
+    prompt $_P__theme
     ..znap.tput sc  # Save cursor position (overwriting the previous save).
 
-    private precmd=prompt_${theme}_precmd
-    if [[ -n $functions[$precmd] ]]; then
-      $precmd
+    private _P__precmd=prompt_${_P__theme}_precmd
+    if [[ -n $functions[$_P__precmd] ]]; then
+      $_P__precmd
 
-      # Ensure $precmd doesn't get called twice before the first prompt.
-      functions[:znap:$precmd]=$functions[$precmd]
-      eval "$precmd() {
-        functions[$precmd]=\$functions[:znap:$precmd]
-        unfunction :znap:$precmd
+      # Ensure $_P__precmd doesn't get called twice before the first prompt.
+      functions[:znap:$_P__precmd]=$functions[$_P__precmd]
+      eval "$_P__precmd() {
+        functions[$_P__precmd]=\$functions[:znap:$_P__precmd]
+        unfunction :znap:$_P__precmd
       }"
     fi
   fi

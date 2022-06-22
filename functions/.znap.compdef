@@ -1,39 +1,39 @@
 #!/bin/zsh
-# add output of command as completion function (deprecated)
+# DEPRECATED
 # args: <function> <command>
 zmodload -F zsh/files b:zf_mkdir
 
-private name=$1 generator=$2
+private _P__name=$1 _P__generator=$2
 shift 2
 
-private cache_dir=$XDG_CACHE_HOME/zsh-snap/fpath
-zf_mkdir -pm 0700 $cache_dir
-fpath=( $cache_dir $fpath[@] )
+private _P__cache_dir=$XDG_CACHE_HOME/zsh-snap/fpath
+zf_mkdir -pm 0700 $_P__cache_dir
+fpath=( $_P__cache_dir $fpath[@] )
 
-private cache_file=$cache_dir/$name
-if [[ -r $cache_file ]]; then
+private _P__cache_file=$_P__cache_dir/$_P__name
+if [[ -r $_P__cache_file ]]; then
   local line=
-  IFS='' read -r line < $cache_file
+  IFS='' read -r line < $_P__cache_file
 
   [[ $line != '#compdef '* ]] &&
       return $(( sysexits[(i)DATAERR] + 63 ))
 
-  private -a cmds=( ${=line#'#compdef '} )
-  private c=
-  for c in $cmds[@]; do
-    if [[ ${${:-=$c}:a} -nt $cache_file ]]; then
-      eval "$generator" >| $cache_file ||
+  private -a _P__cmds=( ${=line#'#compdef '} )
+  private _P__c=
+  for _P__c in $_P__cmds[@]; do
+    if [[ ${${:-=$_P__c}:a} -nt $_P__cache_file ]]; then
+      eval "$_P__generator" >| $_P__cache_file ||
           return
       break
     fi
   done
 else
-  eval "$generator" > $cache_file ||
+  eval "$_P__generator" > $_P__cache_file ||
       return
 fi
-autoload -Uz $cache_file
+autoload -Uz $_P__cache_file
 
 [[ -v _comp_setup ]] &&
-    compdef $name $cmds[@]
+    compdef $_P__name $_P__cmds[@]
 
 true

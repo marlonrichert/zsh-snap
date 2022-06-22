@@ -13,12 +13,12 @@ if ! (( $# )); then
   return
 fi
 
-private cmd=$1
+private _P__cmd=$1
 shift
 
-case $cmd in
+case $_P__cmd in
   ( cd | ls )
-    print -u2 'znap: try `'"$cmd ~${${1:+[$1]}:-znap}"'` instead'
+    print -u2 'znap: try `'"$_P__cmd ~${${1:+[$1]}:-znap}"'` instead'
     return $(( sysexits[(i)USAGE] + 63 ))
   ;;
   ( path )
@@ -34,15 +34,15 @@ esac
 local -A opts_pre=() opts_post=()
 zparseopts -A opts_post -D -- h -help
 
-private func=.znap.$cmd
-if [[ -v functions[$func] ]]; then
+private _P__func=.znap.$_P__cmd
+if [[ -v functions[$_P__func] ]]; then
   if (( ${#opts_pre} || ${#opts_post} )); then
-    .znap.help $cmd
+    .znap.help $_P__cmd
   else
-    $func $@
+    $_P__func $@
   fi
 else
-  print -u2 "znap: unknown command: $cmd"
+  print -u2 "znap: unknown command: $_P__cmd"
   .znap.help
   return $(( sysexits[(i)USAGE] + 63 ))
 fi

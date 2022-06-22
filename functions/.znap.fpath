@@ -4,17 +4,17 @@
 emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_mkdir
 
-private name=$1 generator=$2 dir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+private _P__name=$1 _P__generator=$2 dir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
 shift 2
 
 zf_mkdir -pm 0700 $dir
 
-private file=$dir/$name
-eval "$generator" >| $file ||
+private _P__file=$dir/$_P__name
+eval "$_P__generator" >| $_P__file ||
     return
 
-print -r -- "#$generator" >>| $file
-.znap.compile $file
+print -r -- "#$_P__generator" >>| $_P__file
+.znap.compile $_P__file
 
 [[ -f $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile

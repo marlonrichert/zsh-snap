@@ -11,48 +11,48 @@ fi
 
 .znap.eval.generate() {
   (
-    private __repo=$1 __cache_file=$2
+    private _P__repo=$1 _P__cache_file=$2
     shift 2
-    private __header="#${(q)@}"
+    private _P__header="#${(q)@}"
 
     local __line
-    [[ -r $__cache_file ]] &&
-        IFS='' read -r __line < $__cache_file
+    [[ -r $_P__cache_file ]] &&
+        IFS='' read -r __line < $_P__cache_file
 
-    if [[ $__line != $__header ||
-        ( -d $__repo && -f $__repo/${GIT_DIR:-.git}/index &&
-            $__repo/${GIT_DIR:-.git}/index -nt $__cache_file ) ]]; then
-      [[ -d $__repo ]] &&
-          cd -q -- $__repo
-      print -r -- "$__header" >| $__cache_file
-      eval "$@" >>| $__cache_file
-      .znap.compile $__cache_file
+    if [[ $__line != $_P__header ||
+        ( -d $_P__repo && -f $_P__repo/${GIT_DIR:-.git}/index &&
+            $_P__repo/${GIT_DIR:-.git}/index -nt $_P__cache_file ) ]]; then
+      [[ -d $_P__repo ]] &&
+          cd -q -- $_P__repo
+      print -r -- "$_P__header" >| $_P__cache_file
+      eval "$@" >>| $_P__cache_file
+      .znap.compile $_P__cache_file
     fi
   )
 }
 
-private __repo=~znap/$1 __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
+private _P__repo=~znap/$1 __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
 [[ $1 == */* ]] &&
-    __repo=~[$1]
+    _P__repo=~[$1]
 shift
 
 zf_mkdir -pm 0700 $__cache_dir
-private __cache_file=$__cache_dir/${__repo:t}.zsh
+private _P__cache_file=$__cache_dir/${_P__repo:t}.zsh
 
-if [[ -r $__cache_file ]]; then
-  .znap.eval.generate "$__repo" "$__cache_file" "$@" &|
+if [[ -r $_P__cache_file ]]; then
+  .znap.eval.generate "$_P__repo" "$_P__cache_file" "$@" &|
 else
   print -r "znap eval: generating cache for $*"
-  .znap.eval.generate "$__repo" "$__cache_file" "$@"
+  .znap.eval.generate "$_P__repo" "$_P__cache_file" "$@"
 fi
 
 # Wrap in a named function for profiling purposes.
-.znap.eval:${__cache_file:t}() {
+.znap.eval:${_P__cache_file:t}() {
   . "$1"
 }
 {
-  .znap.eval:${__cache_file:t} "$__cache_file"
+  .znap.eval:${_P__cache_file:t} "$_P__cache_file"
 } always {
   TRY_BLOCK_ERROR=
-  unfunction .znap.eval:${__cache_file:t}
+  unfunction .znap.eval:${_P__cache_file:t}
 }

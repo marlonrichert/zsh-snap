@@ -3,15 +3,15 @@
 # args: <command>
 
 local fd=
-private -a fds=()
-private cmd=
+private -a _P__fds=()
+private _P__cmd=
 {
-  for cmd in $@; do
-    exec {fd}< <( eval "$cmd" )
-    fds+=( $fd )
+  for _P__cmd in $@; do
+    exec {fd}< <( eval "$_P__cmd" )
+    _P__fds+=( $fd )
   done
 } always {
-  for fd in $fds[@]; do
+  for fd in $_P__fds[@]; do
     <&$fd
     exec {fd}<&-
   done
