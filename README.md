@@ -49,7 +49,7 @@ znap source zsh-users/zsh-syntax-highlighting
 znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
 
 # `znap function` lets you lazy-load features you don't always need.
-znap function _pyenv pyenvn 'eval "$( pyenv init - --no-rehash )"'
+znap function _pyenv pyenv 'eval "$( pyenv init - --no-rehash )"'
 compctl -K    _pyenv pyenv
 ```
 
