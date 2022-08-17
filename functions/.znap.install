@@ -34,7 +34,7 @@ for repo in $@; do
   done
 
   comp='_*~*.zwc'
-  func='[^[:punct:][:upper:]][^.]##'
+  func='[[:alpha:]][[:graph:]]##~*[.[:space:]]*'
   pat="$repo/**/($comp|$func)"
   sub="$( git -C $repo submodule foreach --quiet pwd )"
   [[ -n $sub ]] &&
@@ -45,7 +45,7 @@ for repo in $@; do
     link=$datadir/$orig:t
     if [[ $link:A != $orig ]]; then
       IFS='' read -r < $orig
-      if  [[ $orig == */$~func && $REPLY == (\#\!*zsh|autoload |emulate )* ]] ||
+      if  [[ $orig == */$~func && ( $orig == */functions/* || $REPLY == (\#\!*zsh|autoload |emulate )* ) ]] ||
           [[ $orig == */$~comp && $REPLY == \#(autoload|compdef)\ * ]]; then
         if zf_ln -fhs "$orig" "$link"; then
           .znap.compile $orig
