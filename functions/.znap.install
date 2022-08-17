@@ -20,7 +20,7 @@ mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
   repo=~[$repo]
 
-  files=( $repo/{,bin/}*~*.*(-*:A) )
+  files=( $repo/{,bin/}*~*.[^/]##(-*:A) )
   for orig in $files[@]; do
     link=$bindir/$orig:t
     if [[ $link:A != $orig ]]; then
