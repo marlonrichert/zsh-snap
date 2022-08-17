@@ -25,9 +25,10 @@ private basedir=${${(%):-%x}:P:h:h}
         CONFIG  # 78
     )
 
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_DATA_HOME=${XDG_DATA_HOME:-~/.local/share}
+export  XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache} \
+        XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config} \
+        XDG_DATA_HOME=${XDG_DATA_HOME:-~/.local/share} \
+        XDG_STATE_HOME=${XDG_STATE_HOME:-~/.local/state}
 private funcdir=$basedir/functions
 private sitefuncdir=$XDG_DATA_HOME/zsh/site-functions
 
@@ -68,7 +69,7 @@ typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
 [[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:P} -nt $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
 zstyle -s :completion: cache-path _ ||
-    zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/compcache"
+    zstyle ':completion:*' cache-path $XDG_CACHE_HOME/zsh/compcache
 zstyle -s ':completion:*' completer _ ||
     zstyle ':completion:*' completer _expand _complete _ignored
 .znap.function bindkey 'zmodload zsh/complist'

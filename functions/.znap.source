@@ -12,7 +12,7 @@ private _P__file= _P__src= _P__repo=~[$1]
 shift
 
 for _P__src in ${@:-''}; do
-  _P__file=~/.local/bin/${_P__repo:t}${_P__src:+.}${_P__src//\//.}
+  _P__file=$XDG_STATE_HOME/${_P__repo:t}${_P__src:+.}${_P__src//\//.}
   if ! [[ -r $_P__file:P ]]; then
     .znap.source.link "$_P__repo" "$_P__src" "$_P__file" ||
         return

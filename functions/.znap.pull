@@ -9,9 +9,13 @@ autoload +X -Uz is-at-least
 
   local bindir=~/.local/bin
   local fdir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+
   private -a bugs=(
-    $bindir/*.*(@-*)  $fdir/*.zwc.zwc
-    $bindir/*(-@)     $fdir/*(-@)
+    $bindir/*.*(@-*)
+    $bindir/*(@-^*)
+    $bindir/*(-@)
+    $fdir/*.zwc.zwc
+    $fdir/*(-@)
   )
   (( $#bugs )) &&
       zf_rm $bugs[@]
