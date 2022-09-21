@@ -23,7 +23,7 @@ autoload +X -Uz is-at-least
   cd -q $1
 
   is-at-least 2.8 ${${=$( git --version )}[3]} &&
-      private jopt=-j$( ulimit -n )
+      private jopt=-j0
   git fetch -t $jopt --recurse-submodules \
         ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} &> /dev/null ||
       return
