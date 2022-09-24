@@ -1,5 +1,4 @@
 #!/bin/zsh
-emulate zsh
 zmodload zsh/param/private
 
 autoload -Uz ${${(%):-%x}:P:h}/scripts/init.zsh
