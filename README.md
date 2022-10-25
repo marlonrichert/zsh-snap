@@ -1,7 +1,6 @@
 # ⚡️Znap!
-**Znap** is the light-weight Git repo manager for Zsh that's easy to grok. While tailored to
-managing Zsh plugins and dotfiles specifically, Znap also makes it easier to work with multiple Git
-repos in general.
+**Znap** is a fast, light-weight set of tools to ease the use of Zsh plugins & Git repos and 
+reduce your shell's startup time.
 
 > Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert)
 
