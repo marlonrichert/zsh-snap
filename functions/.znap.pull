@@ -11,14 +11,18 @@ autoload +X -Uz is-at-least
   local fdir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
 
   private -a bugs=(
-    $bindir/*.*(@-*)
-    $bindir/*(@-^*)
-    $bindir/*(-@)
-    $fdir/*.zwc.zwc
-    $fdir/*(-@)
+      $bindir/*.*(@-*)
+      $bindir/*(@-^*)
+      $bindir/*(-@)
+      $fdir/*.zwc
+      $fdir/*(-@)
   )
-  (( $#bugs )) &&
-      zf_rm $bugs[@]
+
+  private b=
+  for b in $bugs[@]; do
+    [[ $b:P == ~znap/*/* ]] &&
+        zf_rm $b
+  done
 
   private -a repos=( ~znap/$^@(D-/) )
   (( ${#repos} )) ||
