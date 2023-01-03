@@ -11,8 +11,8 @@ private repo=~znap/$url:t:r
     return 1
 
 is-at-least 2.8 ${${=$( git --version )}[3]} &&
-    private jopt=-j0
-if git -C ~znap clone --depth 1 $jopt --recurse-submodules --shallow-submodules $url; then
+    private -a git_config=( -c fetch.parallel=0 -c submodule.fetchJobs=0 )
+if git ${git_config[@]} -C ~znap clone --depth 1 --recurse-submodules --shallow-submodules $url; then
     [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
         zf_rm -f $_comp_dumpfile
   .znap.ignore $repo:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.

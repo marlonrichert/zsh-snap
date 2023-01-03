@@ -40,8 +40,9 @@ autoload +X -Uz is-at-least
     done
   fi
 
+  local -a git_config=()
   is-at-least 2.8 ${${=$( git --version )}[3]} &&
-      local jopt=-j0
+      git_config+=(-c fetch.parallel=0 -c submodule.fetchJobs=0)
   {
     .znap.multi '.znap.pull.task '${(i)^repos}
   } always {
@@ -60,7 +61,7 @@ autoload +X -Uz is-at-least
   private -a upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
   private msg=
 
-  if ! msg="$( git fetch $jopt -t --recurse-submodules $upstream[@] 2>&1 )"; then
+  if ! msg="$( git ${git_config[@]} fetch -t --recurse-submodules $upstream[@] 2>&1 )"; then
     print -n '\r'
     .znap.status $1:t
     print -nP '\r%F{red}'
@@ -87,7 +88,7 @@ autoload +X -Uz is-at-least
     fi
 
     msg="$(
-        git pull -q $jopt -r --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
+        git ${git_config[@]} pull -q -r --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
     )"
     private err=$?
 
