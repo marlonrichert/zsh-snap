@@ -2,9 +2,26 @@
 # remove executables & completion functions
 # args: <repo> ...
 emulate -L zsh; setopt $_znap_opts
-zmodload -F zsh/files b:zf_rm
 zmodload -F zsh/parameter p:commands
 autoload -Uz is-at-least
+
+# Try if we have a safer and faster alternative to `rm`.
+if [[ $VENDOR == apple ]]; then
+  private rm=trash
+  trash() {
+    local -aU items=( $^@(N) )
+    items=( '(POSIX file "'${^items[@]:a}'")' )
+    osascript -e 'tell application "Finder" to delete every item of {'${(j:, :)items}'}' \
+        > /dev/null
+  }
+elif command -v gio > /dev/null; then
+  # gio is available for macOS, but gio trash does NOT work correctly there.
+  private rm='gio trash'
+else
+  zmodload -F zsh/files b:zf_rm
+  private rm='zf_rm -frs'
+fi
+
 
 if (( $# < 1 )); then
   print -u2 'znap uninstall: not enough arguments'
@@ -25,13 +42,13 @@ for repo in ~znap/$^@:t; do
       abs=( $file[1]:A )
       if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then
         print -r -- ${(D)file[1]}
-        zf_rm -frs $file[1]
+        $=rm $file[1]
         [[ $file == ~/.local/bin/* && ! -d $abs && -v commands[$file[1]:t] ]] &&
             unhash $file[1]:t
       fi
       shift file
     done
-    zf_rm -frs $repo
+    $=rm $repo
     print -r -- $repo
     print -P "%F{12}${repo:t}%f uninstalled."
   else
@@ -41,5 +58,5 @@ for repo in ~znap/$^@:t; do
 done
 hash -f
 [[ -f $_comp_dumpfile ]] &&
-    zf_rm -fs $_comp_dumpfile
+    $=rm $_comp_dumpfile
 return ret
