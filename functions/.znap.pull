@@ -25,12 +25,17 @@ autoload +X -Uz is-at-least
   done
 
   private -a repos=( ~znap/$^@(D-/) )
+  private r=
+
   (( ${#repos} )) ||
       repos=( ~znap/*(D-/) )
 
+  for r in $repos; do
+    git -C $r config --local submodule.fetchJobs 0
+  done
+
   if is-at-least 2.31 ${${=$( git --version )}[3]}; then
     local -a match=() mbegin=() mend=()
-    local r
     for r in $repos; do
       if zstyle -T :znap:pull:${r:t} git-maintenance; then
         git -C $r maintenance start &> /dev/null
@@ -40,8 +45,6 @@ autoload +X -Uz is-at-least
     done
   fi
 
-  is-at-least 2.8 ${${=$( git --version )}[3]} &&
-      local jopt=-j0
   {
     .znap.multi '.znap.pull.task '${(i)^repos}
   } always {
@@ -53,21 +56,15 @@ autoload +X -Uz is-at-least
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
+  cd -q ~znap
+  print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
   cd -q $1
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
-  private -a upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
-  private msg=
-
-  if ! msg="$( git fetch $jopt -t --recurse-submodules $upstream[@] 2>&1 )"; then
-    print -n '\r'
-    .znap.status $1:t
-    print -nP '\r%F{red}'
-    print -r -- "$msg"
-    print -nP '%f'
-    return
-  fi
+  local -a upstream=()
+  ..znap.fetch $1 ||
+      return
 
   print -n .
 
@@ -86,18 +83,12 @@ autoload +X -Uz is-at-least
       return 1
     fi
 
-    msg="$(
-        git pull -q $jopt -r --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
-    )"
-    private err=$?
-
-    print -n '\r'
-    .znap.status $1:t
-    if (( err )); then
-      print -nP '\r%F{red}'
-      print -r -- "$msg"
-      print -nP '%f'
+    if ! msg="$(  git pull -q -r --recurse-submodules $upstream[@] 2>&1 > /dev/null )"; then
+      ..znap.error "$msg"
+      return
     else
+      print -n '\r'
+      .znap.status $1
       private cache_dir=$XDG_CACHE_HOME/zsh-snap
       zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
       .znap.compile $1 &> /dev/null &|
