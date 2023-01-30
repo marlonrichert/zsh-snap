@@ -1,0 +1,17 @@
+#!/bin/zsh
+emulate -L zsh; setopt $_znap_opts
+
+typeset -ga upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
+if [[ -z $upstream ]]; then
+  ..znap.error "$( git rev-parse -q --abbrev-ref @{u} 2>&1 > /dev/null )"
+  return
+fi
+
+if ! git ls-remote -q --exit-code $upstream[@] > /dev/null && [[ $upstream[2] == master ]]; then
+  upstream=( --set-upstream $upstream[1] main )
+fi
+
+private msg=
+if ! msg="$( git fetch -t --recurse-submodules $upstream[@] 2>&1 > /dev/null )"; then
+  ..znap.error "$msg"
+fi

@@ -1,5 +1,5 @@
 # ⚡️Znap!
-**Znap** is a fast, light-weight set of tools to ease the use of Zsh plugins & Git repos and 
+**Znap** is a fast, light-weight set of tools to ease the use of Zsh plugins & Git repos and
 reduce your shell's startup time.
 
 > Enjoy using this software? [Become a sponsor!](https://github.com/sponsors/marlonrichert)
@@ -13,12 +13,9 @@ source zsh-snap/install.zsh
 
 ### Requirements
 
-Recommended:
-* Zsh 5.7.1 or newer
-* Git 2.8 or newer
-
-Minimum:
-* Zsh 5.4.2
+Tested with:
+* Zsh 5.8.1
+* Git 2.39.1
 
 ### Updating
 To update Znap and all of your plugins/repos simultaneously, run
