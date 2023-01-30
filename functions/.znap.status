@@ -17,16 +17,11 @@ autoload +X -Uz is-at-least
   emulate -L zsh; setopt $_znap_opts
 
   cd -q ~znap
-
   print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
-
   cd -q $1
 
-  is-at-least 2.8 ${${=$( git --version )}[3]} &&
-      private jopt=-j0
-  git fetch -t $jopt --recurse-submodules \
-        ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} &> /dev/null ||
-      return
+  local -a upstream=()
+  local err="$( ..znap.fetch )"
 
   private rev= log="$( git log -n1 --decorate --oneline )"
   if [[ $log ==  *'tag: '* ]]; then
@@ -47,7 +42,7 @@ autoload +X -Uz is-at-least
   [[ -z $ahead_behind && -z $changes ]] &&
       ahead_behind=$'\e[32m✓\e[39m'
 
-  print -r -- $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} $ahead_behind $changes
+  print -r -- $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} $ahead_behind $changes $err
 }
 
 .znap.status "$@"

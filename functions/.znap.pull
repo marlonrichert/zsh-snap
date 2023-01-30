@@ -25,12 +25,17 @@ autoload +X -Uz is-at-least
   done
 
   private -a repos=( ~znap/$^@(D-/) )
+  private r=
+
   (( ${#repos} )) ||
       repos=( ~znap/*(D-/) )
 
+  for r in $repos; do
+    git -C $r config --local submodule.fetchJobs 0
+  done
+
   if is-at-least 2.31 ${${=$( git --version )}[3]}; then
     local -a match=() mbegin=() mend=()
-    local r
     for r in $repos; do
       if zstyle -T :znap:pull:${r:t} git-maintenance; then
         git -C $r maintenance start &> /dev/null
@@ -40,12 +45,9 @@ autoload +X -Uz is-at-least
     done
   fi
 
-  is-at-least 2.8 ${${=$( git --version )}[3]} &&
-      local jopt=-j0
   {
     .znap.multi '.znap.pull.task '${(i)^repos}
   } always {
-    print -n '\r'
     .znap.compile ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
   }
 }
@@ -53,84 +55,65 @@ autoload +X -Uz is-at-least
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
+  cd -q ~znap
+  print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
   cd -q $1
+
+  ..znap.fetch ||
+      return
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
-  private -a upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
-  private msg=
-
-  if ! msg="$( git fetch $jopt -t --recurse-submodules $upstream[@] 2>&1 )"; then
-    print -n '\r'
-    .znap.status $1:t
-    print -nP '\r%F{red}'
-    print -r -- "$msg"
-    print -nP '%f'
-    return
-  fi
-
-  print -n .
-
   private -a count=()
-  if count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ) &&
-      (( count[1] )); then
-
-    cd -q ~znap
-    print -nr -- $'\r'"${$( eval "ls -d $1:t" )%[/@]} "
-    cd -q $1
-
-    ..znap.tput el  # Clear to end of line.
-
-    if ! git diff --quiet @; then
-      print -P '%F{red}dirty%f'
-      return 1
+  if count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ); then
+    if (( count[2] )); then
+      print -P "%F{yellow}ahead $count[2]%f"
+      return
     fi
 
-    msg="$(
-        git pull -q $jopt -r --autostash --recurse-submodules $upstream[@] 2>&1 > /dev/null
-    )"
-    private err=$?
+    if (( count[1] )); then
+      print -n 'updating... '
 
-    print -n '\r'
-    .znap.status $1:t
-    if (( err )); then
-      print -nP '\r%F{red}'
-      print -r -- "$msg"
-      print -nP '%f'
-    else
-      private cache_dir=$XDG_CACHE_HOME/zsh-snap
-      zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
-      .znap.compile $1 &> /dev/null &|
+      local msg=
+      if ! msg=$( git pull -q -r --recurse-submodules $upstream[@] 2>&1 > /dev/null ); then
+        ..znap.error $=msg
+        return
+      else
+        private cache_dir=$XDG_CACHE_HOME/zsh-snap
+        zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
+        .znap.compile $1 &> /dev/null &|
 
-      private -i installed=0
-      private link= orig= opt=
-      for link in $bindir/*~*.zwc(@) $fdir/*~*.zwc(@); do
-        orig=$link:P
-        if [[ $orig == $1/* ]]; then
-          if ! [[ -e $orig ]]; then
-            zf_rm -f -- $link
-            continue
-          fi
-          if [[ $orig == $bindir/* && -x $orig ]]; then
-            installed=1
-          elif [[ $orig == $fdir/* ]]; then
-            local REPLY
-            IFS='' read -r < $orig
-            if  [[ $orig == $fdir/_* &&
-                   $REPLY == (\#|autoload |emulate )* ]] ||
-                [[ $orig == $fdir/[^[:punct:][:upper:]][^.]## &&
-                   $REPLY == \#(autoload|compdef)\ * ]]; then
-              installed=1
+        private -i installed=0
+        private link= orig= opt=
+        for link in $bindir/*~*.zwc(@) $fdir/*~*.zwc(@); do
+          orig=$link:P
+          if [[ $orig == $1/* ]]; then
+            if ! [[ -e $orig ]]; then
+              zf_rm -f -- $link
+              continue
             fi
+            if [[ $orig == $bindir/* && -x $orig ]]; then
+              installed=1
+            elif [[ $orig == $fdir/* ]]; then
+              local REPLY
+              IFS='' read -r < $orig
+              if  [[ $orig == $fdir/_* &&
+                    $REPLY == (\#|autoload |emulate )* ]] ||
+                  [[ $orig == $fdir/[^[:punct:][:upper:]][^.]## &&
+                    $REPLY == \#(autoload|compdef)\ * ]]; then
+                installed=1
+              fi
+            fi
+            .znap.compile $orig
           fi
-          .znap.compile $orig
-        fi
-      done
+        done
 
-      (( installed )) &&
-          .znap.install $1:t
+        (( installed )) &&
+            .znap.install $1:t
+      fi
     fi
   fi
+  print -P '%F{green}✓%f'
 }
 
 .znap.pull "$@"

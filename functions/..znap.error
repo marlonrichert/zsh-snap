@@ -1,0 +1,7 @@
+#!/bin/zsh
+emulate -L zsh; setopt $_znap_opts
+
+print -Pn '%F{red}'
+print -rn -- "${@//(error|fatal): /}"
+print -P '%f'
+false
