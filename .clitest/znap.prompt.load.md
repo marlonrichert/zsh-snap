@@ -1,6 +1,6 @@
 Setup
 ```zsh
-% autoload -Uz .znap.prompt.load
+% source .clitest/__init__.zsh
 % fpath_=( "$fpath[@]" )
 %
 ```
