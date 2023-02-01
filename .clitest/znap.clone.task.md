@@ -1,6 +1,6 @@
 Setup:
 ```zsh
-% autoload -Uz .znap.clone.task
+% source .clitest/__init__.zsh
 % git() { if [[ $1 == --version ]]; then print 2.8.0; else print $@[-1]; fi }
 % .znap.compile .znap.ignore () { : }
 % hash -d znap=$(mktemp -d)
