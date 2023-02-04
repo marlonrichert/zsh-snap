@@ -8,7 +8,7 @@ autoload +X -Uz is-at-least
 
   private -a repos=( ~znap/$^@(D-/) )
   (( $#repos > 0 )) ||
-      repos=( ~znap/*(D-/) )
+      repos=( ~znap/*/.git(D-/:h) )
 
   .znap.multi '.znap.status.task '${(i)^repos}
 }
@@ -21,7 +21,7 @@ autoload +X -Uz is-at-least
   cd -q $1
 
   local -a upstream=()
-  local err="$( ..znap.fetch )"
+  private err="$( ..znap.fetch )"
 
   private rev= log="$( git log -n1 --decorate --oneline )"
   if [[ $log ==  *'tag: '* ]]; then
@@ -32,17 +32,21 @@ autoload +X -Uz is-at-least
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -aU lines=( "${(f)$( git status -sb )}" )
+  private branch=${${${lines[1]#'## '}%...*}:#*(main|master)*}
 
   private -i MBEGIN MEND
   private MATCH
   private -aU changes=( ${(0)${${(F)lines[2,-1]}// [[:print:]]#($'\n'|)}//$'m\C-['/$'m\0\C-['} )
   changes=( ${(@)changes[@]//(#m)('??'|'!!')/$MATCH[1]} )
 
-  private ahead_behind=${${(M)lines[1]% \[*\]}# }
-  [[ -z $ahead_behind && -z $changes ]] &&
-      ahead_behind=$'\e[32m✓\e[39m'
+  private ahead_behind=
+  if [[ -z $err ]]; then
+    ahead_behind=${${(M)lines[1]% \[*\]}# }
+    [[ -z $ahead_behind && -z $changes ]] &&
+        ahead_behind=$'\e[32m✓\e[39m'
+  fi
 
-  print -r -- $rev ${${${lines[1]#'## '}%...*}:#*(main|master)*} $ahead_behind $changes $err
+  print -r -- $rev ${err:-$branch} $ahead_behind $changes
 }
 
 .znap.status "$@"

@@ -25,7 +25,7 @@
 ..znap.dirname.d() {
   emulate -L zsh; setopt extendedglob
 
-  if [[ $1 == ~znap/* ]]; then
+  if [[ $1 == ~znap/* && -d $1/.git ]]; then
     # private name=${${1#~znap/}:h1}  <- Zsh 5.8+
     private name=${${1#~znap/}%%/*}
     reply=( "$name" ${#:-~znap/$name} )
@@ -42,7 +42,7 @@
   local -a expl=()
   _tags &&
       _requested $_P__tag expl 'named directory' &&
-          compadd "$expl[@]" -I ']' -Q - ~znap/*(on-/:t)
+          compadd "$expl[@]" -I ']' -Q - ~znap/*/.git(on-/:h:t)
 }
 
 ..znap.dirname() {

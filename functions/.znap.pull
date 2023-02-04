@@ -28,7 +28,7 @@ autoload +X -Uz is-at-least
   private r=
 
   (( ${#repos} )) ||
-      repos=( ~znap/*(D-/) )
+      repos=( ~znap/*/.git(D-/:h) )
 
   for r in $repos; do
     git -C $r config --local submodule.fetchJobs 0
@@ -59,6 +59,7 @@ autoload +X -Uz is-at-least
   print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
   cd -q $1
 
+  local -a upstream=()
   ..znap.fetch ||
       return
 
