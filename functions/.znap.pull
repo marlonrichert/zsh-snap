@@ -60,8 +60,10 @@ autoload +X -Uz is-at-least
   cd -q $1
 
   local -a upstream=()
-  ..znap.fetch ||
-      return
+  if ! ..znap.fetch; then
+    ..znap.error 'no upstream'
+    return 1
+  fi
 
   .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 

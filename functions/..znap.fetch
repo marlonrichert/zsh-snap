@@ -1,10 +1,11 @@
 #!/bin/zsh
 emulate -L zsh; setopt $_znap_opts
 
-typeset -ga upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} )
-if [[ -z $upstream ]]; then
-  ..znap.error "$( git rev-parse -q --abbrev-ref @{u} 2>&1 > /dev/null )"
-  return
+git fetch --prune
+
+if ! upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} ); then
+  git branch -q --unset-upstream 2> /dev/null
+  return 1
 fi
 
 if ! git ls-remote -q --exit-code $upstream[@] > /dev/null && [[ $upstream[2] == master ]]; then
