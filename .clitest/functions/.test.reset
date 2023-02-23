@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+# reset tests
+.test.teardown
+.test.setup
