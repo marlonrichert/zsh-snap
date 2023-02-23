@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+# initialize znap like a user would
+source $PWD/znap.zsh
+
+# works with BSD and GNU gmktemp
+T_TEMPDIR=${"$( mktemp -d -t t_znap.XXXXXXXX )":A}
+
+# set znap location
+hash -d znap=$T_TEMPDIR
+
+# save fpath
+fpath_=( $fpath )
+
+# mockgit
+git() {
+  if [[ $1 == --version ]]; then
+    print 2.8.0
+  else
+    print -r -- $[@]
+  fi
+}
