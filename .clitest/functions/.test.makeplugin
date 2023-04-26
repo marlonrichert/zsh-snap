@@ -1,6 +1,0 @@
-#!/bin/zsh
-
-local file=${1:-foo.plugin.zsh}
-local plugin=${2:-${1%%.*}}
-mkdir -p $T_TEMPDIR/$plugin
-print -r "print -r 'sourcing $plugin/$file...'" > $T_TEMPDIR/$plugin/$file
