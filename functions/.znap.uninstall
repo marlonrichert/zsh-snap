@@ -37,7 +37,7 @@ for repo in ~znap/$^@:t; do
     is-at-least 2.31 ${${=$( git --version )}[3]} &&
         git -C $repo maintenance unregister &> /dev/null
     print 'Removing:'
-    file=( ~/.local/bin/* ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions/* )
+    file=( ~/.local/bin/* ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions/* )
     while (( $#file ));do
       abs=( $file[1]:A )
       if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then

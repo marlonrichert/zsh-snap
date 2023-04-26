@@ -4,7 +4,7 @@
 emulate -L zsh; setopt $_znap_opts
 zmodload -F zsh/files b:zf_mkdir
 
-private _P__name=$1 _P__generator=$2 dir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+private _P__name=$1 _P__generator=$2 dir=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
 shift 2
 
 zf_mkdir -pm 0700 $dir

@@ -8,7 +8,7 @@ autoload +X -Uz is-at-least
   emulate -L zsh; setopt $_znap_opts
 
   local bindir=~/.local/bin
-  local fdir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+  local fdir=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
 
   private -a bugs=(
       $bindir/*.*(@-*)
@@ -48,7 +48,7 @@ autoload +X -Uz is-at-least
   {
     .znap.multi '.znap.pull.task '${(i)^repos}
   } always {
-    .znap.compile ${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+    .znap.compile ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
   }
 }
 

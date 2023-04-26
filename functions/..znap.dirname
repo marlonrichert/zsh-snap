@@ -28,7 +28,7 @@
   if [[ $1 == ~znap/* && -d $1/.git ]]; then
     # private name=${${1#~znap/}:h1}  <- Zsh 5.8+
     private name=${${1#~znap/}%%/*}
-    reply=( "$name" ${#:-~znap/$name} )
+    reply=( "$name" ${#:-$HOMEznap/$name} )
     return 0
   fi
   return 1

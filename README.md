@@ -130,7 +130,7 @@ To remove these (and their repos), use `znap uninstall`:
 ```
 
 Executables are installed in `~/.local/bin`, while completion functions go to
-`${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
+`${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions`.
 
 ### Install generated functions
 Some commands generate output that should be loaded as a function. You can install these generated
@@ -141,7 +141,7 @@ functions as follows:
 % znap fpath _cargo   'rustup  completions zsh cargo'
 ```
 
-These functions, too, are saved to `${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions`.
+These functions, too, are saved to `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions`.
 
 ### Named dirs
 Znap makes your repos dir and all of its subdirs available as [named

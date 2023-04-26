@@ -14,7 +14,7 @@ fi
 
 local REPLY=
 private -a files=() executables=() compfuncs=() autofuncs=()
-private datadir=${XDG_DATA_HOME:-~/.local/share}/zsh/site-functions
+private datadir=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
 private bindir=~/.local/bin comp= func= link= orig= pat= repo= sub=
 mkdir -pm 0700 $bindir $datadir
 for repo in $@; do
