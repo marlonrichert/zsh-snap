@@ -29,28 +29,27 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-private -a abs=() file=()
+private -a abs=() files=()
 private -i ret=0
-private repo=
+private dir= file repo=
 for repo in $@; do
-  repo=~[$repo]
+  dir=~[$repo]
   is-at-least 2.31 ${${=$( git --version )}[3]} &&
-      git -C $repo maintenance unregister &> /dev/null
+      git -C $dir maintenance unregister &> /dev/null
   print 'Removing:'
-  file=( ~/.local/bin/* ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions/* )
-  while (( $#file ));do
-    abs=( $file[1]:A )
-    if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then
-      print -r -- ${(D)file[1]}
-      $=rm $file[1]
-      [[ $file == ~/.local/bin/* && ! -d $abs && -v commands[$file[1]:t] ]] &&
-          unhash $file[1]:t
+  files=( ~/.local/bin/* ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions/* )
+  for file in $files;do
+    abs=( $file:A )
+    if [[ $abs == $dir/* || $file:t == ${dir:t}(|.*) ]]; then
+      print -r -- ${(D)file}
+      $=rm $file
+      [[ $file == ~/.local/bin/* && ! -d $abs && -v commands[$file:t] ]] &&
+          unhash $file:t
     fi
-    shift file
   done
-  $=rm $repo
-  print -r -- $repo
-  print -P "%F{12}${repo:t}%f uninstalled."
+  $=rm $dir
+  print -Pr -- "%F{4}${dir}%f"
+  print -P "%F{12}${repo}%f uninstalled."
 done
 hash -f
 [[ -f $_comp_dumpfile ]] &&

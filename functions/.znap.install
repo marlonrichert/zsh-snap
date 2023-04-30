@@ -10,7 +10,8 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-.znap.clone $@
+.znap.clone $@ ||
+    return
 
 local REPLY=
 private -a files=() executables=() compfuncs=() autofuncs=()

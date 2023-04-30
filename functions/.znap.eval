@@ -31,12 +31,15 @@ fi
   )
 }
 
-local gitdir=
+local gitdir=''
 ..znap.repos-dir
 
-private _P__repo=$gitdir/$1 __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
-[[ $1 == */* ]] &&
-    _P__repo=~[$1]
+if [[ $1 == */* ]]; then
+  .znap.clone $1 ||
+      return
+fi
+
+private _P__repo=~[$1] __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
 shift
 
 zf_mkdir -pm 0700 $__cache_dir

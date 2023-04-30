@@ -8,12 +8,10 @@ if ! [[ -v 1 ]]; then
   return 1
 fi
 
-local gitdir=
+local gitdir=''
 ..znap.repos-dir
 
-private repo=$gitdir/$1
-[[ $1 == */* ]] &&
-    repo=~[$1]
+private repo=~[$1]
 shift
 
 private -aU lines=() files=( $repo/${GIT_DIR:-.git}/**/info/exclude(.) )

@@ -3,56 +3,65 @@
 # Resolve ~[$1]
 ..znap.dirname.n() {
   emulate -L zsh; setopt extendedglob
+  private -a dirs=()
 
-  [[ -z $1 ]] &&
-      return 1
-
-  local gitdir=
+  local gitdir=''
   ..znap.repos-dir
 
-  private dir=$gitdir/$1
-  if [[ $1 == */* ]]; then
-    dir=$gitdir/${${1##*/}%.git}
-    [[ -d $dir ]] ||
-        .znap.clone $1
-  fi
+  case $1 in
+    ( ${1:t} )
+      dirs=( $gitdir/{*/,}$1/.git(Non-/:h) )
+    ;;
+    ( ${1:t2} )
+      dirs=( $gitdir/$1/.git(Non-/:h) )
+    ;;
+  esac
 
-  [[ -d $dir ]] ||
-      return 1
+  (( $#dirs[@] == 1 )) ||
+      return
 
-  reply=( $dir )
-  return 0
+  reply=( $dirs )
 }
 
 # ~Abbreviate $1
 ..znap.dirname.d() {
   emulate -L zsh; setopt extendedglob
 
-  local gitdir=
+  local gitdir=''
   ..znap.repos-dir
 
-  if [[ $1 == $gitdir/* && -d $1/.git ]]; then
-    # private name=${${1#$gitdir/}:h1}  <- Zsh 5.8+
-    private name=${${1#$gitdir/}%%/*}
-    reply=( "$name" ${#:-$HOMEznap/$name} )
-    return 0
-  fi
-  return 1
+  private name=${1:t2}
+
+  local dir=$gitdir/$name
+
+  [[ -d $dir/.git ]] ||
+      return
+
+  private -a same_named=( $gitdir/*/${name:t}/.git(on-/:h:t) )
+  (( $#same_named[@] == 1 )) &&
+      name=${1:t}
+
+  reply=( "$name" $#dir )
 }
 
-# Complete ~[$PREFIX$SUFFIX
+# Complete ~[...]
 ..znap.dirname.c() {
-  private _P__tag=named-directories
-  _tags $_P__tag
-
+set -x
+  if [[ -n $ISUFFIX ]]; then
+    # Workaround: In Zsh <= 5.9.0, _setup doesn't get called when completing inside a subscript.
+    _setup default
+  else
+    local suf=-S]
+  fi
+set +x
   local -a expl=()
+  _description named-directories expl 'named directory'
 
+  local -a repos=()
   local gitdir=
-  ..znap.repos-dir
+  ..znap.repos
 
-  _tags &&
-      _requested $_P__tag expl 'named directory' &&
-          compadd "$expl[@]" -I ']' -Q - $gitdir/*/.git(on-/:h:t)
+  builtin compadd "$expl[@]" $suf -a -- repos
 }
 
 ..znap.dirname() {

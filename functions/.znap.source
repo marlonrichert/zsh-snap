@@ -1,6 +1,7 @@
 #!/bin/zsh
 # load plugins
 # args: <repo> [ <dir> | <file> ] ...
+zmodload -Fa zsh/files b:zf_rm
 
 if ! (( # )); then
   print -u2 'znap source: not enough arguments'
@@ -8,11 +9,21 @@ if ! (( # )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-private _P__file= _P__src= _P__repo=~[$1]
+if [[ $1 == */* ]]; then
+  .znap.clone $1 ||
+      return
+fi
+private _P__repo=~[$1]
+
+private _P__state=$XDG_STATE_HOME/znap
+private _P__file='' _P__src=''
 shift
 
 for _P__src in ${@:-''}; do
-  _P__file=$XDG_STATE_HOME/${_P__repo:t}${_P__src:+.}${_P__src//\//.}
+  [[ -h $XDG_STATE_HOME/${_P__repo:t2}${_P__src:+.}${_P__src//\//.} ]] &&
+      zf_rm -fr $XDG_STATE_HOME/${_P__repo:t2:h}
+
+  _P__file=$_P__state/${_P__repo:t2}${_P__src:+.}${_P__src//\//.}
   if ! [[ -r $_P__file:P ]]; then
     .znap.source.link "$_P__repo" "$_P__src" "$_P__file" ||
         return

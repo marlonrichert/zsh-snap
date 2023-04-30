@@ -10,7 +10,16 @@ if (( $# < 1 )); then
 fi
 
 local -a match=() mbegin=() mend=()
-local server
+private repo=''
+for repo in $@; do
+  if [[ $repo != ([^/]##/[^/]##|*(@|://)*/*.git) ]]; then
+    print -u2 "znap clone: invalid argument '$repo'"
+    .znap.help clone
+    return $(( sysexits[(i)USAGE] + 63 ))
+  fi
+done
+
+local server=''
 zstyle -s :znap:clone: default-server server ||
     server='https://github.com/'
 .znap.multi ".znap.clone.task $server "$^@ ||
