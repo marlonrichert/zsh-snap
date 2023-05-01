@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+zstyle -s :znap: repos-dir gitdir ||
+    gitdir=${${(%):-%x}:P:h:h:a:h}

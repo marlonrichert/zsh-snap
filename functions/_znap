@@ -68,7 +68,10 @@ case $words[1] in
 esac
 ret=$(( ret && ? ))
 
-local -aU opts=( -qS ' ' ) repos=( ~znap/*/.git(D-/:h:t) )
+  local gitdir=
+  ..znap.repos-dir
+
+local -aU opts=( -qS ' ' ) repos=( $gitdir/*/.git(D-/:h:t) )
 case $state in
   ( dirs )
     _alternative 'directories:directory:_files -/'

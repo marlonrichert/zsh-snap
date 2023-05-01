@@ -32,29 +32,25 @@ fi
 private -a abs=() file=()
 private -i ret=0
 private repo=
-for repo in ~znap/$^@:t; do
-  if [[ -d $repo ]]; then
-    is-at-least 2.31 ${${=$( git --version )}[3]} &&
-        git -C $repo maintenance unregister &> /dev/null
-    print 'Removing:'
-    file=( ~/.local/bin/* ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions/* )
-    while (( $#file ));do
-      abs=( $file[1]:A )
-      if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then
-        print -r -- ${(D)file[1]}
-        $=rm $file[1]
-        [[ $file == ~/.local/bin/* && ! -d $abs && -v commands[$file[1]:t] ]] &&
-            unhash $file[1]:t
-      fi
-      shift file
-    done
-    $=rm $repo
-    print -r -- $repo
-    print -P "%F{12}${repo:t}%f uninstalled."
-  else
-    print -Pu2 "%F{12}${repo:t} %F{1}not found.%f"
-    (( ret = sysexits[(i)NOINPUT] + 63 ))
-  fi
+for repo in $@; do
+  repo=~[$repo]
+  is-at-least 2.31 ${${=$( git --version )}[3]} &&
+      git -C $repo maintenance unregister &> /dev/null
+  print 'Removing:'
+  file=( ~/.local/bin/* ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions/* )
+  while (( $#file ));do
+    abs=( $file[1]:A )
+    if [[ $abs == $repo/* || $file:t == ${repo:t}(|.*) ]]; then
+      print -r -- ${(D)file[1]}
+      $=rm $file[1]
+      [[ $file == ~/.local/bin/* && ! -d $abs && -v commands[$file[1]:t] ]] &&
+          unhash $file[1]:t
+    fi
+    shift file
+  done
+  $=rm $repo
+  print -r -- $repo
+  print -P "%F{12}${repo:t}%f uninstalled."
 done
 hash -f
 [[ -f $_comp_dumpfile ]] &&

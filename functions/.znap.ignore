@@ -8,7 +8,10 @@ if ! [[ -v 1 ]]; then
   return 1
 fi
 
-private repo=~znap/$1
+local gitdir=
+..znap.repos-dir
+
+private repo=$gitdir/$1
 [[ $1 == */* ]] &&
     repo=~[$1]
 shift

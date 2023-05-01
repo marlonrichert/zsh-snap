@@ -7,7 +7,10 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 
 .znap.prompt() {
   if (( # )); then
-    private _P__repo=~znap/$1
+    local gitdir=
+    ..znap.repos-dir
+
+    private _P__repo=$gitdir/$1
     [[ $1 == */* ]] &&
         _P__repo=~[$1]
     private _P__theme=${2:-${${_P__repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}

@@ -6,17 +6,22 @@ autoload +X -Uz is-at-least
 .znap.status() {
   emulate -L zsh; setopt $_znap_opts
 
-  private -a repos=( ~znap/$^@(D-/) )
-  (( $#repos > 0 )) ||
-      repos=( ~znap/*/.git(D-/:h) )
+  (
+    local gitdir=
+    ..znap.repos-dir
 
-  .znap.multi '.znap.status.task '${(i)^repos}
+    private -a repos=( $gitdir/$^@(D-/) )
+    (( $#repos > 0 )) ||
+        repos=( $gitdir/*/.git(D-/:h) )
+
+    cd -q $gitdir
+    .znap.multi '.znap.status.task '${(i)^repos}
+  )
 }
 
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  cd -q ~znap
   print -nr -- "${$( eval "ls -d $1:t" )%[/@]} "
   cd -q $1
 

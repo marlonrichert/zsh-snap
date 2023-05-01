@@ -31,7 +31,10 @@ fi
   )
 }
 
-private _P__repo=~znap/$1 __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
+local gitdir=
+..znap.repos-dir
+
+private _P__repo=$gitdir/$1 __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
 [[ $1 == */* ]] &&
     _P__repo=~[$1]
 shift

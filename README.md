@@ -147,7 +147,6 @@ These functions, too, are saved to `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/sit
 Znap makes your repos dir and all of its subdirs available as [named
 directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
 ```zsh
-% cd ~znap                  # `cd` to your repos dir
 % cd ~[github-markdown-toc] # `cd` to a repo
 % ls ~[asdf]/completions    # `ls` a subdir in a repo
 ```

@@ -7,9 +7,12 @@
   [[ -z $1 ]] &&
       return 1
 
-  private dir=~znap/$1
+  local gitdir=
+  ..znap.repos-dir
+
+  private dir=$gitdir/$1
   if [[ $1 == */* ]]; then
-    dir=~znap/${${1##*/}%.git}
+    dir=$gitdir/${${1##*/}%.git}
     [[ -d $dir ]] ||
         .znap.clone $1
   fi
@@ -25,9 +28,12 @@
 ..znap.dirname.d() {
   emulate -L zsh; setopt extendedglob
 
-  if [[ $1 == ~znap/* && -d $1/.git ]]; then
-    # private name=${${1#~znap/}:h1}  <- Zsh 5.8+
-    private name=${${1#~znap/}%%/*}
+  local gitdir=
+  ..znap.repos-dir
+
+  if [[ $1 == $gitdir/* && -d $1/.git ]]; then
+    # private name=${${1#$gitdir/}:h1}  <- Zsh 5.8+
+    private name=${${1#$gitdir/}%%/*}
     reply=( "$name" ${#:-$HOMEznap/$name} )
     return 0
   fi
@@ -40,9 +46,13 @@
   _tags $_P__tag
 
   local -a expl=()
+
+  local gitdir=
+  ..znap.repos-dir
+
   _tags &&
       _requested $_P__tag expl 'named directory' &&
-          compadd "$expl[@]" -I ']' -Q - ~znap/*/.git(on-/:h:t)
+          compadd "$expl[@]" -I ']' -Q - $gitdir/*/.git(on-/:h:t)
 }
 
 ..znap.dirname() {
