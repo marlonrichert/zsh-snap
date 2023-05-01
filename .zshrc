@@ -41,14 +41,11 @@ znap prompt
 znap source marlonrichert/zsh-autocomplete
 znap source marlonrichert/zsh-edit
 
-# ...or to load only those parts of Oh-My-Zsh or Prezto that you really need:
+# You can also choose to load one or more files specifically:
 znap source sorin-ionescu/prezto modules/{environment,history}
 znap source ohmyzsh/ohmyzsh \
     'lib/(*~(git|theme-and-appearance).zsh)' plugins/git
 
-# `znap source` finds the right file automatically, but you can also specify
-# one (or more) explicitly:
-znap source asdf-vm/asdf asdf.sh
 
 # No special syntax is needed to configure plugins. Just use normal Zsh
 # statements:
@@ -78,10 +75,6 @@ znap eval trapd00r/LS_COLORS "$( whence -a dircolors gdircolors ) -b LS_COLORS"
 # this variable has changed.
 znap source marlonrichert/zcolors
 znap eval   marlonrichert/zcolors "zcolors ${(q)LS_COLORS}"
-
-# Here we include the full path to a command. Since that path includes a
-# version number, the cache will be invalidated when that changes.
-znap eval asdf-community/asdf-direnv "asdf exec $( asdf which direnv ) hook zsh"
 
 # Combine `znap eval` with `curl` or `wget` to download, cache and source
 # individual files:

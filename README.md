@@ -173,7 +173,7 @@ This will save them to `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions`
 Znap makes all of the repos it manages available as [named
 directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
 ```sh
-% cd ~[github-markdown-toc] # `cd` to a repo
+% cd ~[zsh-snap] # `cd` to a repo
 % ls ~[asdf]/completions    # `ls` a subdir in a repo
 ```
 
