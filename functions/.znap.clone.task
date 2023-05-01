@@ -13,7 +13,7 @@ local gitdir=''
 ..znap.repos-dir
 
 local -P name=${url#*@*:}
-private new='' old=$gitdir/${name:t:r} repo=$gitdir/${name:t2:r}
+private new= old=$gitdir/${name:t:r}
 
 if [[ -d $old ]]; then
   if new=$gitdir/${${(M)$(
@@ -22,12 +22,14 @@ if [[ -d $old ]]; then
     if [[ -d $new ]]; then
       zf_rm -rf $old
     else
+      zf_mkdir -p $new:h
       zf_mv $old $new
     fi
   fi
 fi
 
-[[ -d $repo/.git ]] &&
+private repo=$gitdir/${name:t2:r}
+[[ -d $repo ]] &&
     return
 
 zf_mkdir -p $repo
