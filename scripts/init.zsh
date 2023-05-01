@@ -4,8 +4,6 @@ zmodload -Fa zsh/files b:zf_ln b:zf_mkdir b:zf_rm
 autoload -Uz add-zsh-hook
 local -a match=() mbegin=() mend=() # These are otherwise leaked by zstyle.
 
-private basedir=${${(%):-%x}:P:h:h}
-
 [[ ${(t)sysexits} != *readonly ]] &&
     readonly -ga sysexits=(
         USAGE   # 64
@@ -29,22 +27,9 @@ export  XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache} \
         XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config} \
         XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share} \
         XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
-private funcdir=$basedir/functions
-private sitefuncdir=$XDG_DATA_HOME/zsh/site-functions
+typeset -gU PATH path FPATH fpath MANPATH manpath
 
-private gitdir=
-zstyle -s :znap: repos-dir gitdir ||
-    zstyle -s :znap: plugins-dir gitdir ||
-        gitdir=$basedir:a:h
-if [[ -z $gitdir ]]; then
-  print -u2 "znap: Could not find repos dir. Aborting."
-  return $(( sysexits[(i)NOINPUT] + 63 ))
-fi
-hash -d znap=$gitdir
-
-zf_mkdir -pm 0700 $sitefuncdir $gitdir \
-    $XDG_CACHE_HOME/zsh{,-snap} $XDG_CONFIG_HOME/zsh $XDG_DATA_HOME
-
+private basedir=${${(%):-%x}:P:h:h}
 if [[ -z $basedir ]]; then
   print -u2 "znap: Could not find Znap's repo. Aborting."
   print -u2 "znap: file name = ${(%):-%x}"
@@ -55,11 +40,19 @@ fi
 . $basedir/scripts/opts.zsh
 setopt $_znap_opts
 
-typeset -gU PATH path FPATH fpath MANPATH manpath
-path=( ~/.local/bin $path[@] )
-fpath=( $fpath[@] $sitefuncdir )
-builtin autoload -Uz $funcdir/{znap,(|.).znap.*~*.zwc}
-zf_ln -fhs $funcdir/_znap $sitefuncdir/_znap
+private sitefuncdir=$XDG_DATA_HOME/zsh/site-functions
+fpath=( $sitefuncdir $fpath[@] )
+builtin autoload -Uz $basedir/functions/{znap,(|.).znap.*~*.zwc}
+
+local gitdir=
+..znap.repos-dir
+if [[ -z $gitdir || ! -d $gitdir ]]; then
+  print -u2 "znap: Could not find repos dir. Aborting."
+  return $(( sysexits[(i)NOINPUT] + 63 ))
+fi
+
+zf_mkdir -pm 0700 $sitefuncdir $gitdir \
+    $XDG_CACHE_HOME/zsh{,-snap} $XDG_CONFIG_HOME/zsh $XDG_DATA_HOME
 
 zstyle -T :znap: auto-compile &&
     add-zsh-hook preexec ..znap.auto-compile
@@ -81,7 +74,7 @@ compinit() {:}
 add-zsh-hook precmd ..znap.compinit-hook
 [[ -v functions[_bash_complete] ]] ||
     .znap.function _bash_complete compgen complete '
-      autoload -Uz bashcompinit
-      bashcompinit
-      bashcompinit() {:}
+        autoload -Uz bashcompinit
+        bashcompinit
+        bashcompinit() {:}
     '

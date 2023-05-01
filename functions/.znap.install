@@ -14,77 +14,23 @@ fi
     return
 
 local REPLY=
-private -a files=() executables=() compfuncs=() autofuncs=()
-private datadir=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
-private bindir=~/.local/bin comp= func= link= orig= pat= repo= sub=
-mkdir -pm 0700 $bindir $datadir
+private -aU funcfiles=()
+private bindir=~/.local/bin
+private d='' link='' pat='[[:alnum:]][[:alnum:]_-]#[[:alnum:]]'
+
 for repo in $@; do
   repo=~[$repo]
 
-  files=( $repo/{,bin/}*~*.[^/]##(-*:A) )
-  for orig in $files[@]; do
-    link=$bindir/$orig:t
-    if [[ $link:A != $orig ]]; then
-      hash $orig:t=$link
-      if zf_ln -fhs "$orig" "$link"; then
-        executables+=( $link )
-      else
-        return $(( sysexits[(i)CANTCREAT] + 63 ))
-      fi
-    fi
-  done
+  path=(
+      $repo/{,bin/}$~pat(N*:h)
+      $path[@]
+  )
+  fpath=(
+      $repo/{,{[Cc]ompletions,[Ss]rc,zsh}/($~pat/)#}_$~pat(N^/:h)
+      $fpath
+  )
 
-  comp='_*~*.zwc'
-  func='[[:alpha:]][[:graph:]]##~*[.[:space:]]*'
-  pat="$repo/**/($comp|$func)"
-  sub="$( git -C $repo submodule foreach --quiet pwd )"
-  [[ -n $sub ]] &&
-      pat+="~(${(j:|:)${(f)sub}})/*"
-  pat+='(-.^D)'
-  files=( $~pat )
-  for orig in ${files[@]:|executables}; do
-    link=$datadir/$orig:t
-    if [[ $link:A != $orig ]]; then
-      IFS='' read -r < $orig
-      if  [[ $orig == */$~func && ( $orig == */functions/* || $REPLY == (\#\!*zsh|autoload |emulate )* ) ]] ||
-          [[ $orig == */$~comp && $REPLY == \#(autoload|compdef)\ * ]]; then
-        if zf_ln -fhs "$orig" "$link"; then
-          .znap.compile $orig
-          case $orig in
-            ( */$~comp ) compfuncs+=( $link ) ;;
-            ( */$~func ) autofuncs+=( $link ) ;;
-          esac
-        else
-          return $(( sysexits[(i)CANTCREAT] + 63 ))
-        fi
-      fi
-    fi
-  done
+  funcfiles=( $repo/{,[Ff]unctions}/($~pat/)#}$~pat(N^/) )
+  (( $#funcfiles )) &&
+      autoload -Uz $funcfiles
 done
-
-if (( $#executables )); then
-  print -P "\nExecutables installed into %F{12}${(D)bindir}%f:"
-  cd -q $bindir
-  print -cP -- '%F{10}'${^executables[@]:t}'%f*'
-  cd -q -
-fi
-if (( $#autofuncs )); then
-  print -P "\nAutoloadable functions installed into %F{12}${(D)datadir}%f:"
-  cd -q $datadir
-  print -nP '%F{10}'
-  print -c -- ${autofuncs[@]:t}
-  print -nP %f
-  cd -q -
-fi
-if (( $#compfuncs )); then
-  print -P "\nCompletion functions installed into %F{12}${(D)datadir}%f:"
-  cd -q $datadir
-  print -c -- ${compfuncs[@]:t}
-  cd -q -
-fi
-
-hash -f
-[[ -f $_comp_dumpfile ]] &&
-    zf_rm -f $_comp_dumpfile
-
-true

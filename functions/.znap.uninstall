@@ -29,26 +29,15 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
-private -a abs=() files=()
+private -a files=()
 private -i ret=0
 private dir= file repo=
 for repo in $@; do
   dir=~[$repo]
   is-at-least 2.31 ${${=$( git --version )}[3]} &&
-      git -C $dir maintenance unregister &> /dev/null
-  print 'Removing:'
-  files=( ~/.local/bin/* ${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions/* )
-  for file in $files;do
-    abs=( $file:A )
-    if [[ $abs == $dir/* || $file:t == ${dir:t}(|.*) ]]; then
-      print -r -- ${(D)file}
-      $=rm $file
-      [[ $file == ~/.local/bin/* && ! -d $abs && -v commands[$file:t] ]] &&
-          unhash $file:t
-    fi
-  done
+      git -C $repo maintenance unregister &> /dev/null
+  print -Pr "Removing %F{4}${dir}%f"
   $=rm $dir
-  print -Pr -- "%F{4}${dir}%f"
   print -P "%F{12}${repo}%f uninstalled."
 done
 hash -f
