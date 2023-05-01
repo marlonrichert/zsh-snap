@@ -30,18 +30,26 @@
   local gitdir=''
   ..znap.repos-dir
 
-  private name=${1:t2}
+  [[ $1 != $gitdir/* ]] &&
+      return 1
 
-  local dir=$gitdir/$name
+  private subdirs=${1#$gitdir}
+  private repo=$gitdir
+  private next=
+  while [[ ! -d $repo/.git && -n $subdirs ]]; do
+    next=${subdirs:h2}
+    repo+=$next
+    subdirs=${subdirs#$next}
+  done
+  private name=${repo#$gitdir}
 
-  [[ -d $dir/.git ]] ||
-      return
+  [[ -d $gitdir/$name/.git ]] ||
+      return 1
 
-  private -a same_named=( $gitdir/*/${name:t}/.git(on-/:h:t) )
-  (( $#same_named[@] == 1 )) &&
-      name=${1:t}
-
-  reply=( "$name" $#dir )
+  private -a samenamed=( $gitdir/{,*/}${name:t}/.git(N-/) )
+  (( $#samenamed[@] == 1 )) &&
+    name=${name:t}
+  reply=( "$name" $#repo )
 }
 
 # Complete ~[...]
