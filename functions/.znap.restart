@@ -1,7 +1,9 @@
 #!/bin/zsh
-# validate dotfiles & safely restart Zsh
+# (DEPRECATED) validate dotfiles & safely restart Zsh
 # args: --
 
+print -Pr -- '%F{9}Note: This command will be removed in a future version of Znap.%f'
+print
 print 'Validating dotfiles...'
 
 # These need to be two separate statements or we won't get the right `$?`.
