@@ -75,7 +75,8 @@ autoload +X -Uz is-at-least
         print -P '%F{green}done%f'
       fi
     else
-      print -P '%F{green}up to date%f'
+      print -n '\r'
+      ..znap.tput el  # Clear to end of line.
     fi
   fi
 }
