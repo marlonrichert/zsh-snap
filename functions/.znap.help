@@ -33,7 +33,7 @@ zmodload -F zsh/parameter p:functions
 Commands:'
   private -i MBEGIN= MEND=
   private MATCH=
-  print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:9:)MATCH} $_ZNAP_ARGS[$MATCH]}"
+  print -l -u$fd "${(ko@)_ZNAP_ARGS/(#m)*/  ${(r:9:)MATCH}  $_ZNAP_ARGS[$MATCH]}"
   print -Pu$fd -- '
 For more info on a command, type `%F{10}znap%f help <command>`.
 '
