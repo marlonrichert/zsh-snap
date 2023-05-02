@@ -81,6 +81,11 @@ Note that the above example does not include any call to
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
 the `.zshrc` file. That is because Znap will run these for you as needed.
 
+If necessary, you can let Znap pass arguments to `compinit` as follows:
+```sh
+zstyle '*:compinit' arguments -D -i -u -C -w
+```
+
 ### Asynchronous compilation
 Znap compiles your scripts and functions in the background. This way, your shell will start up even
 faster next time!

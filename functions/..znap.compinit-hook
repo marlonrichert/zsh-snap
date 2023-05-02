@@ -10,7 +10,9 @@ if ! [[ -v _comp_setup && -f $_comp_dumpfile ]]; then
   autoload -Uz compinit
   bindkey() {:}
   {
-    compinit -d $_comp_dumpfile
+    local -a compargs=()
+    zstyle -a ':autocomplete::compinit' arguments compargs
+    compinit -d "$_comp_dumpfile" "$compargs[@]"
   } always {
     unfunction bindkey
   }
