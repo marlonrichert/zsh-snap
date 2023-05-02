@@ -54,14 +54,13 @@
 
 # Complete ~[...]
 ..znap.dirname.c() {
-set -x
   if [[ -n $ISUFFIX ]]; then
     # Workaround: In Zsh <= 5.9.0, _setup doesn't get called when completing inside a subscript.
     _setup default
   else
     local suf=-S]
   fi
-set +x
+
   local -a expl=()
   _description named-directories expl 'named directory'
 
