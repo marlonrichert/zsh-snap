@@ -17,7 +17,7 @@ keep your Zsh plugins and/or Git repos):
 [[ -r ~/Repos/znap/znap.zsh ]] ||
     git clone --depth 1 -- \
         https://github.com/marlonrichert/zsh-snap.git ~/Repos/znap
-source ~/Git/znap/znap.zsh  # Start Znap
+source ~/Repos/znap/znap.zsh  # Start Znap
 ```
 Then restart your shell.
 
