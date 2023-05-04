@@ -51,6 +51,9 @@ To run `znap pull` on specific repos only, including ones you have set to be exc
 ## `.zshrc` optimization
 Using Znap to optimize your Zsh config can be as simple as this:
 ```sh
+[[ -r ~/Repos/znap/znap.zsh ]] ||
+    git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/Repos/znap
+
 # `znap prompt` makes your prompt visible in just 15-40ms!
 znap prompt sindresorhus/pure
 
@@ -74,12 +77,26 @@ file](.zshrc).
 Additionaly, Znap makes it so that you actually need to have _less_ in your `.zshrc` file, by
 automating several tasks for you.
 
+### Faster `eval`
+Use `znap eval ... <command>` to cache the output of `<command>`, compile it, and then `source` it (instead of `eval` it):
+```sh
+znal eval <name> '<command>'
+```
+This can be up 10 times faster than a regular `eval "$( <command> )"` statement!  If you pass a repo as the first
+argument, then Znap will `eval` the command output inside the given repo and will invalidate the cache whenever the repo
+is update.  Otherwise, the cache will be invalidated whenever `<command>` changes.  Caches are stored in
+`${XDG_CACHE_HOME:-$HOME/.cache}/zsh-snap/eval`.
+
 ### Automatic `compinit` and `bashcompinit`
 Note that the above example does not include any call to
 [`complist`](http://zsh.sourceforge.net/Doc/Release/Zsh-Modules.html#The-zsh_002fcomplist-Module),
 [`compinit`, or
 `bashcompinit`](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Initialization) in
 the `.zshrc` file. That is because Znap will run these for you as needed.
+
+Znap also regenerates your [comp dump
+file](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Use-of-compinit) automatically whenever you update a
+repo, install a repo, or change your `.zshrc` file.
 
 If necessary, you can let Znap pass arguments to `compinit` as follows:
 ```sh
@@ -97,18 +114,6 @@ zstyle ':znap:*' auto-compile no
 
 In any case, you can compile sources manually at any time with
 `znap compile [ <dir> | <file> ] ...`.
-
-### Automatic cache invalidation
-Znap automatically regenerates your [comp dump
-file](http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Use-of-compinit) whenever you
-install or update a repo or change your `.zshrc` file.
-
-Znap also automatically regenerates its internal cache for each command when…
-* …a cache file is older than the Git index of its associated repo.
-* …the last argument of the `znap eval` statements that produced it has changed. So, if the last
-  argument to `znap eval` contains a variable, then its cached output will be regenerated whenever
-  the variable changes. See the [example `.zshrc` file](.zshrc) for a practical use of this.
-* …the cache file is missing. You can delete them manually from `$XDG_CACHE_HOME/zsh-snap/eval`.
 
 ## Automatic `git maintenance`
 When using `git` 2.31.0 or newer, Znap automatically enables `git maintenance` in each repo that it

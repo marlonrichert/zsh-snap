@@ -3,33 +3,13 @@
 # args: ( <repo> | <name> ) <command>
 zmodload -F zsh/files b:zf_mkdir
 
+# TODO: deprecate this and provide `znap cache <key> <command>` instead.
+
 if (( $# < 2 )); then
   print -u2 'znap eval: not enough arguments'
   .znap.help eval
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
-
-.znap.eval.generate() {
-  (
-    private _P__repo=$1 _P__cache_file=$2
-    shift 2
-    private _P__header="#${(q)@}"
-
-    local __line
-    [[ -r $_P__cache_file ]] &&
-        IFS='' read -r __line < $_P__cache_file
-
-    if [[ $__line != $_P__header ||
-        ( -d $_P__repo && -f $_P__repo/${GIT_DIR:-.git}/index &&
-            $_P__repo/${GIT_DIR:-.git}/index -nt $_P__cache_file ) ]]; then
-      [[ -d $_P__repo ]] &&
-          cd -q -- $_P__repo
-      print -r -- "$_P__header" >| $_P__cache_file
-      eval "$@" >>| $_P__cache_file
-      .znap.compile $_P__cache_file
-    fi
-  )
-}
 
 local gitdir=''
 ..znap.repos-dir
@@ -37,20 +17,34 @@ local gitdir=''
 if [[ $1 == */* ]]; then
   .znap.clone $1 ||
       return
-fi
-
-private _P__repo=~[$1] __cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
-shift
-
-zf_mkdir -pm 0700 $__cache_dir
-private _P__cache_file=$__cache_dir/${_P__repo:t}.zsh
-
-if [[ -r $_P__cache_file ]]; then
-  .znap.eval.generate "$_P__repo" "$_P__cache_file" "$@" &|
+  private _P__repo=~[$1]
+  private _P__name=${_P__repo#$gitdir}
 else
-  print -r "znap eval: generating cache for $*"
-  .znap.eval.generate "$_P__repo" "$_P__cache_file" "$@"
+  local _P__name=$1 _P__repo=
 fi
+private _P__cmd=$2
+
+private _P__cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
+zf_mkdir -pm 0700 $_P__cache_dir
+private _P__cache_file=$_P__cache_dir/${_P__name}.zsh
+
+[[ -r $_P__cache_file ]] ||
+    print -r "znap eval: generating cache for ${(q+)_P__cmd}"
+
+private _P__line= _P__header="#${(q+)_P__cmd}" _P__index=$_P__repo/.git/index
+(
+  [[ -r $_P__cache_file ]] &&
+      IFS='' read -r _P__line < $_P__cache_file
+
+  if [[ $_P__line != $_P__header ]] ||
+      [[ -n $_P__repo && -f $_P__index && $_P__index -nt $_P__cache_file ]]; then
+    [[ -d $_P__repo ]] &&
+        cd -q -- $_P__repo
+    print -r -- "$_P__header" >! $_P__cache_file
+    eval "$_P__cmd" >>! $_P__cache_file
+    .znap.compile $_P__cache_file
+  fi
+)
 
 # Wrap in a named function for profiling purposes.
 .znap.eval:${_P__cache_file:t}() {
