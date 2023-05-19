@@ -6,18 +6,16 @@ zmodload -F zsh/zleparameter p:widgets
 autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 
 .znap.prompt() {
-  if (( # )); then
-    local gitdir=''
-    ..znap.repos-dir
+  local theme=
 
+  if (( # )); then
     if [[ $1 == */* ]]; then
       .znap.clone $1 ||
           return
     fi
-    private _P__repo=~[$1]
 
-    private _P__theme=${2:-${${_P__repo##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
-    .znap.prompt.load $_P__repo $_P__theme
+    local theme=
+    .znap.prompt.load "$1"
   fi
 
   ..znap.tput civis # Make cursor invisible.
@@ -32,12 +30,12 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
   exec 2> $_znap_prompt_tmp  # Redirect std err to tmp file.
 
   promptinit
-  if [[ -n $_P__theme ]]; then
-    prompt_themes+=( $_P__theme )
-    prompt $_P__theme
+  if [[ -n $theme ]]; then
+    prompt_themes+=( $theme )
+    prompt $theme
     ..znap.tput sc  # Save cursor position (overwriting the previous save).
 
-    private _P__precmd=prompt_${_P__theme}_precmd
+    private _P__precmd=prompt_${theme}_precmd
     if [[ -n $functions[$_P__precmd] ]]; then
       $_P__precmd
 

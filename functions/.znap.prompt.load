@@ -4,7 +4,6 @@ zmodload -F zsh/parameter p:functions
 .znap.prompt.load() {
   emulate -L zsh; setopt $_znap_opts
 
-  private dir=$1 theme=$2
   private setup=prompt_${theme}_setup
 
   [[ -v functions[$setup] ]] &&
@@ -14,6 +13,13 @@ zmodload -F zsh/parameter p:functions
       return
 
   unfunction $setup
+
+  local repos=()
+  local gitdir=
+  ..znap.repos prompt $theme
+  private dir=$gitdir/$repos[1]
+
+  theme=${2:-${${dir##*/((oh-my-|)zsh-|)}%%((-zsh|)-(prompt|theme)|.zsh)}}
 
   private -a file=( $dir/**/$setup(-.Y1) )
   if [[ -n $file ]]; then
