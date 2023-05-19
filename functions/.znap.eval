@@ -18,15 +18,15 @@ if [[ $1 == */* ]]; then
   .znap.clone $1 ||
       return
   private _P__repo=~[$1]
-  private _P__name=${_P__repo#$gitdir}
+  private _P__name=${_P__repo#$gitdir/}
 else
   local _P__name=$1 _P__repo=
 fi
 private _P__cmd=$2
 
-private _P__cache_dir=$XDG_CACHE_HOME/zsh-snap/eval
-zf_mkdir -pm 0700 $_P__cache_dir
-private _P__cache_file=$_P__cache_dir/${_P__name}.zsh
+private _P__cache_dir=
+private _P__cache_file=$XDG_CACHE_HOME/zsh-snap/eval/${_P__name}.zsh
+zf_mkdir -pm 0700 $_P__cache_file:h
 
 [[ -r $_P__cache_file ]] ||
     print -r "znap eval: generating cache for ${(q+)_P__cmd}"
