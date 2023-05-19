@@ -18,7 +18,12 @@ private -aU funcfiles=()
 private bindir=~/.local/bin
 private d='' link='' pat='[[:alnum:]][[:alnum:]_-]#[[:alnum:]]'
 
-for repo in $@; do
+local -a repos=()
+local gitdir=
+..znap.repos install $@
+
+private repo=
+for repo in $repos; do
   repo=~[$repo]
 
   path=(
