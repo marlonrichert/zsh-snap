@@ -12,8 +12,8 @@ private server=$1 url=$2
 local gitdir=''
 ..znap.repos-dir
 
-local -P name=${url#*@*:}
-private new= old=$gitdir/${name:t:r}
+local -P name=${${url%%(|/).git}:t2}
+private new= old=$gitdir/${name:t}
 
 if [[ -d $old ]]; then
   if new=$gitdir/${${(M)$(
@@ -28,7 +28,7 @@ if [[ -d $old ]]; then
   fi
 fi
 
-private repo=$gitdir/${name:t2:r}
+private repo=$gitdir/$name
 [[ -d $repo ]] &&
     return
 
@@ -36,7 +36,7 @@ zf_mkdir -p $repo
 if git -C $gitdir clone --depth 1 --recurse-submodules --shallow-submodules $url $repo; then
   [[ -v _comp_dumpfile && -f $_comp_dumpfile ]] &&
       zf_rm -f $_comp_dumpfile
-  .znap.ignore ${repo:t2} '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  .znap.ignore "$name" '*.zwc'  # Add `*.zwc` to repo's local ignore list.
   .znap.compile $repo &> /dev/null &|
   true
 fi

@@ -2,11 +2,16 @@
 
 ..znap.repos-dir
 
-repos=( $gitdir/$^@(D-/) )
-if ! (( $#repos[@] )); then
+if (( $# > 1 )); then
+  shift
+  repos=( $gitdir/${^@}(ND-/) )
+
+else
+  repos=( $gitdir/*{,/*}/.git(ND-/:h) )
+
   local -a exclude=()
-  zstyle -a ":znap:$1:" exclude exclude ||
-      exclude=( '^*' )
-  repos=( $gitdir/*{,/*}/.git~(${(~j:|:)~exclude})(ND-/:h) )
+  if zstyle -a ":znap:$1:" exclude exclude; then
+    repos=( ${repos[@]:#$gitdir/(${(~j:|:)~exclude})} )
+  fi
 fi
 repos=( ${repos[@]#$gitdir/} )

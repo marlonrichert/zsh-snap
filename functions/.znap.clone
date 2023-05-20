@@ -12,7 +12,7 @@ fi
 local -a match=() mbegin=() mend=()
 private repo=''
 for repo in $@; do
-  if [[ $repo != ([^/]##/[^/]##|*(@|://)*/*.git) ]]; then
+  if [[ $repo != ([^/]##/[^/]##|*(@|://)*/*.git) ]] && ! [[ -d ${repo#file://} && $repo == */.git ]]; then
     print -u2 "znap clone: invalid argument '$repo'"
     .znap.help clone
     return $(( sysexits[(i)USAGE] + 63 ))
