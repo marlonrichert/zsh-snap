@@ -3,7 +3,7 @@
 # args: <repo> [ <dir> | <file> ] ...
 zmodload -Fa zsh/files b:zf_rm
 
-if ! (( # )); then
+if ! (( $# )); then
   print -u2 'znap source: not enough arguments'
   .znap.help source
   return $(( sysexits[(i)USAGE] + 63 ))
