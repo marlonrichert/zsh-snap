@@ -1,6 +1,6 @@
 #!/bin/zsh
 # instant prompt from repo
-# args: [ <repo> ] <theme>
+# args: <repo> [ <theme> ]
 zmodload -F zsh/parameter p:functions
 zmodload -F zsh/zleparameter p:widgets
 autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
@@ -8,14 +8,14 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
 .znap.prompt() {
   local theme=
 
-  if (( # )); then
+  if (( $# )); then
     if [[ $1 == */* ]]; then
       .znap.clone $1 ||
           return
     fi
 
-    local theme=
-    .znap.prompt.load "$1"
+    local repo=$1 theme=${2:-${${${1:t}/(.zsh|zsh-)/}//-(prompt|theme)/}}
+    .znap.prompt.load
   fi
 
   ..znap.tput civis # Make cursor invisible.
