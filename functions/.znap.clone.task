@@ -12,7 +12,7 @@ private server=$1 url=$2
 local gitdir=''
 ..znap.repos-dir
 
-local -P name=${${url%%(|/).git}:t2}
+local -P name=${${${url##git@*.*:}%%(|/).git}:t2}
 private new= old=$gitdir/${name:t}
 
 if [[ -d $old ]]; then
