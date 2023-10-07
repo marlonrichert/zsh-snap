@@ -15,7 +15,7 @@ local gitdir=''
 local -P name=${${${url##git@*.*:}%%(|/).git}:t2}
 private new= old=$gitdir/${name:t}
 
-if [[ -d $old ]]; then
+if [[ -d ${old}/.git ]]; then
   if new=$gitdir/${${(M)$(
       git -C $old remote get-url origin 2> /dev/null
   )%%[^/:]##/[^/:]##}%.git}; then
