@@ -16,12 +16,12 @@ fi
 private _P__cmd=$1
 shift
 
-local -A opts_pre=() opts_post=()
-zparseopts -A opts_post -D -- h -help
+local -A opts_post=()
+zparseopts -A opts_post -E -D -- h -help
 
 private _P__func=.znap.$_P__cmd
 if [[ -v functions[$_P__func] ]]; then
-  if (( ${#opts_pre} || ${#opts_post} )); then
+  if (( ${#opts_post} )); then
     .znap.help $_P__cmd
   else
     $_P__func $@
