@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+zmodload zsh/datetime
+
+local update_file=${XDG_STATE_HOME}/znap/last-update
+if [[ ! -f "${update_file}" ]] ; then
+  echo $EPOCHSECONDS > "${update_file}"
+  return 0
+fi
+
+local -F interval
+zstyle -s ':znap:pull' auto-update interval
+
+local last_update=$(< "${update_file}")
+(( last_update + (interval * 86400) < EPOCHSECONDS )) || return 0
+
+read -q "?Update znap? [y/N] " _ || { echo ; return 0 }
+echo
+
+.znap.pull
+echo $EPOCHSECONDS > "${update_file}"

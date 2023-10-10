@@ -58,6 +58,10 @@ zstyle -T :znap: auto-compile &&
     add-zsh-hook preexec ..znap.auto-compile
 add-zsh-hook zsh_directory_name ..znap.dirname
 
+if zstyle -s ':znap:pull' auto-update _ ; then
+    ..znap.auto-update
+fi
+
 typeset -gH _comp_dumpfile=${_comp_dumpfile:-$XDG_CACHE_HOME/zsh/compdump}
 [[ -f $_comp_dumpfile && ${${:-${ZDOTDIR:-$HOME}/.zshrc}:P} -nt $_comp_dumpfile ]] &&
     zf_rm -f $_comp_dumpfile
