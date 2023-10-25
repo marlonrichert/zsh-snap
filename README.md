@@ -53,6 +53,7 @@ Using Znap to optimize your Zsh config can be as simple as this:
 ```sh
 [[ -r ~/Repos/znap/znap.zsh ]] ||
     git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/Repos/znap
+source ~/Repos/znap/znap.zsh
 
 # `znap prompt` makes your prompt visible in just 15-40ms!
 znap prompt sindresorhus/pure
