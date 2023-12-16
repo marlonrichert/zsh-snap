@@ -1,6 +1,6 @@
 #!/bin/zsh
 # install executables & completion functions
-# args: <repo> ...
+# args: <repo> [--no-path] [--no-fpath] ...
 emulate -L zsh; setopt $_znap_opts
 zmodload -Fa zsh/files b:zf_ln b:zf_mkdir
 
@@ -10,12 +10,14 @@ if (( $# < 1 )); then
   return $(( sysexits[(i)USAGE] + 63 ))
 fi
 
+local -A opts
+zparseopts -A opts -E -D -- -no-path -no-fpath
+
 .znap.clone $@ ||
     return
 
 local REPLY=
 private -aU funcfiles=()
-private bindir=~/.local/bin
 private d='' link='' pat='[[:alnum:]][[:alnum:]_-]#[[:alnum:]]'
 
 local -a repos=()
@@ -26,14 +28,18 @@ private repo=
 for repo in $repos; do
   repo=~[$repo]
 
-  path=(
-      $repo/{,bin/}$~pat(N*:h)
-      $path[@]
-  )
-  fpath=(
-      $repo/{,{[Cc]ompletions,[Ss]rc,zsh}/($~pat/)#}_$~pat(N^/:h)
-      $fpath
-  )
+  if ! (( $+opts[--no-path] )) ; then
+    path=(
+        $repo/{,bin/}$~pat(N*:h)
+        $path[@]
+    )
+  fi
+  if ! (( $+opts[--no-fpath] )) ; then
+      fpath=(
+          $repo/{,{[Cc]ompletions,[Ss]rc,zsh}/($~pat/)#}_$~pat(N^/:h)
+          $fpath
+      )
+  fi
 
   funcfiles=( $repo/{,[Ff]unctions}/($~pat/)#}$~pat(N^/) )
   (( $#funcfiles )) &&
