@@ -48,6 +48,11 @@ To run `znap pull` on specific repos only, including ones you have set to be exc
 % znap pull <repo> ...
 ```
 
+To be prompted to automatically update with `znap pull` every 30 days, add the following to your `.zshrc` file:
+```sh
+zstyle ':znap:pull' auto-update 30
+```
+
 ## `.zshrc` optimization
 Using Znap to optimize your Zsh config can be as simple as this:
 ```sh
