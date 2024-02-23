@@ -17,7 +17,7 @@ autoload +X -Uz is-at-least
   done
 
   (
-    cd -q $gitdir
+    builtin cd -q $gitdir
 
     local -a repos=()
     ..znap.repos pull "$@"
@@ -46,7 +46,7 @@ autoload +X -Uz is-at-least
   emulate -L zsh; setopt $_znap_opts
 
   print -nr -- "${$( eval "ls -d $1" )%[/@]} "
-  cd -q $1
+  builtin cd -q $1
 
   local -a upstream=()
   if ! ..znap.fetch; then
