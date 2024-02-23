@@ -39,7 +39,7 @@ private _P__line= _P__header="#${(q+)_P__cmd}" _P__index=$_P__repo/.git/index
   if [[ $_P__line != $_P__header ]] ||
       [[ -n $_P__repo && -f $_P__index && $_P__index -nt $_P__cache_file ]]; then
     [[ -d $_P__repo ]] &&
-        cd -q -- $_P__repo
+        builtin cd -q -- $_P__repo
     print -r -- "$_P__header" >! $_P__cache_file
     eval "$_P__cmd" >>! $_P__cache_file
     .znap.compile $_P__cache_file
