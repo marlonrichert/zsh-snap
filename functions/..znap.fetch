@@ -13,6 +13,6 @@ if ! git ls-remote -q --exit-code $upstream[@] > /dev/null && [[ $upstream[2] ==
 fi
 
 private msg=
-if ! msg="$( git fetch -t --recurse-submodules $upstream[@] 2>&1 > /dev/null )"; then
+if ! msg="$( git fetch -t $upstream[@] 2>&1 > /dev/null )"; then
   ..znap.error "$msg"
 fi
