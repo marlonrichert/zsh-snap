@@ -3,7 +3,9 @@ emulate -L zsh; setopt $_znap_opts
 
 git fetch --prune &> /dev/null
 
-if ! upstream=( ${(s:/:)$( git rev-parse -q --abbrev-ref @{u} 2> /dev/null )} ); then
+private ref_name="$(git symbolic-ref -q HEAD)"
+private upstream_fmt='%(upstream:remotename) %(refname:short)'
+if ! upstream=( $( git for-each-ref --format=$upstream_fmt $ref_name ) ); then
   git branch -q --unset-upstream 2> /dev/null
   return 1
 fi
