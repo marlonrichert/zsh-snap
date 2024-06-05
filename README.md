@@ -81,7 +81,7 @@ automating several tasks for you.
 ### Faster `eval`
 Use `znap eval ... <command>` to cache the output of `<command>`, compile it, and then `source` it (instead of `eval` it):
 ```sh
-znal eval <name> '<command>'
+znap eval <name> '<command>'
 ```
 This can be up 10 times faster than a regular `eval "$( <command> )"` statement!  If you pass a repo as the first
 argument, then Znap will `eval` the command output inside the given repo and will invalidate the cache whenever the repo
