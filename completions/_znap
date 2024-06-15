@@ -23,9 +23,6 @@ case $words[1] in
   ( clone )
     _arguments : '*:remote repository:_urls'
   ;;
-  ( compdef )
-    _arguments : ':function name:' ': :_default'
-  ;;
   ( compile )
     _arguments : ': :_default'
   ;;
@@ -42,7 +39,10 @@ case $words[1] in
     _arguments : ': :->repos' ':pattern:'
   ;;
   ( install )
-    _arguments : '*:remote repository:_urls'
+    _arguments : \
+      "--no-fpath[don't update fpath with completions or functions]" \
+      "--no-path[don't update PATH with binaries]" \
+      '*:remote repository:_urls'
   ;;
   ( multi )
     _arguments : ': :_default'
