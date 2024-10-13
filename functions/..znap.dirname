@@ -10,10 +10,10 @@
 
   case $1 in
     ( ${1:t} )
-      dirs=( $gitdir/{*/,}$1/.git(Non-/:h) )
+      dirs=( $gitdir/{*/,}$1/.git(Non-:h) )
     ;;
     ( ${1:t2} )
-      dirs=( $gitdir/$1/.git(Non-/:h) )
+      dirs=( $gitdir/$1/.git(Non-:h) )
     ;;
   esac
 
@@ -36,17 +36,17 @@
   private subdirs=${1#$gitdir}
   private repo=$gitdir
   private next=
-  while [[ ! -d $repo/.git && -n $subdirs ]]; do
+  while [[ ! -e $repo/.git && -n $subdirs ]]; do
     next=${subdirs:h2}
     repo+=$next
     subdirs=${subdirs#$next}
   done
   private name=${repo#$gitdir}
 
-  [[ -d $gitdir/$name/.git ]] ||
+  [[ -e $gitdir/$name/.git ]] ||
       return 1
 
-  private -a samenamed=( $gitdir/{,*/}${name:t}/.git(N-/) )
+  private -a samenamed=( $gitdir/{,*/}${name:t}/.git(N-) )
   (( $#samenamed[@] == 1 )) &&
     name=${name:t}
   reply=( "$name" $#repo )
