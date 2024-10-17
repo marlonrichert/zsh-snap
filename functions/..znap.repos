@@ -7,7 +7,7 @@ if (( $# > 1 )); then
   repos=( $gitdir/${^@}(ND-/) )
 
 else
-  repos=( $gitdir/*{,/*}/.git(ND-/:h) )
+  repos=( $gitdir/*{,/*}/.git(ND-:h) )
 
   local -a exclude=()
   if zstyle -a ":znap:$1:" exclude exclude; then
