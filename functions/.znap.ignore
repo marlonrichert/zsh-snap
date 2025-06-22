@@ -11,7 +11,11 @@ fi
 local gitdir=''
 ..znap.repos-dir
 
-private repo=~[$1]
+if [[ $1 == */* ]]; then
+  private repo=$gitdir/$1
+else
+  private repo=~[$1]
+fi
 shift
 
 private -aU lines=() files=( $repo/${GIT_DIR:-.git}/**/info/exclude(.) )

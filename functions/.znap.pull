@@ -54,7 +54,7 @@ autoload +X -Uz is-at-least
     return 1
   fi
 
-  .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  .znap.ignore ${1#$gitdir/} '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -a count=()
   if count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ); then
