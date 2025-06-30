@@ -54,7 +54,7 @@ autoload +X -Uz is-at-least
     return 1
   fi
 
-  .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  .znap.ignore ${1:t2} '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -a count=()
   if count=( ${="$( git rev-list --count --left-right @{u}...@ 2> /dev/null )"} ); then
@@ -70,7 +70,7 @@ autoload +X -Uz is-at-least
         return
       else
         private cache_dir=$XDG_CACHE_HOME/zsh-snap
-        zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_$1:t $cache_dir/eval/${1:t}.zsh
+        zf_rm -f -- $_comp_dumpfile $cache_dir/fpath/_${1:t2} $cache_dir/eval/${1:t2}.zsh
         .znap.compile $1 &> /dev/null &|
         print -P '%F{green}done%f'
       fi

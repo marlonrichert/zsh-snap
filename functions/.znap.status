@@ -34,7 +34,7 @@ autoload +X -Uz is-at-least
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"$'\e[m'
   fi
 
-  .znap.ignore $1:t '*.zwc'  # Add `*.zwc` to repo's local ignore list.
+  .znap.ignore ${1:t2} '*.zwc'  # Add `*.zwc` to repo's local ignore list.
 
   private -aU lines=( "${(f)$( git status -sb )}" )
   private branch=${${${lines[1]#'## '}%...*}:#*(main|master)*}

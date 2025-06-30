@@ -14,7 +14,7 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
           return
     fi
 
-    local repo=$1 theme=${2:-${${${1:t}/(.zsh|zsh-)/}//-(prompt|theme)/}}
+    local repo=$1 theme=${2:-${${${1:t2}/(.zsh|zsh-)/}//-(prompt|theme)/}}
     .znap.prompt.load
   fi
 
