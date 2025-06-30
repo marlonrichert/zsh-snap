@@ -10,10 +10,12 @@ autoload +X -Uz is-at-least
   local gitdir=''
   ..znap.repos-dir
 
-  private link='' bindir=~/.local/bin datadir=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
-  for link in {$bindir,$datadir}/*(N@); do
-    [[ $( readlink -f $link ) == $gitdir/* ]] &&
-        zf_rm $link
+  private link=
+  private bindir=~/.local/bin
+  private datadir=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions
+  private statedir=${XDG_STATE_HOME:-$HOME/.local/state}/znap
+  for link in {$bindir,$datadir,$statedir/*}/*(-@N); do
+      zf_rm "$link"
   done
 
   (
