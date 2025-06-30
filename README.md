@@ -116,22 +116,6 @@ zstyle ':znap:*' auto-compile no
 In any case, you can compile sources manually at any time with
 `znap compile [ <dir> | <file> ] ...`.
 
-## Automatic `git maintenance`
-When using `git` 2.31.0 or newer, Znap automatically enables `git maintenance` in each repo that it
-manages. This automatically optimizes your repos in the background, so that your `git` and `znap`
-commands will run faster.
-
-To selectively disable this feature, add
-```sh
-zstyle ':znap:*:<glob pattern>' git-maintenance off
-```
-to your `.zshrc` file. Next time you run `znap pull`, `git maintenance` will then be disabled for
-each repo whose name matches `<glob pattern>`.
-
-Use `*` as your [glob
-pattern](https://zsh.sourceforge.io/Doc/Release/Expansion.html#Filename-Generation) to opt out of
-this feature completely.
-
 ## Command-Line Usage
 Znap also makes life on the command line easier.  For a full list of available commands, run
 ```sh

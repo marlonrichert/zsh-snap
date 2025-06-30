@@ -34,8 +34,6 @@ private -i ret=0
 private dir= file repo=
 for repo in $@; do
   dir=~[$repo]
-  is-at-least 2.31 ${${=$( git --version )}[3]} &&
-      git -C $repo maintenance unregister &> /dev/null
   print -Pr "Removing %F{4}${dir}%f"
   $=rm $dir
   print -P "%F{12}${repo}%f uninstalled."
