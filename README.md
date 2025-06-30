@@ -48,6 +48,31 @@ To run `znap pull` on specific repos only, including ones you have set to be exc
 % znap pull <repo> ...
 ```
 
+## Named dirs
+Znap gives you handy shortcuts to your repos in the form of [named
+directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion).
+
+You can use these both on the command line:
+```sh
+% cd ~[zsh-snap]               # `cd` to a repo
+% ls ~[asdf/asdf]/completions  # `ls` to a subdir in a repo
+% rm -rf ~[zsh-users/zsh]      # Remove a repo completely.
+% print ~[zsh-snap]            # Print the absolute path of a repo.
+```
+
+And in your dotfiles:
+```sh
+znap clone tuist/xcbeautify zsh-users/zsh-completions  # Make sure we have the repos we need.
+ path=( ~[tuist/xcbeautify]/tools         $path )      # Add commands.
+fpath=( ~[zsh-users/zsh-completions]/src $fpath )      # Add completions.
+```
+
+Additionally, Znap gives you a shortcut for moving to the root directory of the current repo:
+```sh
+% cd ~[zsh-autocomplete]/Functions/Util
+% cd ~[]  # Moves you all the way up to ~[zsh-autocomplete].
+```
+
 ## `.zshrc` optimization
 Using Znap to optimize your Zsh config can be as simple as this:
 ```sh
@@ -67,9 +92,6 @@ znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
 # `znap function` lets you lazy-load features you don't always need.
 znap function _pyenv pyenv "znap eval pyenv 'pyenv init - --no-rehash'"
 compctl -K    _pyenv pyenv
-
-# `znap install` adds new commands and completions.
-znap install aureliojargas/clitest zsh-users/zsh-completions
 ```
 
 For more examples of what Znap can do for your dotfiles, please see [the included `.zshrc`
@@ -147,12 +169,6 @@ To run `znap status` on specific repos only, including ones you have set to be e
 % znap status <repo> ...
 ```
 
-### Removing repos
-To remove one or more repos, use `znap uninstall`:
-```sh
-% znap uninstall asdf-vm/asdf ohmyzsh/ohmyzsh
-```
-
 ### Install generated functions
 Some commands generate output that should be loaded as a function.  You can install these generated functions with
 `znap fpath <function> '<command>'`.  For example:
@@ -163,14 +179,6 @@ Some commands generate output that should be loaded as a function.  You can inst
 ```
 
 This will save them to `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions`.
-
-### Named dirs
-Znap makes all of the repos it manages available as [named
-directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion):
-```sh
-% cd ~[zsh-snap] # `cd` to a repo
-% ls ~[asdf]/completions    # `ls` a subdir in a repo
-```
 
 ## Author
 © 2020-2021 [Marlon Richert](https://github.com/marlonrichert)
