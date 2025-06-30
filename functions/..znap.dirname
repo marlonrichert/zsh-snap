@@ -47,8 +47,11 @@
       return 1
 
   private -a samenamed=( $gitdir/{,*/}${name:t}/.git(N-/) )
-  (( $#samenamed[@] == 1 )) &&
+  if (( $#samenamed[@] == 1 )); then
     name=${name:t}
+  else
+    name=${name:t2}
+  fi
   reply=( "$name" $#repo )
 }
 
