@@ -19,7 +19,7 @@ zmodload -F zsh/parameter p:functions
   ..znap.repos prompt $repo
   private dir=$gitdir/$repos[1]
 
-  private -a file=( $dir/{,[Ff]unctions/}$setup(-.Y1) )
+  private -a file=( $dir/{,[Ff]unctions/}$setup(-.Y1N) )
   if [[ -n $file ]]; then
 
     if autoload +X -Uz $file &>/dev/null; then
@@ -30,7 +30,7 @@ zmodload -F zsh/parameter p:functions
     unfunction $file
   fi
 
-  file=( $dir/*$theme*.zsh*~*/*test*(-.Y1) )
+  file=( $dir/*$theme*.zsh*~*/*test*(-.Y1N) )
 
   if [[ -n $file ]]; then
     eval "$setup() {

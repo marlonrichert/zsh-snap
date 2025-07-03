@@ -14,16 +14,14 @@ autoload -Uz add-zsh-hook add-zle-hook-widget promptinit
           return
     fi
 
-    local repo=$1 theme=${2:-${${${1:t2}/(.zsh|zsh-)/}//-(prompt|theme)/}}
+    local repo=$1 theme=${2:-${${${1:t}/(.zsh|zsh-)/}//-(prompt|theme)/}}
     .znap.prompt.load
   fi
-
   ..znap.tput civis # Make cursor invisible.
   ..znap.tput sc    # Save cursor position.
   add-zsh-hook precmd .znap.prompt.precmd
 
   # Temporarily redirect standard error to file.
-  mkdir -pm 0700 ${XDG_DATA_HOME:-$HOME/.local/share}/zsh-snap/err
   typeset -gHi _znap_prompt_fd=-1
   typeset -gH _znap_prompt_tmp==( <<< '' )
   exec {_znap_prompt_fd}>&2  # Save a copy of std err.
