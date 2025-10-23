@@ -18,7 +18,8 @@ fi
 files=( ${(@n)files} )
 
 private -i ret=0
-private f= func= opt=
+private f= opt=
+private -a funcs=()
 while (( $#files[@] )); do
   {
     f=$files[1]
@@ -42,15 +43,18 @@ while (( $#files[@] )); do
     fi
 
     if ! [[ -e $f.zwc ]]; then
-      func=${(k)functions_source[(r)$f:a]}
-      if [[ -n $func && $func == $f:t ]] || (( fpath[(i)$f:a:h] )); then
+      # (R) collects all (not just the first) functions autoloaded from $f;
+      # (e) matches $f:a literally, since it may contain glob-special chars;
+      # (I) returns 0 (not $#array+1) when there's no match.
+      funcs=( ${(@k)functions_source[(Re)$f:a]} )
+      if (( funcs[(Ie)$f:t] )) || (( fpath[(Ie)$f:a:h] )); then
         opt=zM
       else
         opt=R
       fi
 
       if emulate zsh -c "zcompile -U$opt -- ${(q)f}"; then
-        if [[ $funcstack[2] == znap ]] ; then
+        if [[ ${funcstack[2]:-} == znap ]] ; then
           print -Pr -- "${(D)f:h}/%F{green}$f:t.zwc%f"
         fi
       else

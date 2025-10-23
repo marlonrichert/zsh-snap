@@ -8,6 +8,6 @@ zstyle -s :znap: auto-compile-ignore exclude \| &&
 include=( "${${(@vu)functions_source}[@]:#$~exclude}" )
 
 (( $#include )) &&
-    ( .znap.compile &> /dev/null ) &|
+    ( .znap.compile $include &> /dev/null ) &|
 
 true
