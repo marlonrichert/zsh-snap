@@ -13,7 +13,7 @@ private _P__file=$dir/$_P__name
 eval "$_P__generator" >| $_P__file ||
     return
 
-print -r -- "#$_P__generator" >>| $_P__file
+print -r "#$_P__generator" >>| $_P__file
 .znap.compile $_P__file
 
 [[ -f $_comp_dumpfile ]] &&
