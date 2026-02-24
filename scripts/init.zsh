@@ -44,8 +44,7 @@ private sitefuncdir=$XDG_DATA_HOME/zsh/site-functions
 fpath=( $basedir/completions $sitefuncdir $fpath[@] )
 builtin autoload -Uz $basedir/functions/{znap,(|.).znap.*~*.zwc}
 
-local gitdir=
-..znap.repos-dir
+local gitdir=..znap.repos-dir
 if [[ -z $gitdir || ! -d $gitdir ]]; then
   print -u2 "znap: Could not find repos dir. Aborting."
   return $(( sysexits[(i)NOINPUT] + 63 ))
