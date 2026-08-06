@@ -16,7 +16,7 @@ fi
 private _P__cmd=$1
 shift
 
-local -A opts_pre=() opts_post=()
+local -A opts_post=()
 zparseopts -A opts_post -D -- h -help
 
 private _P__func=.znap.$_P__cmd
