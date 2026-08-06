@@ -9,6 +9,9 @@
   ..znap.repos-dir
 
   case $1 in
+    ( '' )
+      dirs=( "$( git rev-parse --show-toplevel 2> /dev/null )" )
+    ;;
     ( ${1:t} )
       dirs=( $gitdir/{*/,}$1/.git(Non-/:h) )
     ;;
