@@ -52,19 +52,19 @@ To run `znap pull` on specific repos only, including ones you have set to be exc
 Znap gives you handy shortcuts to your repos in the form of [named
 directories](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Expansion).
 
-You can use these both on the command line:
-```sh
-% cd ~[zsh-snap]               # `cd` to a repo
-% ls ~[asdf/asdf]/completions  # `ls` to a subdir in a repo
-% rm -rf ~[zsh-users/zsh]      # Remove a repo completely.
-% print ~[zsh-snap]            # Print the absolute path of a repo.
-```
-
-And in your dotfiles:
+You can use these in your dotfiles:
 ```sh
 znap clone tuist/xcbeautify zsh-users/zsh-completions  # Make sure we have the repos we need.
  path=( ~[tuist/xcbeautify]/tools         $path )      # Add commands.
 fpath=( ~[zsh-users/zsh-completions]/src $fpath )      # Add completions.
+```
+
+And on the command line, too:
+```sh
+% cd ~[zsh-snap]               # `cd` to a repo
+% ls ~[asdf/asdf]/completions  # `ls` to a subdir in a repo
+% rm -rf ~[zsh-users/zsh]      # Delete a repo completely.
+% print ~[zsh-snap]            # Print the absolute path of a repo.
 ```
 
 Additionally, Znap gives you a shortcut for moving to the root directory of the current repo:
@@ -83,7 +83,7 @@ source ~/Repos/znap/znap.zsh
 # `znap prompt` makes your prompt visible in just 15-40ms!
 znap prompt sindresorhus/pure
 
-# `znap source` starts plugins.
+# `znap source` loads plugins.
 znap source marlonrichert/zsh-autocomplete
 
 # `znap eval` makes evaluating generated command output up to 10 times faster.
