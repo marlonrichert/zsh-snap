@@ -22,7 +22,6 @@ autoload +X -Uz is-at-least
 .znap.status.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  print -nr -- "${$( eval "ls -d $1" )%[/@]} "
   builtin cd -q $1
 
   local -a upstream=()
@@ -51,6 +50,8 @@ autoload +X -Uz is-at-least
         ahead_behind=$'\e[32m✓\e[39m'
   fi
 
+  builtin cd -q -
+  ..znap.ls "$1"
   print -r -- $rev ${err:-$branch} $ahead_behind $changes
 }
 

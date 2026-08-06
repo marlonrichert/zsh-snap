@@ -36,7 +36,7 @@ autoload +X -Uz is-at-least
 .znap.pull.task() {
   emulate -L zsh; setopt $_znap_opts
 
-  print -nr -- "${$( eval "ls -d $1" )%[/@]} "
+  ..znap.ls "$1"
   builtin cd -q $1
 
   local -a upstream=()
