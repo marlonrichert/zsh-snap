@@ -5,13 +5,13 @@
 if (( $# > 1 )); then
   shift
   repos=( $gitdir/${^@}(ND-/) )
-
+  repos=( ${repos[@]#$gitdir/} )
 else
   repos=( $gitdir/*{,/*}/.git(ND-/:h) )
+  repos=( ${repos[@]#$gitdir/} )
 
   local -a exclude=()
   if zstyle -a ":znap:$1:" exclude exclude; then
-    repos=( ${repos[@]:#$gitdir/(${(~j:|:)~exclude})} )
+    repos=( ${repos[@]:#${(~j:|:)~exclude}} )
   fi
 fi
-repos=( ${repos[@]#$gitdir/} )
