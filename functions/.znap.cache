@@ -1,0 +1,49 @@
+#!/bin/zsh
+# cache command output in file
+# args: ( <repo> | <name>:<key> ) <file> <command>
+zmodload -F zsh/files b:zf_mkdir
+
+.znap.cache.write() {
+  <<< "$( $=1 )" > $2 ||
+      return
+  .znap.compile $2
+}
+
+private _P_cache_file=$2
+zf_mkdir -p $_P_cache_file:h
+
+if [[ $1 == ?*/?* ]]; then
+  local gitdir=
+  ..znap.repos-dir
+
+  .znap.clone $1 ||
+      return
+
+  private _P__repo=${gitdir}/$1
+  private _P__git_index=${_P__repo}/.git/index
+
+  if [[ ! -r $_P_cache_file || $_P__git_index -nt $_P_cache_file ]]; then
+    .znap.cache.write "$3" "$_P_cache_file" ||
+        return
+  fi
+
+  return 0
+fi
+
+if [[ $1 == ?*:?* ]]; then
+  private _P_lock_file= _P_name=${1%%:*} _P_key=${1#:*}
+
+  _P_lock_file=$XDG_CACHE_HOME/zsh-snap/cache/${_P_name}.lock
+  zf_mkdir -p $_P_lock_file:h
+
+  if [[ ! -f $_P_cache_file || ! -f $_P_lock_file || $_P_key != "$( < $_P_lock_file )" ]]; then
+    .znap.cache.write "$3" "$_P_cache_file" ||
+        return
+  fi
+
+  return 0
+fi
+
+print -u2 'znap cache: first argument should contain / or :'
+.znap.help cache
+return $(( sysexits[(i)USAGE] + 63 ))

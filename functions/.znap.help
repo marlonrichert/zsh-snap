@@ -8,9 +8,11 @@ zmodload -F zsh/parameter p:functions
   emulate -LR zsh; setopt $_znap_opts
 
   typeset -gHA _ZNAP_ARGS=()
-  private f=
+  private f= text=
   for f in ${${(%):-%x}:a:h}/.znap.[^.]##; do
-    _ZNAP_ARGS[${${f:t}#.znap.}]=${${(f)mapfile[$f]}[2]#'# '}
+    text=${${(f)mapfile[$f]}[2]#'# '}
+    [[ $text != '(DEPRECATED) '* ]] &&
+        _ZNAP_ARGS[${${f:t}#.znap.}]=$text
   done
 
   if (( $# > 0 )); then
