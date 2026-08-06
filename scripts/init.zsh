@@ -6,21 +6,21 @@ local -a match=() mbegin=() mend=() # These are otherwise leaked by zstyle.
 
 [[ ${(t)sysexits} != *readonly ]] &&
     readonly -ga sysexits=(
-        USAGE   # 64
-        DATAERR
-        NOINPUT
-        NOUSER
-        NOHOST
-        UNAVAILABLE
-        SOFTWARE
-        OSERR
-        OSFILE
-        CANTCREAT
-        IOERR
-        TEMPFAIL
-        PROTOCOL
-        NOPERM
-        CONFIG  # 78
+        USAGE       # incorrect command usage (64)
+        DATAERR     # user input data error
+        NOINPUT     # user input file not found or not readable
+        NOUSER      # user not found or login failed
+        NOHOST      # host not found
+        UNAVAILABLE # service unavailable, dependency not found, or unknown failure
+        SOFTWARE    # assertion error
+        OSERR       # system error
+        OSFILE      # system file not found, not openable, or contents invalid
+        CANTCREAT   # unable to create user output file
+        IOERR       # other IO errors
+        TEMPFAIL    # try again later
+        PROTOCOL    # remote system error
+        NOPERM      # insufficient permissions to perform non-file operation
+        CONFIG      # configuration not found or invalid (78)
     )
 
 export  XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache} \
