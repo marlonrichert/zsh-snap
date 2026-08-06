@@ -28,8 +28,8 @@ autoload +X -Uz is-at-least
   local -a upstream=()
   private err="$( ..znap.fetch )"
 
-  private rev= log="$( git log -n1 --decorate --oneline )"
-  if [[ $log ==  *'tag: '* ]]; then
+  private rev log
+  if log="$( git log -n1 --decorate --oneline 2> /dev/null )" && [[ $log ==  *'tag: '* ]]; then
     private -a chunks=( ${(s.tag: .)log} )
     rev="${chunks[1]##*[ (]}${chunks[2]%%[,)]*}"$'\e[m'
   fi
