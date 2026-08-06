@@ -55,8 +55,13 @@ autoload +X -Uz is-at-least
     elif (( count[1] )); then
       print -n 'updating... '
 
-      local msg=
-      if ! msg=$( git pull -q -r --recurse-submodules $upstream[@] 2>&1 > /dev/null ); then
+      local msg= unshallow=
+      if [[ $( git rev-parse --is-shallow-repository ) == true ]]; then
+        unshallow=--unshallow
+      fi
+      if ! msg=$(
+          git pull --quiet --rebase --recurse-submodules $unshallow "$upstream[@]" 2>&1 > /dev/null
+      ); then
         ..znap.error $=msg
         return
       else
